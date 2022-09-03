@@ -1,0 +1,145 @@
+.Event {
+    text-align: middle;
+    margin-right: 10%;
+    margin-top: -33%;
+    font-size: large;
+}
+.row1:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+/* Create two unequal columns that floats next to each other */
+/* Left column */
+
+.tablecentrecolumn {
+  float: middle;
+  width: 100%;
+  margin-top: 100px;
+}
+
+.centremodalcolumn {
+  float: middle;
+  width: 50%;
+  margin-top: 100px;
+}
+
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 800px) {
+    .leftcolumn,
+    .rightcolumn {
+        width: 90%;
+        padding: 0;
+    }
+}
+/* Fake image */
+.fakeimg {
+    background-color: #aaa;
+    width: 100%;
+    padding: 20px;
+}
+
+
+.rightCard1 {
+    background-color: #DCE9FF;
+    padding: 10px;
+    border-radius: 25px;
+    width: 100%;
+    margin-top: 10px;
+    text-align: center;
+}
+.leftCard1 {
+  padding: 20px;
+  border-radius: 25px;
+  width: 100%;
+}
+
+.centerCard {
+  padding: 50px;
+  border-radius: 100px;
+  width: 100%;
+}
+
+.modalcenter {
+    margin-left: middle;
+    margin-right: middle;
+    margin-top: middle;
+    margin-bottom: middle;
+}
+
+.modalbutton {
+    background-color: #B4CFB0;  
+    border-radius: 25px;
+    text-align: center;
+}
+
+/* table tings */
+.myshiftscrollable {
+    height: 450px;
+    overflow: scroll;
+}
+
+.myshiftcenter {
+    text-align: center;
+}
+
+
+.dropbtn {
+    background-color: #FFCFC6;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .dropbtn2 {
+    background-color: #FFCFC6;
+    color: black;
+    padding: 12px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+
+  /* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {
+    background-color:#d7e1f2;
+  }
+
+  .volunteerType {
+    margin-left: 500%;
+  }

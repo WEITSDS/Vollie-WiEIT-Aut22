@@ -1,0 +1,31 @@
+
+.profile-div{ 
+    margin-top: 10px;
+    background-color: whitesmoke;
+}
+
+
+
+.profile-div {
+    /* width: 100vw; */
+    padding: 21px;
+    /* width: 100vw; */
+    /* height: 100vh; */
+    /* background-color: rgb(205, 205, 205); */
+    /* max-height: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 100%; */
+    /* display: inline-table; */
+
+
+}
+.col-6 {
+    margin-left: -7%;
+    /* right: 7%; */
+    /* color: rgb(69, 66, 66); */
+}
+
+.col-8{
+    margin-right: 2%;
+}

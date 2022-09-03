@@ -1,0 +1,102 @@
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+/* Create two unequal columns that floats next to each other */
+/* Left column */
+.leftcolumn_shift {
+    float: left;
+    width: 50%;
+    margin-top: 100px;
+}
+
+/* Right column */
+.rightcolumn_shift {
+    float: right;
+    width: 23%;
+    background-color: #ffffff;
+    padding-left: 20px;
+    margin-top: 100px;
+}
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 800px) {
+    .leftcolumn_shift,
+    .rightcolumn_shift {
+        width: 90%;
+        padding: 0;
+    }
+}
+
+/* Add a card effect for articles */
+.card {
+    background-color: white;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.info_card {
+    background-color: #dce9ff;
+    padding: 20px;
+    border-radius: 25px;
+    width: 200%;
+    margin-top: 0px;
+}
+
+.center_shift {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.fixed_header {
+    width: 400px;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.fixed_header tbody {
+    overflow: auto;
+    height: 100px;
+}
+
+.fixed_header thead {
+    background: black;
+    color: #fff;
+}
+
+.fixed_header th,
+.fixed_header td {
+    padding: 5px;
+    text-align: left;
+    width: 200px;
+}
+
+/* table tings */
+.scrollable_shift {
+    height: 450px;
+    overflow: scroll;
+    padding-left: 10%;
+}
+
+.scrollable_info {
+  height: 520px;
+  overflow: scroll;
+  padding-left: 10%;
+}
+
+.center_shift {
+    text-align: center;
+}
+
+.btnPink {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #f5ac9f;
+    border-radius: 8px;
+}
+.btnPink:hover {
+    background-color: #f5ac9f;
+    color: white;
+}
