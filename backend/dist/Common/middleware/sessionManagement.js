@@ -44,6 +44,7 @@ function isCurrentUserLoggedIn(req, res, next) {
         next();
     }
 }
+
 function endSession(req, res) {
     req.session.destroy(function () { return res.status(200).json({ success: true, message: "Logged out successfully" }); });
 }

@@ -1,13 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+
 let tslib_1 = require("tslib");
 let tslog_1 = require("tslog");
-
 let shift_model = tslib_1.__importDefault(require("./shift.model"));
 let shift_interface = require("./shift.interface");
 let mongoose_1 = tslib_1.__importDefault(require("mongoose"));
 let utility_1 = require("../utility");
 let logger = new tslog_1.Logger({ name: "shift.controller" });
+
 
 let createShift = function (req, res) {
     let shiftFields = req.body;
@@ -55,21 +56,34 @@ let createShift = function (req, res) {
 };
 exports.createShift = createShift;
 let deleteShift = function (req, res) {
-    if (!(req.params.id)) {
+    if (!(req.params.id) && req.session.user.isAdmin) {
         shift_model.default.deleteOne({ _id: req.params.id})
             .exec()
             .then(deletionResult => {
-                if (deletionResult.acknowledged) {
+                console.log(deletionResult)
+                if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
                     return res.status(200).json({
                         message: "Shift deleted",
                         //data: (0, shift_interface.mapShiftToShiftSummary)(results),
                         success: true,
+                    });
+                } else {
+                    return res.status(404).json({
+                        message: "Shift id not found",
+                        //data: (0, shift_interface.mapShiftToShiftSummary)(results),
+                        success: false,
                     });
                 }
             })
             .catch(err => {
                 (0, utility_1.handleError)(logger, res, err, "Shift deletion failed");
             })
+    } else {
+        return res.status(401).json({
+            message: "Unauthorised, admin privileges are required",
+            //data: (0, shift_interface.mapShiftToShiftSummary)(results),
+            success: false,
+        });
     }
 };
 exports.deleteShift = deleteShift;
