@@ -126,3 +126,40 @@ let assignUser = function (req, res) {
         })
 }
 exports.assignUser = assignUser;
+
+let removeUser = function (req, res) {
+    shift_model.default.findOneAndUpdate(
+        { _id: req.params.shiftid}, 
+        { $pull: { users: req.session.user._id }}
+        )
+        .exec()
+        .then(popUserResponse => {
+            if (popUserResponse) {
+                user_model.default.findOneAndUpdate(
+                    { _id: req.session.user._id}, 
+                    { $pull: { shifts: req.params.shiftid }}
+                )
+                .exec()
+                .then(popShiftResponse => {
+                    if (popShiftResponse) {
+                        return res.status(404).json({
+                            message: "User removed from shift",
+                            success: true,
+                        });
+                    } else {
+                        return res.status(404).json({
+                            message: "User not found",
+                            success: true,
+                        });
+                    }
+
+                })
+            } else {
+                return res.status(404).json({
+                    message: "User not found",
+                    success: true,
+                });
+            }
+        })
+}
+exports.removeUser = removeUser;
