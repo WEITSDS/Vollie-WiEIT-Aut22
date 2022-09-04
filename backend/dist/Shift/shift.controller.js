@@ -12,48 +12,55 @@ let utility_1 = require("../utility");
 let logger = new tslog_1.Logger({ name: "shift.controller" });
 
 let createShift = function (req, res) {
-    let shiftFields = req.body;
-    if (!(0, shift_interface.isIBasicShift)(shiftFields)) {
-        res.status(400).json({ message: "New shift request body was not valid", success: false });
-        return;
-    }
-    shift_model.default.findOne({ name: shiftFields.name })
-        .exec()
-        .then(function (existingShift) {
-        if (existingShift != null) {
-            logger.warn(existingShift);
-            res.json({
-                message: "Shift with that name already exists",
-                status: false,
-            });
+    if (!(req.params.id) && req.session.user.isAdmin) {
+        let shiftFields = req.body;
+        if (!(0, shift_interface.isIBasicShift)(shiftFields)) {
+            res.status(400).json({ message: "New shift request body was not valid", success: false });
+            return;
         }
-        var newShift = new shift_model.default({
-            name: shiftFields.name,
-            status: shiftFields.status,
-            startAt: shiftFields.startAt,
-            endAt: shiftFields.endAt,
-            hours: shiftFields.hours,
-            address: shiftFields.address,
-            addressDescription: shiftFields.addressDescription
-        });
-        newShift.id = new mongoose_1.default.Types.ObjectId();
-        logger.info(newShift);
-        newShift
-            .save()
-            .then(function (results) {
-            return res.status(200).json({
-                message: "Shift created",
-                data: (0, shift_interface.mapShiftToShiftSummary)(results),
-                success: true,
+        shift_model.default.findOne({ name: shiftFields.name })
+            .exec()
+            .then(function (existingShift) {
+            if (existingShift != null) {
+                logger.warn(existingShift);
+                res.json({
+                    message: "Shift with that name already exists",
+                    status: false,
+                });
+            }
+            var newShift = new shift_model.default({
+                name: shiftFields.name,
+                status: shiftFields.status,
+                startAt: shiftFields.startAt,
+                endAt: shiftFields.endAt,
+                hours: shiftFields.hours,
+                address: shiftFields.address,
+                addressDescription: shiftFields.addressDescription
+            });
+            newShift.id = new mongoose_1.default.Types.ObjectId();
+            logger.info(newShift);
+            newShift
+                .save()
+                .then(function (results) {
+                return res.status(200).json({
+                    message: "Shift created",
+                    data: (0, shift_interface.mapShiftToShiftSummary)(results),
+                    success: true,
+                });
+            })
+                .catch(function (err) {
+                (0, utility_1.handleError)(logger, res, err, "Shift creation failed");
             });
         })
             .catch(function (err) {
             (0, utility_1.handleError)(logger, res, err, "Shift creation failed");
         });
-    })
-        .catch(function (err) {
-        (0, utility_1.handleError)(logger, res, err, "Shift creation failed");
-    });
+    } else {
+        return res.status(401).json({
+            message: "Unauthorised, admin privileges are required",
+            success: false,
+        });
+    }
 };
 exports.createShift = createShift;
 let deleteShift = function (req, res) {
@@ -65,13 +72,11 @@ let deleteShift = function (req, res) {
                 if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
                     return res.status(200).json({
                         message: "Shift deleted",
-                        //data: (0, shift_interface.mapShiftToShiftSummary)(results),
                         success: true,
                     });
                 } else {
                     return res.status(404).json({
                         message: "Shift id not found",
-                        //data: (0, shift_interface.mapShiftToShiftSummary)(results),
                         success: false,
                     });
                 }
@@ -82,7 +87,6 @@ let deleteShift = function (req, res) {
     } else {
         return res.status(401).json({
             message: "Unauthorised, admin privileges are required",
-            //data: (0, shift_interface.mapShiftToShiftSummary)(results),
             success: false,
         });
     }
