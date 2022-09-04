@@ -173,7 +173,7 @@ function isLoginBody(args) {
     return typeof p === "object" && typeof p.email === "string" && typeof p.password === "string";
 }
 var handleLogin = function (req, res) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-    var loginDetails, email, password, foundUser, err_3;
+    let loginDetails, email, password, foundUser, err_3, id;
     return tslib_1.__generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -195,10 +195,11 @@ var handleLogin = function (req, res) { return tslib_1.__awaiter(void 0, void 0,
                     return [2];
                 }
                 foundUser.lastLogin = Date.now();
+                id = foundUser._id
                 return [4, foundUser.save()];
             case 2:
                 _a.sent();
-                sessionManager.createSession(req, { email: email, isAdmin: (foundUser === null || foundUser === void 0 ? void 0 : foundUser.isAdmin) || false });
+                sessionManager.createSession(req, { _id: id, email: email, isAdmin: (foundUser === null || foundUser === void 0 ? void 0 : foundUser.isAdmin) || false });
                 res.status(200).json({ message: "Logged in successfully", success: true });
                 return [3, 4];
             case 3:

@@ -5,8 +5,9 @@ var express_1 = tslib_1.__importDefault(require("express"));
 var constants_1 = require("./constants");
 var mongoose_1 = tslib_1.__importDefault(require("mongoose"));
 var user_route_1 = tslib_1.__importDefault(require("./User/user.route"));
-var shift_route_1 = tslib_1.__importDefault(require("./Shift/shift.route"));
 var user_admin_route_1 = tslib_1.__importDefault(require("./User/user.admin.route"));
+var user_route_1 = tslib_1.__importDefault(require("./User/user.route"));
+var shift_route_1 = tslib_1.__importDefault(require("./Shift/shift.route"));
 var qualifications_route_1 = tslib_1.__importDefault(require("./Qualifications/qualifications.route"));
 var tag_route_1 = tslib_1.__importDefault(require("./Tag/tag.route"));
 var https = require("https");
@@ -40,7 +41,7 @@ app.post("/api/logout", function (req, res) {
 });
 app.use("/api/tags", tag_route_1.default);
 app.use("/api/users", user_route_1.default);
-app.use("/api/ishifts", shift_route_1.default);
+app.use("/api/shifts", shift_route_1.default);
 app.use("/api/users/admin", user_admin_route_1.default);
 app.get("/api/credentials/:email/:password", function (request, response) {
     var email = request.params.email;
@@ -70,6 +71,7 @@ app.get("/api/credentials/:email/:password", function (request, response) {
     req.write(data);
     req.end();
 });
+/*
 app.get("/api/shifts/:token", function (request, response) {
     var token = request.params.token;
     var body = "";
@@ -93,6 +95,6 @@ app.get("/api/shifts/:token", function (request, response) {
         console.error(error);
     });
     req.end();
-});
+}); */
 app.use("/api/qualifications", qualifications_route_1.default);
 //# sourceMappingURL=index.js.map

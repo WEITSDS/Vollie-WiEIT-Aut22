@@ -9,14 +9,13 @@ function isIBasicShift(args) {
         typeof ishift.name === "string" &&    
         typeof ishift.startAt === "string" &&
         typeof ishift.endAt === "string" &&
-        typeof ishift.hours === "string" &&
+        typeof ishift.hours === "number" &&
         typeof ishift.address === "string" &&
-        typeof ishift.addressDescription === "string"&&
-        typeof ishift.status === "string");
+        typeof ishift.description === "string");
 }
 exports.isIBasicShift = isIBasicShift;
 function mapShiftToShiftSummary(_a) {
-    var name = _a.name, startAt = _a.startAt, endAt = _a.endAt, _id = _a._id, hours = _a.hours, address = _a.address, addressDescription = _a.addressDescription, createdAt = _a.createdAt, status = _a.status, users = _a.users;
+    var name = _a.name, startAt = _a.startAt, endAt = _a.endAt, _id = _a._id, hours = _a.hours, address = _a.address, description = _a.description, createdAt = _a.createdAt, status = _a.status, users = _a.users;
     return {
         name: name,
         startAt: startAt,
@@ -25,7 +24,7 @@ function mapShiftToShiftSummary(_a) {
         hours: hours,
         users: users.map(user_interface_1.mapUserToUserSummary),
         address: address,
-        addressDescription: addressDescription,
+        description: description,
         status: status,
     };
 }

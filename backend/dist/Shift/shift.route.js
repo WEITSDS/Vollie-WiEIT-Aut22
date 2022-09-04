@@ -5,6 +5,7 @@ let express_1 = tslib_1.__importDefault(require("express"));
 let shift_controller_1 = require("./shift.controller");
 let router = express_1.default.Router();
 router.post("/create", shift_controller_1.createShift);
+router.patch("/assign-user/:shiftid", shift_controller_1.assignUser);
 //router.post("/update", shift_controller_1.updateShift);
 router.delete("/delete/:id", shift_controller_1.deleteShift);
 //router.get("/ownusers", (0, utility_1.wrapAsync)(shift_controller_1.getOwnShifts));

@@ -4,11 +4,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 let tslib_1 = require("tslib");
 let tslog_1 = require("tslog");
 let shift_model = tslib_1.__importDefault(require("./shift.model"));
+let user_model = tslib_1.__importDefault(require("../User/user.model"));
 let shift_interface = require("./shift.interface");
 let mongoose_1 = tslib_1.__importDefault(require("mongoose"));
+let ObjectID = require('mongodb').ObjectID;
 let utility_1 = require("../utility");
 let logger = new tslog_1.Logger({ name: "shift.controller" });
-
 
 let createShift = function (req, res) {
     let shiftFields = req.body;
@@ -87,3 +88,41 @@ let deleteShift = function (req, res) {
     }
 };
 exports.deleteShift = deleteShift;
+
+let assignUser = function (req, res) {
+    console.log(req.session.user)
+    shift_model.default.findOneAndUpdate(
+        { _id: req.params.shiftid}, 
+        { $push: { users: req.session.user._id }}
+        )
+        .exec()
+        .then(assignUserResponse => {
+            if (assignUserResponse) {
+                user_model.default.findOneAndUpdate(
+                { _id: req.session.user._id}, 
+                { $push: { shifts: req.params.shiftid }}
+                )
+                .exec()
+                .then(assignShiftResponse => {
+                    if (assignShiftResponse) {
+                        return res.status(200).json({
+                            message: "User assigned to shift",
+                            success: true,
+                        });
+                    } else {
+                        return res.status(404).json({
+                            message: "User not found",
+                            success: true,
+                        });
+                    }
+                })
+            } else {
+                return res.status(404).json({
+                    message: "Shift not found",
+                    success: true,
+                });
+            }
+            
+        })
+}
+exports.assignUser = assignUser;
