@@ -2,7 +2,8 @@ import React from "react";
 import "./viewAvailableShifts.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MockData from "./data.json";
-import { get } from "../api/utility";
+//import { get } from "../api/utility";
+import { assignUserToShift } from "../api/shiftApi";
 import { NavigationBar } from "../components/navbar";
 
 interface SelectedShiftState {
@@ -10,14 +11,14 @@ interface SelectedShiftState {
 }
 
 interface data {
-    id: number;
-    who: string;
-    when: string;
-    time: string;
-    where: string;
-    task: string;
-    task_description: string;
-    contact: string;
+    id: string,
+    name: string,
+    startAt: string,
+    endAt: string,
+    address: string,
+    description: string,
+    status: string,
+    hours: string
 }
 
 export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
@@ -25,12 +26,12 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
         selectedShift: undefined,
     };
 
-    async componentDidMount() {
-        const localToken = localStorage.getItem("token");
-        const shiftData = await get(`/api/shifts/${localToken || ""}`);
-        const shiftResponse = (await shiftData.json()) as string;
+    componentDidMount() {
+        //const localToken = localStorage.getItem("token");
+        //const shiftData = await get(`/api/shifts/${localToken || ""}`);
+        //const shiftResponse = (await shiftData.json()) as string;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const responseJSON = JSON.parse(shiftResponse);
+        /*const responseJSON = JSON.parse(shiftResponse);
         console.log(responseJSON);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         for (let i = 0; i < responseJSON.length; i++) {
@@ -41,7 +42,7 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const time = myArray[1] as string;
             MockData.push({
-                id: i,
+                id: responseJSON[i],
                 who: "UTS",
                 when: date,
                 time: time,
@@ -50,8 +51,8 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
                 task_description: "test",
                 contact: "Marrilee@gmail.com",
             });
-        }
-        this.forceUpdate();
+        } */
+        //this.forceUpdate();
     }
 
     buttonHandler = (shift: data) => {
@@ -59,6 +60,12 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
             selectedShift: shift ?? undefined,
         });
     };
+
+    handleAccept = async (shift: data) => {
+        const assignShiftResponse = await assignUserToShift(shift);
+        console.log(assignShiftResponse);
+    };
+
     render = () => {
         const data = MockData;
         const { selectedShift } = this.state;
@@ -85,9 +92,9 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
                                     <tbody>
                                         {data.map((d) => (
                                             <tr key={d.id}>
-                                                <td>{d.task}</td>
-                                                <td>{d.when}</td>
-                                                <td>{d.where}</td>
+                                                <td>{d.name}</td>
+                                                <td>{d.startAt}</td>
+                                                <td>{d.address}</td>
                                                 <td>
                                                     <button className="btnPink" onClick={() => this.buttonHandler(d)}>
                                                         View
@@ -119,7 +126,12 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
                                             <p>{selectedShift.task_description}</p>
                                         </tr>
                                         <div className="center_shift">
-                                            <button className="btnPink">Accept</button>
+                                            <button
+                                                className="btnPink"
+                                                onClick={() => void this.handleAccept(selectedShift)}
+                                            >
+                                                Accept
+                                            </button>
                                         </div>
                                     </tbody>
                                 ) : (

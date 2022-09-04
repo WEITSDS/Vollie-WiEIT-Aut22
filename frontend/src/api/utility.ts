@@ -12,6 +12,15 @@ export async function post(url: string, body: Record<string, unknown>): Promise<
     });
 }
 
+export async function patch(url: string): Promise<Response> {
+    return await fetch(url, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+}
+
 export async function get(url: string, queryParameters?: Record<string, string>): Promise<Response> {
     const queryArgs = [];
     if (queryParameters) {
