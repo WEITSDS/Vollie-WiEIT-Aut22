@@ -3,6 +3,7 @@ import "./viewAvailableShifts.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MockData from "./data.json";
 //import { get } from "../api/utility";
+import { default as dayjs } from "dayjs";
 import { assignUserToShift } from "../api/shiftApi";
 import { NavigationBar } from "../components/navbar";
 
@@ -11,14 +12,14 @@ interface SelectedShiftState {
 }
 
 interface data {
-    id: string,
-    name: string,
-    startAt: string,
-    endAt: string,
-    address: string,
-    description: string,
-    status: string,
-    hours: string
+    id: string;
+    name: string;
+    startAt: string;
+    endAt: string;
+    address: string;
+    description: string;
+    status: string;
+    hours: number;
 }
 
 export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
@@ -93,7 +94,11 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
                                         {data.map((d) => (
                                             <tr key={d.id}>
                                                 <td>{d.name}</td>
-                                                <td>{d.startAt}</td>
+                                                <td>
+                                                    {dayjs(d.startAt).format("DD/DD/YYYY")}
+                                                    &nbsp;at&nbsp;
+                                                    {dayjs(d.startAt).format("hh:mm A")}
+                                                </td>
                                                 <td>{d.address}</td>
                                                 <td>
                                                     <button className="btnPink" onClick={() => this.buttonHandler(d)}>
@@ -113,17 +118,15 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
                                 {selectedShift ? (
                                     <tbody>
                                         <tr key={selectedShift.id}>
-                                            <h2 className="center_shift">{selectedShift.task}</h2>
-                                            <h4>Who:</h4>
-                                            <p>{selectedShift.who}</p>
+                                            <h2 className="center_shift">{selectedShift.name}</h2>
                                             <h4>When:</h4>
-                                            <p>{selectedShift.when}</p>
+                                            <p>{dayjs(selectedShift.startAt).format("DD/DD/YYYY")}</p>
                                             <h4>Time:</h4>
-                                            <p>{selectedShift.time}</p>
+                                            <p>{dayjs(selectedShift.startAt).format("hh:mm A")}</p>
                                             <h4>Where:</h4>
-                                            <p>{selectedShift.where}</p>
+                                            <p>{selectedShift.address}</p>
                                             <h4>Task:</h4>
-                                            <p>{selectedShift.task_description}</p>
+                                            <p>{selectedShift.description}</p>
                                         </tr>
                                         <div className="center_shift">
                                             <button

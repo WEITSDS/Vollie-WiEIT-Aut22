@@ -1,11 +1,12 @@
 [
     {
       "id": "63146057447ee774df7dcd59",
+      "name": "Food Service",
       "startAt": "2022-09-04T05:48:52.183+00:00",
       "endAt": "2022-09-04T08:48:52.183+00:00",
       "address": "123 Fake Street, Baulkham Hills, 2154, NSW, Australia",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Integer quis auctor elit sed vulputate mi sit amet. Leo duis ut diam quam nulla porttitor massa id neque. Sem integer vitae justo eget magna fermentum iaculis eu. Accumsan tortor posuere ac ut consequat semper. Sed",
-      "status": "Food Service",
-      "hours": 3,
+      "status": "Scheduled",
+      "hours": 3
     }
 ]

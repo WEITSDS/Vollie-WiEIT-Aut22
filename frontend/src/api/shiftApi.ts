@@ -18,13 +18,14 @@ async function patchBasicResponse(url: string): Promise<ResponseWithStatus> {
 }
 
 interface ShiftDetails {
-    id: string,
-    startAt: string,
-    endAt: string,
-    address: string,
-    description: string,
-    status: string,
-    hours: string
+    id: string;
+    name: string;
+    startAt: string;
+    endAt: string;
+    address: string;
+    description: string;
+    status: string;
+    hours: number;
 }
 
 export async function assignUserToShift(shift: ShiftDetails): Promise<ResponseWithStatus> {
