@@ -2,7 +2,7 @@ import React from "react";
 import logo from "../images/uts-logo.svg";
 import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import HelpModal from "./helpModal";
-import { logoutUser, User } from "../api/userAPI";
+import { logoutUser, User } from "../api/userApi";
 import { getLoggedInUser } from "../protectedRoute";
 
 interface NavBarState {

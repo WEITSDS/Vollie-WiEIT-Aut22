@@ -5,7 +5,9 @@ import MockData from "./data.json";
 //import { get } from "../api/utility";
 import { default as dayjs } from "dayjs";
 import { assignUserToShift } from "../api/shiftApi";
+import { getOwnUser } from "../api/userApi";
 import { NavigationBar } from "../components/navbar";
+//import { userInfo } from "os";
 
 interface SelectedShiftState {
     selectedShift?: data;
@@ -63,7 +65,14 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
     };
 
     handleAccept = async (shift: data) => {
-        const assignShiftResponse = await assignUserToShift(shift);
+        const user = await getOwnUser();
+        const data = {
+            userid: user.data?._id as string,
+            shiftid: shift.id,
+        };
+        console.log(shift);
+        //Request now requires shiftid and userid to be passed as an object.
+        const assignShiftResponse = await assignUserToShift(data);
         console.log(assignShiftResponse);
     };
 
