@@ -1,169 +1,172 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-
-let tslib_1 = require("tslib");
-let tslog_1 = require("tslog");
-let shift_model = tslib_1.__importDefault(require("./shift.model"));
-let user_model = tslib_1.__importDefault(require("../User/user.model"));
-let shift_interface = require("./shift.interface");
-let mongoose_1 = tslib_1.__importDefault(require("mongoose"));
-let ObjectID = require('mongodb').ObjectID;
-let utility_1 = require("../utility");
-let logger = new tslog_1.Logger({ name: "shift.controller" });
-
-let createShift = function (req, res) {
-    if (!(req.params.id) && req.session.user.isAdmin) {
-        let shiftFields = req.body;
-        if (!(0, shift_interface.isIBasicShift)(shiftFields)) {
-            res.status(400).json({ message: "New shift request body was not valid", success: false });
-            return;
-        }
-        shift_model.default.findOne({ name: shiftFields.name })
-            .exec()
-            .then(function (existingShift) {
-            if (existingShift != null) {
-                logger.warn(existingShift);
-                res.json({
-                    message: "Shift with that name already exists",
-                    status: false,
-                });
-            }
-            var newShift = new shift_model.default({
-                name: shiftFields.name,
-                status: shiftFields.status,
-                startAt: shiftFields.startAt,
-                endAt: shiftFields.endAt,
-                hours: shiftFields.hours,
-                address: shiftFields.address,
-                addressDescription: shiftFields.addressDescription
+exports.removeUser = exports.assignUser = exports.deleteShift = exports.createShift = void 0;
+var tslib_1 = require("tslib");
+var user_model_1 = tslib_1.__importDefault(require("../User/user.model"));
+var Shift_model_1 = tslib_1.__importDefault(require("./Shift.model"));
+var mongoose_1 = tslib_1.__importDefault(require("mongoose"));
+var tslog_1 = require("tslog");
+var utility_1 = require("../utility");
+var shift_interface_1 = require("./shift.interface");
+var logger = new tslog_1.Logger({ name: "shift.controller" });
+var createShift = function (req, res) {
+    var _a;
+    var isAdmin = ((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.isAdmin) || false;
+    if (req.params.id && !isAdmin) {
+        res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+        return;
+    }
+    var shiftFields = req.body;
+    if (!(0, shift_interface_1.isIBasicShift)(shiftFields)) {
+        res.status(400).json({ message: "New shift request body was not valid", success: false });
+        return;
+    }
+    Shift_model_1.default.findOne({ name: shiftFields.name })
+        .exec()
+        .then(function (existingShift) {
+        if (existingShift) {
+            logger.warn(existingShift);
+            res.json({
+                message: "Shift already exists",
+                status: false,
             });
-            newShift.id = new mongoose_1.default.Types.ObjectId();
-            logger.info(newShift);
-            newShift
-                .save()
-                .then(function (results) {
-                return res.status(200).json({
-                    message: "Shift created",
-                    data: (0, shift_interface.mapShiftToShiftSummary)(results),
-                    success: true,
-                });
-            })
-                .catch(function (err) {
-                (0, utility_1.handleError)(logger, res, err, "Shift creation failed");
+        }
+        var newShift = new Shift_model_1.default({
+            name: shiftFields.name,
+            status: shiftFields.status,
+            startAt: shiftFields.startAt,
+            endAt: shiftFields.endAt,
+            hours: shiftFields.hours,
+            address: shiftFields.address,
+            description: shiftFields.description,
+        });
+        newShift.id = new mongoose_1.default.Types.ObjectId();
+        logger.info(newShift);
+        newShift
+            .save()
+            .then(function (results) {
+            return res.status(200).json({
+                message: "Shift created",
+                data: (0, shift_interface_1.mapShiftToShiftSummary)(results),
+                success: true,
             });
         })
             .catch(function (err) {
             (0, utility_1.handleError)(logger, res, err, "Shift creation failed");
         });
-    } else {
-        return res.status(401).json({
-            message: "Unauthorised, admin privileges are required",
-            success: false,
-        });
-    }
+    })
+        .catch(function (err) {
+        (0, utility_1.handleError)(logger, res, err, "Shift creation failed");
+    });
 };
 exports.createShift = createShift;
-let deleteShift = function (req, res) {
-    if (!(req.params.id) && req.session.user.isAdmin) {
-        shift_model.default.deleteOne({ _id: req.params.id})
-            .exec()
-            .then(deletionResult => {
-                console.log(deletionResult)
-                if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
-                    return res.status(200).json({
-                        message: "Shift deleted",
-                        success: true,
-                    });
-                } else {
-                    return res.status(404).json({
-                        message: "Shift id not found",
-                        success: false,
-                    });
-                }
-            })
-            .catch(err => {
-                (0, utility_1.handleError)(logger, res, err, "Shift deletion failed");
-            })
-    } else {
-        return res.status(401).json({
-            message: "Unauthorised, admin privileges are required",
-            success: false,
-        });
+var deleteShift = function (req, res) {
+    var _a;
+    var isAdmin = ((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.isAdmin) || false;
+    if (!req.params.shiftid && isAdmin) {
+        res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+        return;
     }
+    Shift_model_1.default.deleteOne({ _id: req.params.shiftid })
+        .exec()
+        .then(function (deletionResult) {
+        console.log(deletionResult);
+        if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
+            return res.status(200).json({
+                message: "Shift deleted",
+                success: true,
+            });
+        }
+        else {
+            return res.status(404).json({
+                message: "Shift id not found",
+                success: false,
+            });
+        }
+    })
+        .catch(function (err) {
+        (0, utility_1.handleError)(logger, res, err, "Shift deletion failed");
+    });
 };
 exports.deleteShift = deleteShift;
-
-let assignUser = function (req, res) {
-    console.log(req.session.user)
-    shift_model.default.findOneAndUpdate(
-        { _id: req.params.shiftid}, 
-        { $push: { users: req.session.user._id }}
-        )
-        .exec()
-        .then(assignUserResponse => {
-            if (assignUserResponse) {
-                user_model.default.findOneAndUpdate(
-                { _id: req.session.user._id}, 
-                { $push: { shifts: req.params.shiftid }}
-                )
-                .exec()
-                .then(assignShiftResponse => {
-                    if (assignShiftResponse) {
-                        return res.status(200).json({
-                            message: "User assigned to shift",
-                            success: true,
-                        });
-                    } else {
-                        return res.status(404).json({
-                            message: "User not found",
-                            success: true,
-                        });
-                    }
-                })
-            } else {
-                return res.status(404).json({
-                    message: "Shift not found",
-                    success: true,
-                });
-            }
-            
-        })
-}
+var assignUser = function (req, res) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+    return tslib_1.__generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4, Shift_model_1.default.findOneAndUpdate({ _id: req.params.shiftid }, { $addToSet: { users: req.params.userid } })
+                    .exec()
+                    .then(function (assignUserResponse) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+                    return tslib_1.__generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!assignUserResponse) return [3, 2];
+                                return [4, user_model_1.default.findOneAndUpdate({ _id: req.params.userid }, { $addToSet: { shifts: req.params.shiftid } })
+                                        .exec()
+                                        .then(function (assignShiftResponse) {
+                                        if (assignShiftResponse) {
+                                            return res.status(200).json({
+                                                message: "User assigned to shift",
+                                                success: true,
+                                            });
+                                        }
+                                        else {
+                                            return res.status(404).json({
+                                                message: "User not found",
+                                                success: true,
+                                            });
+                                        }
+                                    })];
+                            case 1:
+                                _a.sent();
+                                _a.label = 2;
+                            case 2: return [2];
+                        }
+                    });
+                }); })];
+            case 1:
+                _a.sent();
+                return [2];
+        }
+    });
+}); };
 exports.assignUser = assignUser;
-
-let removeUser = function (req, res) {
-    shift_model.default.findOneAndUpdate(
-        { _id: req.params.shiftid}, 
-        { $pull: { users: req.session.user._id }}
-        )
-        .exec()
-        .then(popUserResponse => {
-            if (popUserResponse) {
-                user_model.default.findOneAndUpdate(
-                    { _id: req.session.user._id}, 
-                    { $pull: { shifts: req.params.shiftid }}
-                )
-                .exec()
-                .then(popShiftResponse => {
-                    if (popShiftResponse) {
-                        return res.status(404).json({
-                            message: "User removed from shift",
-                            success: true,
-                        });
-                    } else {
-                        return res.status(404).json({
-                            message: "User not found",
-                            success: true,
-                        });
-                    }
-
-                })
-            } else {
-                return res.status(404).json({
-                    message: "User not found",
-                    success: true,
-                });
-            }
-        })
-}
+var removeUser = function (req, res) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+    return tslib_1.__generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4, Shift_model_1.default.findOneAndUpdate({ _id: req.params.shiftid }, { $pull: { users: req.params.userid } })
+                    .exec()
+                    .then(function (assignUserResponse) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+                    return tslib_1.__generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!assignUserResponse) return [3, 2];
+                                return [4, user_model_1.default.findOneAndUpdate({ _id: req.params.userid }, { $pull: { shifts: req.params.shiftid } })
+                                        .exec()
+                                        .then(function (assignShiftResponse) {
+                                        if (assignShiftResponse) {
+                                            return res.status(200).json({
+                                                message: "User removed from shift",
+                                                success: true,
+                                            });
+                                        }
+                                        else {
+                                            return res.status(404).json({
+                                                message: "User not found",
+                                                success: true,
+                                            });
+                                        }
+                                    })];
+                            case 1:
+                                _a.sent();
+                                _a.label = 2;
+                            case 2: return [2];
+                        }
+                    });
+                }); })];
+            case 1:
+                _a.sent();
+                return [2];
+        }
+    });
+}); };
 exports.removeUser = removeUser;
+//# sourceMappingURL=shift.controller.js.map

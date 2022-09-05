@@ -45,7 +45,7 @@ function isCurrentUserLoggedIn(req: core.Request, res: core.Response, next: core
     // reponse with 401 unauthorised (identity not known) otherwise continue with the flow of middleware
     const notLoggedIn = req.session.user == null;
     if (notLoggedIn && routeNeedsAuth(req.url)) {
-        res.status(401).json({ message: "Unauthorized, please login", success: false });
+        res.status(401).json({ message: "Unauthorised, please login", success: false });
     } else {
         next();
     }

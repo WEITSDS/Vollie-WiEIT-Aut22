@@ -3,6 +3,7 @@ import { PORT, HOST, PROTOCOL } from "./constants";
 import mongoose from "mongoose";
 import userRoutes from "./User/user.route";
 import userAdminRoutes from "./User/user.admin.route";
+import shiftRoutes from "./Shift/shift.route";
 import qualificationRoutes from "./Qualifications/qualifications.route";
 import tagRoutes from "./Tag/tag.route";
 import https = require("https");
@@ -59,6 +60,9 @@ app.use("/api/tags", tagRoutes);
 //**Use Routes */
 app.use("/api/users", userRoutes);
 app.use("/api/users/admin", userAdminRoutes);
+
+//**Shift Routes */
+app.use("/api/shifts", shiftRoutes);
 
 //Sling API Call to retrieve Auth Token
 app.get("/api/credentials/:email/:password", (request, response) => {
