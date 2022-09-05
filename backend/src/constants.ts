@@ -37,9 +37,9 @@ const MONGO_OPTIONS = {
     retryWrites: false,
 };
 
-const MONGO_USERNAME = process.env.MONGO_USERNAME || "weit_user";
-const MONGO_PASSWORD = process.env.MONGO_PASSWORD || "IdCRhTHXp3sUBu8M";
-const MONGO_HOST = process.env.MONGO_HOST || "cluster0.cfutj.mongodb.net/WEIT";
+const MONGO_USERNAME = process.env.MONGO_USERNAME || "vollie-wieit";
+const MONGO_PASSWORD = process.env.MONGO_PASSWORD || "RRTJa3wml^SbN1G1o;3S";
+const MONGO_HOST = process.env.MONGO_HOST || "wieit.gtchrvd.mongodb.net/test";
 
 const MONGO = {
     host: MONGO_HOST,
