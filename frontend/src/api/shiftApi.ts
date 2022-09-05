@@ -78,7 +78,6 @@ interface DeleteDetails {
     _id: string;
 }
 
-
 export function deleteShift(req: DeleteDetails): Promise<ResponseWithStatus> {
     return deleteBasicResponse(`${ROOT_URL}/api/shifts/${req._id}`);
 }
