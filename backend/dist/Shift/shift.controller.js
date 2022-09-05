@@ -63,65 +63,65 @@ exports.createShift = createShift;
 var deleteShift = function (req, res) {
     var _a;
     var isAdmin = ((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.isAdmin) || false;
-    if (!req.params.id && isAdmin) {
-        Shift_model_1.default.deleteOne({ _id: req.params })
-            .exec()
-            .then(function (deletionResult) {
-            if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
-                return res.status(200).json({
-                    message: "Shift deleted",
-                    success: true,
-                });
-            }
-            else {
-                return res.status(404).json({
-                    message: "Shift id not found",
-                    success: false,
-                });
-            }
-        })
-            .catch(function (err) {
-            (0, utility_1.handleError)(logger, res, err, "Shift deletion failed");
-        });
+    if (!req.params.shiftid && isAdmin) {
+        res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+        return;
     }
+    Shift_model_1.default.deleteOne({ _id: req.params.shiftid })
+        .exec()
+        .then(function (deletionResult) {
+        console.log(deletionResult);
+        if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
+            return res.status(200).json({
+                message: "Shift deleted",
+                success: true,
+            });
+        }
+        else {
+            return res.status(404).json({
+                message: "Shift id not found",
+                success: false,
+            });
+        }
+    })
+        .catch(function (err) {
+        (0, utility_1.handleError)(logger, res, err, "Shift deletion failed");
+    });
 };
 exports.deleteShift = deleteShift;
 var assignUser = function (req, res) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-    var userId;
     return tslib_1.__generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                userId = "test";
-                return [4, Shift_model_1.default.findOneAndUpdate({ _id: req.params.shiftid }, { $addToSet: { users: userId } })
-                        .exec()
-                        .then(function (assignUserResponse) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-                        return tslib_1.__generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    if (!assignUserResponse) return [3, 2];
-                                    return [4, user_model_1.default.findOneAndUpdate({ _id: userId }, { $addToSet: { shifts: req.params.shiftid } })
-                                            .exec()
-                                            .then(function (assignShiftResponse) {
-                                            if (assignShiftResponse) {
-                                                return res.status(200).json({
-                                                    message: "User assigned to shift",
-                                                    success: true,
-                                                });
-                                            }
-                                            else {
-                                                return res.status(404).json({
-                                                    message: "User not found",
-                                                    success: true,
-                                                });
-                                            }
-                                        })];
-                                case 1:
-                                    _a.sent();
-                                    _a.label = 2;
-                                case 2: return [2];
-                            }
-                        });
-                    }); })];
+            case 0: return [4, Shift_model_1.default.findOneAndUpdate({ _id: req.params.shiftid }, { $addToSet: { users: req.params.userid } })
+                    .exec()
+                    .then(function (assignUserResponse) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+                    return tslib_1.__generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!assignUserResponse) return [3, 2];
+                                return [4, user_model_1.default.findOneAndUpdate({ _id: req.params.userid }, { $addToSet: { shifts: req.params.shiftid } })
+                                        .exec()
+                                        .then(function (assignShiftResponse) {
+                                        if (assignShiftResponse) {
+                                            return res.status(200).json({
+                                                message: "User assigned to shift",
+                                                success: true,
+                                            });
+                                        }
+                                        else {
+                                            return res.status(404).json({
+                                                message: "User not found",
+                                                success: true,
+                                            });
+                                        }
+                                    })];
+                            case 1:
+                                _a.sent();
+                                _a.label = 2;
+                            case 2: return [2];
+                        }
+                    });
+                }); })];
             case 1:
                 _a.sent();
                 return [2];
@@ -130,41 +130,38 @@ var assignUser = function (req, res) { return tslib_1.__awaiter(void 0, void 0, 
 }); };
 exports.assignUser = assignUser;
 var removeUser = function (req, res) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-    var userId;
     return tslib_1.__generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                userId = "test";
-                return [4, Shift_model_1.default.findOneAndUpdate({ _id: req.params.shiftid }, { $pull: { users: userId } })
-                        .exec()
-                        .then(function (assignUserResponse) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-                        return tslib_1.__generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    if (!assignUserResponse) return [3, 2];
-                                    return [4, user_model_1.default.findOneAndUpdate({ _id: userId }, { $pull: { shifts: req.params.shiftid } })
-                                            .exec()
-                                            .then(function (assignShiftResponse) {
-                                            if (assignShiftResponse) {
-                                                return res.status(200).json({
-                                                    message: "User removed from shift",
-                                                    success: true,
-                                                });
-                                            }
-                                            else {
-                                                return res.status(404).json({
-                                                    message: "User not found",
-                                                    success: true,
-                                                });
-                                            }
-                                        })];
-                                case 1:
-                                    _a.sent();
-                                    _a.label = 2;
-                                case 2: return [2];
-                            }
-                        });
-                    }); })];
+            case 0: return [4, Shift_model_1.default.findOneAndUpdate({ _id: req.params.shiftid }, { $pull: { users: req.params.userid } })
+                    .exec()
+                    .then(function (assignUserResponse) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+                    return tslib_1.__generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!assignUserResponse) return [3, 2];
+                                return [4, user_model_1.default.findOneAndUpdate({ _id: req.params.userid }, { $pull: { shifts: req.params.shiftid } })
+                                        .exec()
+                                        .then(function (assignShiftResponse) {
+                                        if (assignShiftResponse) {
+                                            return res.status(200).json({
+                                                message: "User removed from shift",
+                                                success: true,
+                                            });
+                                        }
+                                        else {
+                                            return res.status(404).json({
+                                                message: "User not found",
+                                                success: true,
+                                            });
+                                        }
+                                    })];
+                            case 1:
+                                _a.sent();
+                                _a.label = 2;
+                            case 2: return [2];
+                        }
+                    });
+                }); })];
             case 1:
                 _a.sent();
                 return [2];

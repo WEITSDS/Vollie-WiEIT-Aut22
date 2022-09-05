@@ -69,36 +69,37 @@ export const createShift = (req: Request, res: Response) => {
 
 export const deleteShift = (req: Request, res: Response) => {
     const isAdmin = req.session.user?.isAdmin || false;
-    if (!req.params.id && isAdmin) {
-        Shift.deleteOne({ _id: req.params })
-            .exec()
-            .then((deletionResult) => {
-                if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
-                    return res.status(200).json({
-                        message: "Shift deleted",
-                        success: true,
-                    });
-                } else {
-                    return res.status(404).json({
-                        message: "Shift id not found",
-                        success: false,
-                    });
-                }
-            })
-            .catch((err) => {
-                handleError(logger, res, err, "Shift deletion failed");
-            });
+    if (!req.params.shiftid && isAdmin) {
+        res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+        return;
     }
+    Shift.deleteOne({ _id: req.params.shiftid })
+        .exec()
+        .then((deletionResult) => {
+            console.log(deletionResult);
+            if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
+                return res.status(200).json({
+                    message: "Shift deleted",
+                    success: true,
+                });
+            } else {
+                return res.status(404).json({
+                    message: "Shift id not found",
+                    success: false,
+                });
+            }
+        })
+        .catch((err) => {
+            handleError(logger, res, err, "Shift deletion failed");
+        });
 };
 
 export const assignUser = async (req: Request, res: Response): Promise<void> => {
-    const userId = "test" as string; //Get UserId from request, maybe param or body?
-
-    await Shift.findOneAndUpdate({ _id: req.params.shiftid }, { $addToSet: { users: userId } })
+    await Shift.findOneAndUpdate({ _id: req.params.shiftid }, { $addToSet: { users: req.params.userid } })
         .exec()
         .then(async (assignUserResponse): Promise<void> => {
             if (assignUserResponse) {
-                await User.findOneAndUpdate({ _id: userId }, { $addToSet: { shifts: req.params.shiftid } })
+                await User.findOneAndUpdate({ _id: req.params.userid }, { $addToSet: { shifts: req.params.shiftid } })
                     .exec()
                     .then((assignShiftResponse) => {
                         if (assignShiftResponse) {
@@ -122,12 +123,11 @@ export const assignUser = async (req: Request, res: Response): Promise<void> => 
 };
 
 export const removeUser = async (req: Request, res: Response): Promise<void> => {
-    const userId = "test" as string; //get user from request. new param?
-    await Shift.findOneAndUpdate({ _id: req.params.shiftid }, { $pull: { users: userId } })
+    await Shift.findOneAndUpdate({ _id: req.params.shiftid }, { $pull: { users: req.params.userid } })
         .exec()
         .then(async (assignUserResponse): Promise<void> => {
             if (assignUserResponse) {
-                await User.findOneAndUpdate({ _id: userId }, { $pull: { shifts: req.params.shiftid } })
+                await User.findOneAndUpdate({ _id: req.params.userid }, { $pull: { shifts: req.params.shiftid } })
                     .exec()
                     .then((assignShiftResponse) => {
                         if (assignShiftResponse) {
