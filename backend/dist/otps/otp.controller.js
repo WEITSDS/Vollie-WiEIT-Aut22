@@ -58,7 +58,7 @@ function verifyOTPForUser(req, res, _next) {
                         return [2];
                     }
                     if (!req.session.user) {
-                        sessionManager.createSession(req, { email: user.email, isAdmin: user.isAdmin });
+                        sessionManager.createSession(req, { _id: user._id, email: user.email, isAdmin: user.isAdmin });
                     }
                     if (!!user.verified) return [3, 2];
                     user.verified = true;

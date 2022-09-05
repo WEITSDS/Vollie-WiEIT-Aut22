@@ -105,27 +105,27 @@ export const assignUser = async (req: Request, res: Response): Promise<void> => 
     await Shift.findOneAndUpdate({ _id: req.params.shiftid }, { $addToSet: { users: req.params.userid } })
         .exec()
         .then(async (assignUserResponse): Promise<void> => {
-            if (assignUserResponse) {
-                await User.findOneAndUpdate({ _id: req.params.userid }, { $addToSet: { shifts: req.params.shiftid } })
-                    .exec()
-                    .then((assignShiftResponse) => {
-                        if (assignShiftResponse) {
-                            return res.status(200).json({
-                                message: "User assigned to shift",
-                                success: true,
-                            });
-                        } else {
-                            return res.status(404).json({
-                                message: "User not found",
-                                success: true,
-                            });
-                        }
-                    });
-            } /*
-            return res.status(404).json({
-                message: "Shift not found",
-                success: true,
-            });*/
+            if (!assignUserResponse) {
+                res.status(404).json({ message: "Shift not found", success: false });
+                return;
+            }
+            await User.findOneAndUpdate({ _id: req.params.userid }, { $addToSet: { shifts: req.params.shiftid } })
+                .exec()
+                .then((assignShiftResponse) => {
+                    if (assignShiftResponse) {
+                        res.status(200).json({ message: "User assigned to shift", success: true });
+                        return;
+                    } else {
+                        res.status(404).json({ message: "User not found", success: true });
+                        return;
+                    }
+                })
+                .catch((err) => {
+                    handleError(logger, res, err, "Shift assignment to user failed");
+                });
+        })
+        .catch((err) => {
+            handleError(logger, res, err, "User assignment to shift failed");
         });
 };
 

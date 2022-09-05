@@ -74,7 +74,7 @@ export function verifyOTPForUser(req: Request, res: Response, _next: NextFunctio
                 // The user could be trying to reset their password here (and won't be logged in),
                 // so log them in now :)
                 if (!req.session.user) {
-                    sessionManager.createSession(req, { email: user.email, isAdmin: user.isAdmin });
+                    sessionManager.createSession(req, { _id: user._id, email: user.email, isAdmin: user.isAdmin });
                 }
 
                 // If they aren't already verified, do that now

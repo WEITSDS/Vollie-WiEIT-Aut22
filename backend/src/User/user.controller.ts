@@ -209,7 +209,7 @@ export const handleLogin = async (req: Request, res: Response): Promise<void> =>
         foundUser.lastLogin = Date.now();
         await foundUser.save();
 
-        sessionManager.createSession(req, { email, isAdmin: foundUser?.isAdmin || false });
+        sessionManager.createSession(req, { _id: foundUser?._id, email, isAdmin: foundUser?.isAdmin || false });
         res.status(200).json({ message: "Logged in successfully", success: true });
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occurred");

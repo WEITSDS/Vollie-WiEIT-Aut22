@@ -107,30 +107,34 @@ var assignUser = function (req, res) { return tslib_1.__awaiter(void 0, void 0, 
                         return tslib_1.__generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
-                                    if (!assignUserResponse) return [3, 2];
+                                    if (!assignUserResponse) {
+                                        res.status(404).json({ message: "Shift not found", success: false });
+                                        return [2];
+                                    }
                                     return [4, user_model_1.default.findOneAndUpdate({ _id: req.params.userid }, { $addToSet: { shifts: req.params.shiftid } })
                                             .exec()
                                             .then(function (assignShiftResponse) {
                                             if (assignShiftResponse) {
-                                                return res.status(200).json({
-                                                    message: "User assigned to shift",
-                                                    success: true,
-                                                });
+                                                res.status(200).json({ message: "User assigned to shift", success: true });
+                                                return;
                                             }
                                             else {
-                                                return res.status(404).json({
-                                                    message: "User not found",
-                                                    success: true,
-                                                });
+                                                res.status(404).json({ message: "User not found", success: true });
+                                                return;
                                             }
+                                        })
+                                            .catch(function (err) {
+                                            (0, utility_1.handleError)(logger, res, err, "Shift assignment to user failed");
                                         })];
                                 case 1:
                                     _a.sent();
-                                    _a.label = 2;
-                                case 2: return [2];
+                                    return [2];
                             }
                         });
-                    }); })];
+                    }); })
+                        .catch(function (err) {
+                        (0, utility_1.handleError)(logger, res, err, "User assignment to shift failed");
+                    })];
             case 1:
                 _c.sent();
                 return [2];

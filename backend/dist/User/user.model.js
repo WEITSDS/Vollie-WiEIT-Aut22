@@ -14,6 +14,7 @@ var UserSchema = new mongoose_2.Schema({
     isAdmin: { type: Boolean, default: false, required: true },
     qualifications: [{ type: mongoose_1.default.Types.ObjectId, ref: "Qualification" }],
     tags: [{ type: mongoose_1.default.Types.ObjectId, ref: "Tag" }],
+    shifts: [{ type: mongoose_1.default.Types.ObjectId, ref: "Shift" }],
 }, {
     timestamps: true,
 });

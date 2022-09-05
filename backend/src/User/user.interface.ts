@@ -14,6 +14,7 @@ export interface IBasicUser {
 }
 
 export interface IUser extends Document, IBasicUser {
+    _id: string;
     verified: boolean;
     isAdmin: boolean;
     lastLogin: number;
@@ -62,7 +63,7 @@ export function mapUserToUserSummary({
         lastLogin: lastLogin ?? 0,
         firstName,
         lastName,
-        _id: (_id as string) || "",
+        _id: _id || "",
         email,
         verified,
         qualifications: qualifications.map(mapQualificationToQualificationSummary),

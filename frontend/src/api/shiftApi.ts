@@ -63,7 +63,6 @@ export async function unassignUserFromShift(req: AssignmentUserDetails): Promise
 interface ShiftDetails {
     _id: string;
     name: string;
-    status: string;
     startAt: Date;
     endAt: Date;
     hours: number;
@@ -75,6 +74,11 @@ export function createShift(req: ShiftDetails): Promise<ResponseWithStatus> {
     return postBasicResponse(`${ROOT_URL}/api/shifts/create`, { body: req });
 }
 
-export function deleteShift(req: ShiftDetails): Promise<ResponseWithStatus> {
+interface DeleteDetails {
+    _id: string;
+}
+
+
+export function deleteShift(req: DeleteDetails): Promise<ResponseWithStatus> {
     return deleteBasicResponse(`${ROOT_URL}/api/shifts/${req._id}`);
 }

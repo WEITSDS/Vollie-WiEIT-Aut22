@@ -198,7 +198,7 @@ var handleLogin = function (req, res) { return tslib_1.__awaiter(void 0, void 0,
                 return [4, foundUser.save()];
             case 2:
                 _a.sent();
-                sessionManager.createSession(req, { email: email, isAdmin: (foundUser === null || foundUser === void 0 ? void 0 : foundUser.isAdmin) || false });
+                sessionManager.createSession(req, { _id: foundUser === null || foundUser === void 0 ? void 0 : foundUser._id, email: email, isAdmin: (foundUser === null || foundUser === void 0 ? void 0 : foundUser.isAdmin) || false });
                 res.status(200).json({ message: "Logged in successfully", success: true });
                 return [3, 4];
             case 3:
