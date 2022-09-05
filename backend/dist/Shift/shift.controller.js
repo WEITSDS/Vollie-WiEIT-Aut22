@@ -90,80 +90,98 @@ var deleteShift = function (req, res) {
 };
 exports.deleteShift = deleteShift;
 var assignUser = function (req, res) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-    return tslib_1.__generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4, Shift_model_1.default.findOneAndUpdate({ _id: req.params.shiftid }, { $addToSet: { users: req.params.userid } })
-                    .exec()
-                    .then(function (assignUserResponse) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-                    return tslib_1.__generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                if (!assignUserResponse) return [3, 2];
-                                return [4, user_model_1.default.findOneAndUpdate({ _id: req.params.userid }, { $addToSet: { shifts: req.params.shiftid } })
-                                        .exec()
-                                        .then(function (assignShiftResponse) {
-                                        if (assignShiftResponse) {
-                                            return res.status(200).json({
-                                                message: "User assigned to shift",
-                                                success: true,
-                                            });
-                                        }
-                                        else {
-                                            return res.status(404).json({
-                                                message: "User not found",
-                                                success: true,
-                                            });
-                                        }
-                                    })];
-                            case 1:
-                                _a.sent();
-                                _a.label = 2;
-                            case 2: return [2];
-                        }
-                    });
-                }); })];
+    var isAdmin, sessionUserId;
+    var _a, _b;
+    return tslib_1.__generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                isAdmin = ((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.isAdmin) || false;
+                sessionUserId = (_b = req.session.user) === null || _b === void 0 ? void 0 : _b._id;
+                if (!isAdmin && sessionUserId !== req.params.userid) {
+                    res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+                    return [2];
+                }
+                return [4, Shift_model_1.default.findOneAndUpdate({ _id: req.params.shiftid }, { $addToSet: { users: req.params.userid } })
+                        .exec()
+                        .then(function (assignUserResponse) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+                        return tslib_1.__generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (!assignUserResponse) return [3, 2];
+                                    return [4, user_model_1.default.findOneAndUpdate({ _id: req.params.userid }, { $addToSet: { shifts: req.params.shiftid } })
+                                            .exec()
+                                            .then(function (assignShiftResponse) {
+                                            if (assignShiftResponse) {
+                                                return res.status(200).json({
+                                                    message: "User assigned to shift",
+                                                    success: true,
+                                                });
+                                            }
+                                            else {
+                                                return res.status(404).json({
+                                                    message: "User not found",
+                                                    success: true,
+                                                });
+                                            }
+                                        })];
+                                case 1:
+                                    _a.sent();
+                                    _a.label = 2;
+                                case 2: return [2];
+                            }
+                        });
+                    }); })];
             case 1:
-                _a.sent();
+                _c.sent();
                 return [2];
         }
     });
 }); };
 exports.assignUser = assignUser;
 var removeUser = function (req, res) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-    return tslib_1.__generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4, Shift_model_1.default.findOneAndUpdate({ _id: req.params.shiftid }, { $pull: { users: req.params.userid } })
-                    .exec()
-                    .then(function (assignUserResponse) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-                    return tslib_1.__generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                if (!assignUserResponse) return [3, 2];
-                                return [4, user_model_1.default.findOneAndUpdate({ _id: req.params.userid }, { $pull: { shifts: req.params.shiftid } })
-                                        .exec()
-                                        .then(function (assignShiftResponse) {
-                                        if (assignShiftResponse) {
-                                            return res.status(200).json({
-                                                message: "User removed from shift",
-                                                success: true,
-                                            });
-                                        }
-                                        else {
-                                            return res.status(404).json({
-                                                message: "User not found",
-                                                success: true,
-                                            });
-                                        }
-                                    })];
-                            case 1:
-                                _a.sent();
-                                _a.label = 2;
-                            case 2: return [2];
-                        }
-                    });
-                }); })];
+    var isAdmin, sessionUserId;
+    var _a, _b;
+    return tslib_1.__generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                isAdmin = ((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.isAdmin) || false;
+                sessionUserId = (_b = req.session.user) === null || _b === void 0 ? void 0 : _b._id;
+                if (!isAdmin && sessionUserId !== req.params.userid) {
+                    res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+                    return [2];
+                }
+                return [4, Shift_model_1.default.findOneAndUpdate({ _id: req.params.shiftid }, { $pull: { users: req.params.userid } })
+                        .exec()
+                        .then(function (assignUserResponse) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+                        return tslib_1.__generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (!assignUserResponse) return [3, 2];
+                                    return [4, user_model_1.default.findOneAndUpdate({ _id: req.params.userid }, { $pull: { shifts: req.params.shiftid } })
+                                            .exec()
+                                            .then(function (assignShiftResponse) {
+                                            if (assignShiftResponse) {
+                                                return res.status(200).json({
+                                                    message: "User removed from shift",
+                                                    success: true,
+                                                });
+                                            }
+                                            else {
+                                                return res.status(404).json({
+                                                    message: "User not found",
+                                                    success: true,
+                                                });
+                                            }
+                                        })];
+                                case 1:
+                                    _a.sent();
+                                    _a.label = 2;
+                                case 2: return [2];
+                            }
+                        });
+                    }); })];
             case 1:
-                _a.sent();
+                _c.sent();
                 return [2];
         }
     });

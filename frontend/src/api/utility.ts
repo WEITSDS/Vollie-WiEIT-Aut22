@@ -38,6 +38,15 @@ export async function get(url: string, queryParameters?: Record<string, string>)
     });
 }
 
+export async function del(url: string): Promise<Response> {
+    return await fetch(url, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+}
+
 export interface BasicResponse {
     message: string;
     success: boolean;

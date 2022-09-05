@@ -95,6 +95,13 @@ export const deleteShift = (req: Request, res: Response) => {
 };
 
 export const assignUser = async (req: Request, res: Response): Promise<void> => {
+    const isAdmin = req.session.user?.isAdmin || false;
+    const sessionUserId = req.session.user?._id;
+    if (!isAdmin && sessionUserId !== req.params.userid) {
+        res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+        return;
+    }
+
     await Shift.findOneAndUpdate({ _id: req.params.shiftid }, { $addToSet: { users: req.params.userid } })
         .exec()
         .then(async (assignUserResponse): Promise<void> => {
@@ -123,6 +130,13 @@ export const assignUser = async (req: Request, res: Response): Promise<void> => 
 };
 
 export const removeUser = async (req: Request, res: Response): Promise<void> => {
+    const isAdmin = req.session.user?.isAdmin || false;
+    const sessionUserId = req.session.user?._id;
+    if (!isAdmin && sessionUserId !== req.params.userid) {
+        res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+        return;
+    }
+
     await Shift.findOneAndUpdate({ _id: req.params.shiftid }, { $pull: { users: req.params.userid } })
         .exec()
         .then(async (assignUserResponse): Promise<void> => {

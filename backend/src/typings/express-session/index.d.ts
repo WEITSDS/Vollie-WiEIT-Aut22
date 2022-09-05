@@ -1,6 +1,7 @@
 import "express-session";
 
 interface UserCookie {
+    _id: string;
     email: string;
     isAdmin: boolean;
 }
