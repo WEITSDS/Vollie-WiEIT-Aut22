@@ -1,9 +1,8 @@
-import { NextFunction, Request, Response } from "express";
-import User from "./user.model";
-import Shift from "../Shift/Shift.model";
+import { Request, Response } from "express";
+import User from "../User/user.model";
+import Shift from "./Shift.model";
 import mongoose from "mongoose";
 import { Logger } from "tslog";
-import * as sessionManager from "../Common/middleware/sessionManagement";
 import { handleError } from "../utility";
 import { isIBasicShift, mapShiftToShiftSummary } from "./shift.interface";
 
@@ -16,24 +15,28 @@ const logger = new Logger({ name: "shift.controller" });
  */
 
 export const createShift = (req: Request, res: Response) => {
-    if (!(req.params.id) && req.session.user.isAdmin) {
-        const shiftFields = req.body as unknown;
-        if (!isIBasicShift(shiftFields)) {
-            res.status(400).json({ message: "New shift request body was not valid", success: false });
-            return;
-        }
+    const isAdmin = req.session.user?.isAdmin || false;
+    if (req.params.id && !isAdmin) {
+        res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+        return;
+    }
+    const shiftFields = req.body as unknown;
+    if (!isIBasicShift(shiftFields)) {
+        res.status(400).json({ message: "New shift request body was not valid", success: false });
+        return;
+    }
 
-        Shift.findOne({ name: shiftFields.name })
-            .exec()
-            .then((existingShift) => {
-                if (existingShift) {
-                    logger.warn(existingShift);
-                    res.json({
-                        message: "Shift already exists",
-                        status: false
-                    })
-                }
-            
+    Shift.findOne({ name: shiftFields.name })
+        .exec()
+        .then((existingShift) => {
+            if (existingShift) {
+                logger.warn(existingShift);
+                res.json({
+                    message: "Shift already exists",
+                    status: false,
+                });
+            }
+
             const newShift = new Shift({
                 name: shiftFields.name,
                 status: shiftFields.status,
@@ -41,12 +44,11 @@ export const createShift = (req: Request, res: Response) => {
                 endAt: shiftFields.endAt,
                 hours: shiftFields.hours,
                 address: shiftFields.address,
-                addressDescription: shiftFields.addressDescription
-            })
-            
-            newShift.id = new mongoose.Types.ObjectId();
-            logger.ingo(newShift)
+                description: shiftFields.description,
+            });
 
+            newShift.id = new mongoose.Types.ObjectId();
+            logger.info(newShift);
             newShift
                 .save()
                 .then((results) => {
@@ -54,28 +56,23 @@ export const createShift = (req: Request, res: Response) => {
                         message: "Shift created",
                         data: mapShiftToShiftSummary(results),
                         success: true,
-                    })
+                    });
                 })
                 .catch((err: unknown) => {
                     handleError(logger, res, err, "Shift creation failed");
                 });
-            })
-            .catch((err: unknown) => {
-                handleError(logger, res, err, "Shift creation failed");
-            });
-    } else {
-        return res.status(401).json({
-            message: "Unauthorised, admin privileges are required",
-            success: false,
+        })
+        .catch((err: unknown) => {
+            handleError(logger, res, err, "Shift creation failed");
         });
-    }
 };
 
 export const deleteShift = (req: Request, res: Response) => {
-    if (!(req.params.id) && req.session.user.isAdmin) {
-        Shift.deleteOne({ _id: req.params})
+    const isAdmin = req.session.user?.isAdmin || false;
+    if (!req.params.id && isAdmin) {
+        Shift.deleteOne({ _id: req.params })
             .exec()
-            .then(deletionResult => {
+            .then((deletionResult) => {
                 if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
                     return res.status(200).json({
                         message: "Shift deleted",
@@ -88,18 +85,20 @@ export const deleteShift = (req: Request, res: Response) => {
                     });
                 }
             })
-            .catch(err => {
+            .catch((err) => {
                 handleError(logger, res, err, "Shift deletion failed");
-            })
+            });
     }
 };
 
-export const assignUser = (req: Request, res: Response) => {
-    Shift.findOneAndUpdate( { _id: req.params.shiftid }, { $push: { users: req.session.user._id } } )
+export const assignUser = async (req: Request, res: Response): Promise<void> => {
+    const userId = "test" as string; //Get UserId from request, maybe param or body?
+
+    await Shift.findOneAndUpdate({ _id: req.params.shiftid }, { $addToSet: { users: userId } })
         .exec()
-        .then((assignUserResponse) => {
+        .then(async (assignUserResponse): Promise<void> => {
             if (assignUserResponse) {
-                User.findOneAndUpdate( { _id: req.session.user._id }, { $push: { shifts: req.params.shiftid } } )
+                await User.findOneAndUpdate({ _id: userId }, { $addToSet: { shifts: req.params.shiftid } })
                     .exec()
                     .then((assignShiftResponse) => {
                         if (assignShiftResponse) {
@@ -113,22 +112,22 @@ export const assignUser = (req: Request, res: Response) => {
                                 success: true,
                             });
                         }
-                    })
-            } else {
-                return res.status(404).json({
-                    message: "Shift not found",
-                    success: true,
-                });
-            }
-        })
-}
+                    });
+            } /*
+            return res.status(404).json({
+                message: "Shift not found",
+                success: true,
+            });*/
+        });
+};
 
-export const removeUser = (req: Request, res: Response) => {
-    Shift.findOneAndUpdate( { _id: req.params.shiftid }, { $pull: { users: req.session.user._id } } )
+export const removeUser = async (req: Request, res: Response): Promise<void> => {
+    const userId = "test" as string; //get user from request. new param?
+    await Shift.findOneAndUpdate({ _id: req.params.shiftid }, { $pull: { users: userId } })
         .exec()
-        .then((assignUserResponse) => {
+        .then(async (assignUserResponse): Promise<void> => {
             if (assignUserResponse) {
-                User.findOneAndUpdate( { _id: req.session.user._id }, { $pull: { shifts: req.params.shiftid } } )
+                await User.findOneAndUpdate({ _id: userId }, { $pull: { shifts: req.params.shiftid } })
                     .exec()
                     .then((assignShiftResponse) => {
                         if (assignShiftResponse) {
@@ -142,12 +141,11 @@ export const removeUser = (req: Request, res: Response) => {
                                 success: true,
                             });
                         }
-                    })
-            } else {
-                return res.status(404).json({
-                    message: "Shift not found",
-                    success: true,
-                });
-            }
-        })
-}
+                    });
+            } /*
+            return res.status(404).json({
+                message: "Shift not found",
+                success: true,
+            });*/
+        });
+};

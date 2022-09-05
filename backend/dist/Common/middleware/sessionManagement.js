@@ -38,13 +38,12 @@ function routeNeedsAuth(url) {
 function isCurrentUserLoggedIn(req, res, next) {
     var notLoggedIn = req.session.user == null;
     if (notLoggedIn && routeNeedsAuth(req.url)) {
-        res.status(401).json({ message: "Unauthorized, please login", success: false });
+        res.status(401).json({ message: "Unauthorised, please login", success: false });
     }
     else {
         next();
     }
 }
-
 function endSession(req, res) {
     req.session.destroy(function () { return res.status(200).json({ success: true, message: "Logged out successfully" }); });
 }

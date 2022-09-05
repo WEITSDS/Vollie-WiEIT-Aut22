@@ -24,7 +24,7 @@
     "tslib": "^2.3.1",
     "tslog": "^3.3.3"
   },
-  "devDependencies": {    
+  "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.12",
     "@types/dotenv": "^8.2.0",

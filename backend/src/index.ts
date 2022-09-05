@@ -3,7 +3,7 @@ import { PORT, HOST, PROTOCOL } from "./constants";
 import mongoose from "mongoose";
 import userRoutes from "./User/user.route";
 import userAdminRoutes from "./User/user.admin.route";
-import shiftRoutes from ".Shift/shift.route";
+import shiftRoutes from "./Shift/shift.route";
 import qualificationRoutes from "./Qualifications/qualifications.route";
 import tagRoutes from "./Tag/tag.route";
 import https = require("https");

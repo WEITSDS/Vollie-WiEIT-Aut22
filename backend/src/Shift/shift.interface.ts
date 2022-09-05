@@ -1,20 +1,20 @@
 import { Document } from "mongoose";
-import { mapUserToUserSummary, IBasicUser, IUser } from "../User/user.interface";
+import { UserSummary } from "../User/user.interface";
 
 export interface IBasicShift {
-    name: date;  
-    startAt: date;
+    name: string;
+    startAt: Date;
     endAt: string;
     hours: number;
     address: string;
     description: string;
+    status: string;
 }
 
 export interface IShift extends Document, IBasicShift {
     isArchived: boolean;
-    atchivedAt: Date;
-    status: string;
-    user: IUser[];
+    archivedAt: Date;
+    users: UserSummary[];
     createdAt: Date;
 }
 
@@ -22,51 +22,53 @@ export function isIBasicShift(args: unknown): args is IBasicShift {
     const ishift = args as Partial<IBasicShift>;
     return (
         typeof ishift === "object" &&
-        typeof ishift.name === "string" &&    
-        typeof ishift.startAt === "date" &&
-        typeof ishift.endAt === "date" &&
+        typeof ishift.name === "string" &&
+        typeof ishift.startAt === "string" &&
+        typeof ishift.endAt === "string" &&
         typeof ishift.hours === "number" &&
         typeof ishift.address === "string" &&
         typeof ishift.description === "string"
     );
 }
 
-export interface UserSummary {
-    name: date;  
-    startAt: date;
+export interface ShiftSummary {
+    _id: string;
+    name: string;
+    startAt: Date;
     endAt: string;
     hours: number;
     address: string;
     description: string;
     isArchived: boolean;
-    atchivedAt: Date;
+    archivedAt: Date;
     status: string;
-    user: IUser[];
     createdAt: Date;
 }
 
 export function mapShiftToShiftSummary({
-    name, 
+    _id,
+    name,
     startAt,
     endAt,
     hours,
     address,
     description,
-    isArchived,
-    atchivedAt,
     status,
-    user,
-    createdAt
-}: IShift): UserShift {
+    createdAt,
+    archivedAt,
+    isArchived,
+}: IShift): ShiftSummary {
     return {
+        _id: (_id as string) || "",
         name: name,
         startAt: startAt,
-        _id: _id || "",
         endAt: endAt,
         hours: hours,
-        users: users.map(mapUserToUserSummary),
         address: address,
         description: description,
         status: status,
+        createdAt: createdAt,
+        isArchived: isArchived,
+        archivedAt: archivedAt,
     };
 }
