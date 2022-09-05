@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import MockData from "./data.json";
 //import { get } from "../api/utility";
 import { default as dayjs } from "dayjs";
-import { assignUserToShift } from "../api/shiftApi";
+// import { assignUserToShift } from "../api/shiftApi";
 import { NavigationBar } from "../components/navbar";
 
 interface SelectedShiftState {
@@ -62,10 +62,10 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
         });
     };
 
-    handleAccept = async (shift: data) => {
-        const assignShiftResponse = await assignUserToShift(shift);
-        console.log(assignShiftResponse);
-    };
+    // handleAccept = async (shift: data) => {
+    //     const assignShiftResponse = await assignUserToShift(shift);
+    //     console.log(assignShiftResponse);
+    // };
 
     render = () => {
         const data = MockData;
@@ -129,12 +129,7 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
                                             <p>{selectedShift.description}</p>
                                         </tr>
                                         <div className="center_shift">
-                                            <button
-                                                className="btnPink"
-                                                onClick={() => void this.handleAccept(selectedShift)}
-                                            >
-                                                Accept
-                                            </button>
+                                            <button className="btnPink">Accept</button>
                                         </div>
                                     </tbody>
                                 ) : (
