@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
+// import { Button } from "react-bootstrap/lib/InputGroup";
 import "./addShiftForm.css";
 type formProps = {
     handleEvent: any;
+    handleClose: any;
     // ...rest of your props
 };
 
-const AddShiftForm: React.FC<formProps> = ({ handleEvent }) => {
+const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose }) => {
     return (
         <div>
             <form className="add-shift-form">
@@ -36,6 +38,12 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent }) => {
 
                 <label>Hours</label>
                 <input type="text" required name="shiftHours" onChange={handleEvent} />
+                <div className="btn-container">
+                    <button className="cancel-btn" onClick={handleClose}>
+                        Cancel
+                    </button>
+                    <input className="add-btn" type="submit" value="Add" />
+                </div>
             </form>
         </div>
     );
