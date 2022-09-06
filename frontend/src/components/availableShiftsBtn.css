@@ -1,4 +1,4 @@
-.admin-btn {
+#whiteButton {
     width: 248px;
     height: 63px;
     left: 561px;
@@ -14,6 +14,16 @@
     border-radius: 40px;
     border: 0;
     outline: none;
+}
+
+#whiteButton:hover,
+#whiteButton:focus {
+    transform: translateY(-0.25em);
+    background: #ffffff;
+}
+
+#whiteButton:focus {
+    background: #ededed;
 }
 
 .btn-icon {

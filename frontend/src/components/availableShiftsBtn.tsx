@@ -11,7 +11,7 @@ export class AvailableShiftsBtn extends Component<AdminProps> {
     render() {
         const { className, btnText, btnIcon, onClickHandler } = this.props;
         return (
-            <button className={className} onClick={onClickHandler}>
+            <button id="whiteButton" className={className} onClick={onClickHandler}>
                 <img className="btn-icon" src={btnIcon} />
                 {btnText}
             </button>
