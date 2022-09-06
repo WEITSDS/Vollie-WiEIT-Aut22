@@ -5,8 +5,8 @@ import { AvailableShiftsBtn } from "../components/availableShiftsBtn";
 import AddShiftForm from "../components/addShiftForm";
 import "./adminViewAvailableShifts.css";
 import addShiftIcon from "../assets/addShiftIcon.svg";
-// import deleteIcon from "../assets/deleteIcon.svg";
-// import filterIcon from "../assets/filterIcon.svg";
+import deleteIcon from "../assets/deleteIcon.svg";
+import filterIcon from "../assets/filterIcon.svg";
 import Modal from "react-bootstrap/Modal";
 
 export class AdminViewAvailbleShifts extends Component<any, any> {
@@ -16,29 +16,49 @@ export class AdminViewAvailbleShifts extends Component<any, any> {
             show: false,
         };
     }
-    handleEvent = () => {
+    openAddShift = () => {
         this.setState({ show: true });
         console.log("button1");
+    };
+
+    deleteSelected = () => {
+        console.log("button2");
+    };
+
+    handleFilter = () => {
+        console.log("button3");
     };
 
     render() {
         return (
             <div>
                 <NavigationBar />
-                <div>
+                <div className="header-container">
                     <h1>Available Shifts</h1>
-                    <AvailableShiftsBtn
-                        className="admin-btn"
-                        btnText="Add Shift"
-                        btnIcon={addShiftIcon}
-                        onClickHandler={this.handleEvent}
-                    />
-                    {/* <AvailableShiftsBtn className="admin-btn" btnText="Delete Selected" btnIcon={deleteIcon} />
-                    <AvailableShiftsBtn className="admin-btn" btnText="Filters" btnIcon={filterIcon} /> */}
-                    <Modal show={this.state.show}>
-                        <AddShiftForm />
-                    </Modal>
+                    <div className="btn-container">
+                        <AvailableShiftsBtn
+                            className="admin-btn"
+                            btnText="Add Shift"
+                            btnIcon={addShiftIcon}
+                            onClickHandler={this.openAddShift}
+                        />
+                        <AvailableShiftsBtn
+                            className="admin-btn"
+                            btnText="Delete Selected"
+                            btnIcon={deleteIcon}
+                            onClickHandler={this.deleteSelected}
+                        />
+                        <AvailableShiftsBtn
+                            className="admin-btn"
+                            btnText="Filters"
+                            btnIcon={filterIcon}
+                            onClickHandler={this.handleFilter}
+                        />
+                    </div>
                 </div>
+                <Modal show={this.state.show}>
+                    <AddShiftForm />
+                </Modal>
             </div>
         );
     }

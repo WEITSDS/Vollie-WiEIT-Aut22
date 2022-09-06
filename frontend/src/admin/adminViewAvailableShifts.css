@@ -1,0 +1,28 @@
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 53px;
+}
+
+.header-container h1 {
+    margin-left: 89px;
+    font-weight: 600;
+}
+
+.btn-container {
+    position: static;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-container button {
+    margin-right: 48px;
+    vertical-align: middle;
+}
+
+h1 {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 35px;
+    line-height: 42px;
+}
