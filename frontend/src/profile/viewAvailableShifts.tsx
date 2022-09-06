@@ -5,7 +5,7 @@ import MockData from "./data.json";
 //import { get } from "../api/utility";
 import { default as dayjs } from "dayjs";
 import { assignUserToShift } from "../api/shiftApi";
-import { getOwnUser } from "../api/userApi";
+import { getOwnUser } from "../api/userAPI";
 import { NavigationBar } from "../components/navbar";
 //import { userInfo } from "os";
 

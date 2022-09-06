@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import ModalBody from "react-bootstrap/ModalBody";
 import ModalTitle from "react-bootstrap/ModalTitle";
-import { NewUserBody, registerUser } from "../api/userApi";
+import { NewUserBody, registerUser } from "../api/userAPI";
 import { SITE_NAME } from "../constants";
 import { emailIsValid, passwordIsValid, setPageTitle, stringValueIsValid } from "../utility";
 import { WEITBackground } from "../components/background";

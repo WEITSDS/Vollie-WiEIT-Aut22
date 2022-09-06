@@ -1,4 +1,4 @@
-import { User } from "../api/userApi";
+import { User } from "../api/userAPI";
 
 interface VerifiedMarkProps {
     editingSelf?: boolean;

@@ -3,7 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { Tag } from "../../api/tagApi";
-import { batchChangeUserTag, User } from "../../api/userApi";
+import { batchChangeUserTag, User } from "../../api/userAPI";
 
 interface EditUserTagsProps {
     tags: Tag[];

@@ -1,7 +1,7 @@
 import React from "react";
 import avatar from "../assets/avatar.svg";
 import Spinner from "react-bootstrap/Spinner";
-import { getUser, User } from "../api/userApi";
+import { getUser, User } from "../api/userAPI";
 import { QualificationsSection } from "./qualifications/qualificationManagement";
 import { VerifyAccountModal } from "./verifyAccount";
 import { NavigationBar } from "../components/navbar";

@@ -1,5 +1,5 @@
 import { Badge } from "react-bootstrap";
-import { User } from "../../api/userApi";
+import { User } from "../../api/userAPI";
 
 interface TagBadgesProps {
     user: User;
