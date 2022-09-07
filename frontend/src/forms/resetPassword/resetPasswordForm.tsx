@@ -1,5 +1,5 @@
 import React from "react";
-import { resetPassword } from "../../api/userAPI";
+import { resetPassword } from "../../api/userApi";
 import { OTPVerifier } from "../otpVerifier";
 import { setPageTitle } from "../../utility";
 import { EnterEmail } from "./enterEmail";

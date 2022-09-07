@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, ModalBody, Spinner } from "react-bootstrap";
-import { getAllUsers, User } from "../../api/userAPI";
+import { getAllUsers, User } from "../../api/userApi";
 import avatar from "../../assets/avatar.svg";
 import { Link } from "react-router-dom";
 import { WEITBackground } from "../../components/background";

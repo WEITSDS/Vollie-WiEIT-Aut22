@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import ModalBody from "react-bootstrap/ModalBody";
 import ModalTitle from "react-bootstrap/ModalTitle";
-import { sendOTPEmail, verifyOTP } from "../api/userAPI";
+import { sendOTPEmail, verifyOTP } from "../api/userApi";
 
 interface OTPProps extends FormStage {
     email: string;

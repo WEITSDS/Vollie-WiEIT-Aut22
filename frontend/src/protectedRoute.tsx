@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { getUser, User } from "./api/userAPI";
+import { getUser, User } from "./api/userApi";
 
 const authPath = "/login";
 
