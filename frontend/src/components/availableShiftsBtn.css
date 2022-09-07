@@ -3,7 +3,7 @@
     height: 63px;
     left: 561px;
     top: 125px;
-    font-family: "Lato";
+    font-family: "Lato" Import !important;
     font-style: normal;
     font-weight: 700;
     font-size: 20px;
