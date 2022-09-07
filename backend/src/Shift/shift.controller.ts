@@ -163,3 +163,77 @@ export const removeUser = async (req: Request, res: Response): Promise<void> => 
             });*/
         });
 };
+
+export const getAllShifts = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const availableShifts = await Shift.find({ status: "Scheduled" });
+        return res.status(200).json({
+            message: "success",
+            data: availableShifts,
+            success: true,
+        });
+    } catch (error) {
+        console.log("get all shifts error", error);
+        return res.status(500).json({
+            message: "get all shifts error",
+            error,
+            success: false,
+        });
+    }
+};
+
+export const getAvailableShifts = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { _id: userID } = req.session.user || {};
+
+        // users can get their own shifts, if request is looking for user other than themselve, they must be admin
+        if (!userID) return res.status(403).json({ message: "Authorization error", success: false });
+
+        const userObj = await User.findOne({ _id: userID });
+        // const userRole = userObj?.role || "testRole"
+        const userRole = "testRole";
+
+        const availableShifts = await Shift.find({
+            $and: [{ "roles.${userRole}": { $gt: 0 } }, { status: "scheduled" }],
+        });
+
+        return res.status(200).json({
+            message: "success",
+            data: availableShifts,
+            success: true,
+        });
+    } catch (error) {
+        console.log("get available shifts error", error);
+        return res.status(500).json({
+            message: "get available shifts error",
+            error,
+            success: false,
+        });
+    }
+};
+
+export const getUserShifts = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { targetUserID, statusType } = req.params;
+
+        // users can get their own shifts, if request is looking for user other than themselve, they must be admin
+        if (targetUserID !== req.session.user?._id && !req.session.user?.isAdmin)
+            return res.status(403).json({ message: "Authorization error", success: false });
+
+        // Default to show all shifts (including finished ones)
+        const availableShifts = await Shift.find({ users: { $all: [targetUserID] }, status: statusType || null });
+
+        return res.status(200).json({
+            message: "success",
+            data: availableShifts,
+            success: true,
+        });
+    } catch (error) {
+        console.log("get user shifts error", error);
+        return res.status(500).json({
+            message: "get user shifts error",
+            error,
+            success: false,
+        });
+    }
+};
