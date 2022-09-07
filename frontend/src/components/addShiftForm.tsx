@@ -42,7 +42,9 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose }) => {
                     <button className="cancel-btn" onClick={handleClose}>
                         Cancel
                     </button>
-                    <input className="add-btn" type="submit" value="Add" />
+                    <button className="add-btn" type="submit">
+                        Add
+                    </button>
                 </div>
             </form>
         </div>

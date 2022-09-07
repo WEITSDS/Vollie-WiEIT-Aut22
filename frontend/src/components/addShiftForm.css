@@ -2,13 +2,11 @@
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    background: #ececec;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 20px;
-    outline: none;
+    margin-top: 50px;
 }
 
-.add-shift-form input {
+.add-shift-form input[type="text"],
+input[type="date"] {
     left: 27.85%;
     right: 32.78%;
     top: 14.31%;
@@ -49,4 +47,51 @@
     line-height: 30px;
 
     color: #000000;
+}
+
+.btn-container {
+    padding: 0 0 0 0 !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly !important;
+    padding-bottom: 50px;
+    margin-bottom: 50px;
+    margin-left: 45px;
+}
+
+.add-btn {
+    height: 56px;
+    width: 154px;
+
+    border-radius: 10px;
+
+    background: #3a5fe2;
+    border-radius: 10px;
+    font-family: "Lato";
+    font-style: normal;
+
+    font-size: 22px;
+    line-height: 26px;
+    border: 0;
+
+    color: #fffdfd;
+}
+
+.cancel-btn {
+    padding: 0 0 0 0 !important;
+    margin-right: 0 !important;
+    height: 56px;
+    width: 150px;
+    left: 663px;
+    top: 2045px;
+    border-radius: 10px;
+    background: #686868;
+    border: 0;
+    font-family: "Lato";
+    font-style: normal;
+
+    font-size: 22px;
+    line-height: 26px;
+
+    color: #fffdfd;
 }
