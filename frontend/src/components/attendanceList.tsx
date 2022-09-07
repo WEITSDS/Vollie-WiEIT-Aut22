@@ -5,7 +5,7 @@ export default function AttendanceListModal() {
     /*For Testing Purposes, the Attendance List Modal/Table is mapped to the help button on the NAV bar
     To revert to previous state, 
     1) Link helpModal.ts to Navbar.TSX (All Under Components Folder)
-    2)  */
+    2) Test */
     const [modalBox, setModalBox] = useState(false);
     const handleClose = () => setModalBox(false);
     const handleShow = () => setModalBox(true);
