@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import ModalBody from "react-bootstrap/ModalBody";
 import ModalTitle from "react-bootstrap/ModalTitle";
-import { getUser, LoginBody, loginUser } from "../api/userAPI";
+import { getUser, LoginBody, loginUser } from "../api/userApi";
 import { SITE_NAME } from "../constants";
 import { setPageTitle } from "../utility";
 import { WEITBackground } from "../components/background";

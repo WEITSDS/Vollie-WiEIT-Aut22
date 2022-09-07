@@ -3,7 +3,7 @@ import { Tag, getAllTags } from "../api/tagApi";
 import { NavigationBar } from "../components/navbar";
 import { WEITBackground } from "../components/background";
 import { ModalBody, Spinner } from "react-bootstrap";
-import { getAllUsers, User } from "../api/userAPI";
+import { getAllUsers, User } from "../api/userApi";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { setPageTitle } from "../utility";
