@@ -1,1 +1,0 @@
-{"version":3,"file":"otp.route.js","sourceRoot":"","sources":["../../src/otps/otp.route.ts"],"names":[],"mappings":";;AAAA,4DAA8B;AAC9B,mDAAqE;AAGrE,IAAM,SAAS,GAAG,iBAAO,CAAC,MAAM,EAAE,CAAC;AACnC,SAAS,CAAC,IAAI,CAAC,SAAS,EAAE,iCAAgB,CAAC,CAAC;AAC5C,SAAS,CAAC,IAAI,CAAC,OAAO,EAAE,gCAAe,CAAC,CAAC;AAEzC,iBAAS,SAAS,CAAC"}
