@@ -16,14 +16,9 @@
     outline: none;
 }
 
-#whiteButton:hover,
-#whiteButton:focus {
+#whiteButton:hover {
     transform: translateY(-0.25em);
     background: #ffffff;
-}
-
-#whiteButton:focus {
-    background: #ededed;
 }
 
 .btn-icon {
