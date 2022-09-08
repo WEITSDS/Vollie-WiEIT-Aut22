@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Modal, Button, Nav } from "react-bootstrap";
+// import axios from "axios";
 
 export default function AttendanceListModal() {
     /*For Testing Purposes, the Attendance List Modal/Table is mapped to the help button on the NAV bar
@@ -9,6 +10,37 @@ export default function AttendanceListModal() {
     const [modalBox, setModalBox] = useState(false);
     const handleClose = () => setModalBox(false);
     const handleShow = () => setModalBox(true);
+
+    // const attendanceList = {
+    //     name: "",
+    //     type: "",
+    // };
+
+    // const getAttendanceList = () => {
+    //     axios.get()
+    //         .then((Response) => {
+    //             const data = response.data;
+    //             console.log('Data has been received');
+    //         })
+    //         .catch(() => {
+    //             alert("Problems with retreiving data!");
+    //         });
+    // }
+
+    // const displayAttendanceList = (attendanceList) => {
+    //     if(!attendanceList.length) return null;
+
+    //     attendanceList.map((attendanceList, index) => (
+    //         <div key={index}>
+    //             <tr>
+    //                 <td>{index}</td>
+    //                 <td>{attendanceList.name}</td>
+    //                 <td>{attendanceList.category}</td>
+    //             </tr>
+    //         </div>
+    //     ));
+    // }
+
     return (
         <>
             {/* Replace this with view attendance list button */}
