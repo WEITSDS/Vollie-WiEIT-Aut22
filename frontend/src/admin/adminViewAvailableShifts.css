@@ -42,3 +42,9 @@ h1 {
     border-radius: 50%;
     animation: spinner 1.5s linear infinite;
 }
+
+.modal-content {
+    background: #ffffff;
+
+    border-radius: 20px;
+}

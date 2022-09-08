@@ -12,6 +12,9 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose }) => {
     return (
         <div>
             <form className="add-shift-form">
+                <div className="form-header">
+                    <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
+                </div>
                 <label className="title">Title</label>
                 <input type="text" required name="shiftTitle" onChange={handleEvent} />
 

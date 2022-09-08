@@ -2,7 +2,10 @@
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+
     background: #ececec;
+
+    border-radius: 20px;
 }
 
 .add-shift-form input[type="text"] {
@@ -137,4 +140,16 @@
     margin-bottom: 40px;
     margin-top: 20px;
     border: 1px solid #d0d0d0;
+}
+
+.btn-close {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-right: 20px;
+}
+
+.form-header {
+    display: flex;
+    justify-content: flex-end;
 }
