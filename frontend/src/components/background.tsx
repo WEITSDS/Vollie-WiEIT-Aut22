@@ -4,7 +4,7 @@ interface Props {
 export const WEITBackground = ({ children }: Props): JSX.Element => {
     return (
         <>
-            <div className="background-image weit-logo" />
+            <div className="background-image weit-logo " />
             {children}
         </>
     );
