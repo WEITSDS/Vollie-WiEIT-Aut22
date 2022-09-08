@@ -7,6 +7,7 @@ import deleteIcon from "../assets/deleteIcon.svg";
 import filterIcon from "../assets/filterIcon.svg";
 import Modal from "react-bootstrap/Modal";
 import { useState } from "react";
+import LoadingSpinner from "../components/loadingSpinner";
 
 const defaultFormFields = {
     shiftTitle: "",
@@ -23,18 +24,7 @@ const defaultFormFields = {
 export const AdminViewAvailbleShifts = () => {
     const [show, setShow] = useState(false);
     const [formFields, setFormFields] = useState(defaultFormFields);
-
-    // const {
-    //     shiftTitle,
-    //     shiftDescription,
-    //     startDate,
-    //     endDate,
-    //     shiftTime,
-    //     shiftAddress,
-    //     shiftVenue,
-    //     addressDescription,
-    //     shiftHours,
-    // } = formFields;
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (event: { target: { name: any; value: any } }) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -45,8 +35,22 @@ export const AdminViewAvailbleShifts = () => {
     };
 
     const openAddShift = () => {
-        setShow(true);
-        console.log("button1");
+        setIsLoading(true);
+        fetch("https://jsonplaceholder.typicode.com/posts")
+            .then((response) => response.json())
+            .then((response) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                console.log(response.data);
+                setIsLoading(false);
+            })
+            .then(() => {
+                setShow(true);
+                console.log("button1");
+                console.log(isLoading);
+            })
+            .catch(() => {
+                console.log("error");
+            });
     };
 
     const closeAddShift = () => {
@@ -68,23 +72,28 @@ export const AdminViewAvailbleShifts = () => {
             <div className="header-container">
                 <h1>Available Shifts</h1>
                 <div className="btn-container">
+                    {isLoading ? <LoadingSpinner /> : console.log("test")}
                     <AvailableShiftsBtn
                         className="admin-btn"
                         btnText="Add Shift"
                         btnIcon={addShiftIcon}
                         onClickHandler={openAddShift}
+                        isLoading={isLoading}
                     />
+
                     <AvailableShiftsBtn
                         className="admin-btn"
                         btnText="Delete Selected"
                         btnIcon={deleteIcon}
                         onClickHandler={deleteSelected}
+                        isLoading={false}
                     />
                     <AvailableShiftsBtn
                         className="admin-btn"
                         btnText="Filters"
                         btnIcon={filterIcon}
                         onClickHandler={handleFilter}
+                        isLoading={false}
                     />
                 </div>
             </div>
