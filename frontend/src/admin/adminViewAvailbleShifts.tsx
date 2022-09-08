@@ -55,7 +55,6 @@ export const AdminViewAvailbleShifts = () => {
 
     const closeAddShift = () => {
         setShow(false);
-        console.log("button3");
     };
 
     const deleteSelected = () => {
@@ -97,6 +96,7 @@ export const AdminViewAvailbleShifts = () => {
                     />
                 </div>
             </div>
+
             <Modal show={show}>
                 <AddShiftForm handleEvent={handleChange} handleClose={closeAddShift} />
             </Modal>

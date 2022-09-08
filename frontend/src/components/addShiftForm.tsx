@@ -12,7 +12,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose }) => {
     return (
         <div>
             <form className="add-shift-form">
-                <label>Title</label>
+                <label className="title">Title</label>
                 <input type="text" required name="shiftTitle" onChange={handleEvent} />
 
                 <label>Description</label>
@@ -38,6 +38,31 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose }) => {
 
                 <label>Hours</label>
                 <input type="text" required name="shiftHours" onChange={handleEvent} />
+
+                <h1 className="type-header">Volunteer Type Numbers</h1>
+                <hr className="type-line" />
+                <div className="type-container">
+                    <div className="type">
+                        <label>General volunteer:</label>
+                        <input type="text" name="type1" min="0" onChange={handleEvent} />
+                    </div>
+                    <div className="type">
+                        <label>Undergraduate ambassadors:</label>
+                        <input type="text" name="type1" min="0" onChange={handleEvent} />
+                    </div>
+                    <div className="type">
+                        <label>Postgradute ambassadors:</label>
+                        <input type="text" name="type1" min="0" onChange={handleEvent} />
+                    </div>
+                    <div className="type">
+                        <label>Staff ambassadors:</label>
+                        <input type="text" name="type1" min="0" onChange={handleEvent} />
+                    </div>
+                    <div className="type">
+                        <label>Sprouts:</label>
+                        <input type="text" name="type1" min="0" onChange={handleEvent} />
+                    </div>
+                </div>
                 <div className="btn-container">
                     <button className="cancel-btn" onClick={handleClose}>
                         Cancel

@@ -2,29 +2,33 @@
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    margin-top: 50px;
+    background: #ececec;
 }
 
-.add-shift-form input[type="text"],
-input[type="date"] {
-    left: 27.85%;
-    right: 32.78%;
-    top: 14.31%;
-    bottom: 82.96%;
+.add-shift-form input[type="text"] {
+    height: 40px;
+    width: 360px;
+    left: 401px;
+    top: 335px;
+    border-radius: 10px;
 
     margin: 0px 70px 28px 70px;
 
     background: #f9f9f9;
     border: 1px solid #f0eaea;
-    border-radius: 18px;
+}
+
+.add-shift-form input[type="date"] {
+    height: 40px;
+    width: 360px;
+    margin: 0px 70px 28px 70px;
+    border-radius: 0px;
+    background: #ffffff;
+    border: 1px solid #f5f2f2;
 }
 
 .add-shift-form textarea {
-    left: 27.85%;
-    right: 32.78%;
-    top: 14.31%;
-    bottom: 82.96%;
-
+    height: 200px;
     margin: 0px 70px 28px 70px;
 
     background: #f9f9f9;
@@ -33,13 +37,7 @@ input[type="date"] {
 }
 
 .add-shift-form label {
-    left: 27.85%;
-    right: 68.75%;
-    top: 12.05%;
-    bottom: 85.39%;
-
     margin: 0px 70px 5px 70px;
-
     font-family: "Lato";
     font-style: normal;
     font-weight: 400;
@@ -59,12 +57,14 @@ input[type="date"] {
     margin-left: 45px;
 }
 
+.title {
+    margin-top: 20px !important;
+}
+
 .add-btn {
     height: 56px;
     width: 154px;
-
     border-radius: 10px;
-
     background: #3a5fe2;
     border-radius: 10px;
     font-family: "Lato";
@@ -94,4 +94,47 @@ input[type="date"] {
     line-height: 26px;
 
     color: #fffdfd;
+}
+
+.type-header {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 30px;
+    margin-left: 68px;
+}
+
+.type {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    white-space: nowrap;
+}
+
+.type input[type="text"] {
+    margin-left: 0px;
+    margin-right: 130px;
+    width: 90px;
+}
+
+.type label {
+    margin-right: 20px !important;
+    font-size: 18px;
+}
+
+:focus {
+    outline: 3px solid #a1a1d5;
+}
+.type-line {
+    height: 0px;
+    width: 400px;
+    left: 357px;
+    top: 1625px;
+    border-radius: nullpx;
+    margin: auto;
+    margin-bottom: 40px;
+    margin-top: 20px;
+    border: 1px solid #d0d0d0;
 }
