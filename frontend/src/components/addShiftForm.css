@@ -153,3 +153,33 @@
     display: flex;
     justify-content: flex-end;
 }
+
+.spinner-button {
+    margin-bottom: 20px;
+}
+
+.add-btn:disabled {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.8;
+}
+
+.loading-btn {
+    display: flex;
+    align-items: center;
+}
+
+.spinner-icon {
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.load-txt {
+    margin-right: 40px;
+}
+
+.error-message {
+    color: rgb(255, 68, 68);
+    text-align: center;
+}

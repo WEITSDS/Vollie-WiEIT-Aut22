@@ -25,6 +25,7 @@ export const AdminViewAvailbleShifts = () => {
     const [show, setShow] = useState(false);
     const [formFields, setFormFields] = useState(defaultFormFields);
     const [isLoading, setIsLoading] = useState(false);
+    const [errorShow, setErrorShow] = useState(true);
 
     const handleChange = (event: { target: { name: any; value: any } }) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -35,26 +36,12 @@ export const AdminViewAvailbleShifts = () => {
     };
 
     const openAddShift = () => {
-        setIsLoading(true);
-        fetch("https://jsonplaceholder.typicode.com/posts")
-            .then((response) => response.json())
-            .then((response) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                console.log(response.data);
-                setIsLoading(false);
-            })
-            .then(() => {
-                setShow(true);
-                console.log("button1");
-                console.log(isLoading);
-            })
-            .catch(() => {
-                console.log("error");
-            });
+        setShow(true);
     };
 
     const closeAddShift = () => {
         setShow(false);
+        setErrorShow(true);
     };
 
     const deleteSelected = () => {
@@ -65,6 +52,20 @@ export const AdminViewAvailbleShifts = () => {
         console.log("button3");
     };
 
+    const handleSubmit = () => {
+        setIsLoading(true);
+        fetch("https://jsonplaceholder.typicode.com/todos/1")
+            .then((response) => response.json())
+            .then((response) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                console.log(response.data);
+                setIsLoading(false);
+            })
+            .catch(() => {
+                setErrorShow(false);
+                console.log("error");
+            });
+    };
     return (
         <div>
             <NavigationBar />
@@ -98,7 +99,13 @@ export const AdminViewAvailbleShifts = () => {
             </div>
 
             <Modal show={show}>
-                <AddShiftForm handleEvent={handleChange} handleClose={closeAddShift} />
+                <AddShiftForm
+                    handleEvent={handleChange}
+                    handleClose={closeAddShift}
+                    handleSubmit={handleSubmit}
+                    isLoading={isLoading}
+                    handleError={errorShow}
+                />
             </Modal>
         </div>
     );

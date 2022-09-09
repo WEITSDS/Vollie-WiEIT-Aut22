@@ -2,13 +2,17 @@
 
 // import { Button } from "react-bootstrap/lib/InputGroup";
 import "./addShiftForm.css";
+import LoadingSpinner from "../components/loadingSpinner";
 type formProps = {
     handleEvent: any;
     handleClose: any;
+    handleSubmit: any;
+    isLoading: boolean;
+    handleError: boolean;
     // ...rest of your props
 };
 
-const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose }) => {
+const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSubmit, isLoading, handleError }) => {
     return (
         <div>
             <form className="add-shift-form">
@@ -16,31 +20,31 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose }) => {
                     <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
                 </div>
                 <label className="title">Title</label>
-                <input type="text" required name="shiftTitle" onChange={handleEvent} />
+                <input type="text" name="shiftTitle" onChange={handleEvent} />
 
                 <label>Description</label>
-                <textarea required name="shiftDescription" onChange={handleEvent} />
+                <textarea name="shiftDescription" onChange={handleEvent} />
 
                 <label>Select Start Date</label>
-                <input type="date" required name="startDate" onChange={handleEvent} />
+                <input type="date" name="startDate" onChange={handleEvent} />
 
                 <label>Select End Date</label>
-                <input type="date" required name="endDate" onChange={handleEvent} />
+                <input type="date" name="endDate" onChange={handleEvent} />
 
                 <label>Time</label>
-                <input type="text" required name="shiftTime" onChange={handleEvent} />
+                <input type="text" name="shiftTime" onChange={handleEvent} />
 
                 <label>Address</label>
-                <input type="text" required name="shiftAddress" onChange={handleEvent} />
+                <input type="text" name="shiftAddress" onChange={handleEvent} />
 
                 <label>Venue</label>
-                <input type="text" required name="shiftVenue" onChange={handleEvent} />
+                <input type="text" name="shiftVenue" onChange={handleEvent} />
 
                 <label>Address Description</label>
-                <input type="text" required name="addressDescription" onChange={handleEvent} />
+                <input type="text" name="addressDescription" onChange={handleEvent} />
 
                 <label>Hours</label>
-                <input type="text" required name="shiftHours" onChange={handleEvent} />
+                <input type="text" name="shiftHours" onChange={handleEvent} />
 
                 <h1 className="type-header">Volunteer Type Numbers</h1>
                 <hr className="type-line" />
@@ -66,13 +70,28 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose }) => {
                         <input type="text" name="type1" min="0" onChange={handleEvent} />
                     </div>
                 </div>
+                <div className="error-message" hidden={handleError}>
+                    <p>There was an error adding the shift please try again.</p>
+                </div>
                 <div className="btn-container">
                     <button className="cancel-btn" onClick={handleClose}>
                         Cancel
                     </button>
-                    <button className="add-btn" type="submit">
-                        Add
-                    </button>
+                    {!isLoading && (
+                        <button className="add-btn" type="submit" onClick={handleSubmit}>
+                            Add
+                        </button>
+                    )}
+                    {isLoading && (
+                        <button className="add-btn" type="submit" disabled>
+                            <div className="loading-btn">
+                                <div className="spinner-icon">
+                                    <LoadingSpinner />
+                                </div>
+                                <div className=" load-txt">Add</div>
+                            </div>
+                        </button>
+                    )}
                 </div>
             </form>
         </div>
