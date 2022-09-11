@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Button, Nav } from "react-bootstrap";
+//import AttendanceList from "./attendanceList.json";
+import { getAllUsers, User } from "../api/userAPI";
 // import axios from "axios";
 
 export default function AttendanceListModal() {
@@ -7,43 +9,58 @@ export default function AttendanceListModal() {
     To revert to previous state, 
     1) Link helpModal.ts to Navbar.TSX (All Under Components Folder)
     2) Test  */
+
     const [modalBox, setModalBox] = useState(false);
     const handleClose = () => setModalBox(false);
     const handleShow = () => setModalBox(true);
 
-    // const attendanceList = {
-    //     name: "",
-    //     type: "",
-    // };
+    //With typescript, we should be defining a type for the users variable because it's a non standard datatype.
+    //We set this type prior to setting the default value. Where null is the default. since we cant set a type, User[], as the default
+    //We say the users variable can be a User[] or null and then set the default to null
+    //We later deal with this in displayAttendanceList where we say the parameter can be User[] or null
+    const [users, setUsers] = useState<User[] | null>(null);
+    
 
-    // const getAttendanceList = () => {
-    //     axios.get()
-    //         .then((Response) => {
-    //             const data = response.data;
-    //             console.log('Data has been received');
-    //         })
-    //         .catch(() => {
-    //             alert("Problems with retreiving data!");
-    //         });
-    // }
+    //Will run on component mount (once it's inserted into the view). 
+    //Run with blank list at end to ensure it is only run once. When variables/s inside list change, the useEffect is run again
+    useEffect(() => {
+        //Get the users from the userAPI in the interface User[] format
+        const getUsers = async () => {
+            //Wait for the response
+            let response = await getAllUsers();
+            //Since the response is in the format ResponseWithData<User[]> 
+            // Retrieve the users from the data object (message, success, data) which is of type User[]
+            let users = response.data;
 
-    // const displayAttendanceList = (attendanceList) => {
-    //     if(!attendanceList.length) return null;
+            //Use the useState functionality to set the users which is to be used later when rendering.
+            setUsers(users);
+        }
+        //Run the above function
+        getUsers();
+    }, []);
 
-    //     attendanceList.map((attendanceList, index) => (
-    //         <div key={index}>
-    //             <tr>
-    //                 <td>{index}</td>
-    //                 <td>{attendanceList.name}</td>
-    //                 <td>{attendanceList.category}</td>
-    //             </tr>
-    //         </div>
-    //     ));
-    // }
+    /**
+     * 
+     * @param attendanceList User[] or null (defined in ResponseWithData interface in the utility class)
+     * @returns map of rows to render
+     * 
+     */
+
+    const displayAttendanceList = (attendanceList: User[] | null) => {
+        return (
+            attendanceList?.map((attendanceList, index) => (
+                <tr key={index}>
+                    <th scope="row">{index + 1}</th>
+                    <td>{attendanceList.firstName}&nbsp;{attendanceList.lastName}</td>
+                    <td>{attendanceList.isAdmin}</td>
+                </tr>
+            ))
+        )
+    }
 
     return (
         <>
-            {/* Replace this with view attendance list button */}
+            {/* Replace this with view attendance list button */}   
             <Nav.Link href="#" onClick={handleShow} className="text-body me-1">
                 <i className="bi bi-question-circle" /> Help
             </Nav.Link>
@@ -61,7 +78,6 @@ export default function AttendanceListModal() {
                 </Modal.Header>
                 <Modal.Body>
                     <table className="table table-striped table-hover">
-                        {/* Dummy Data */}
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
@@ -70,16 +86,7 @@ export default function AttendanceListModal() {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td scope="row">Brendon Tong</td>
-                                <td>Sprouts</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>Jim Gordon</td>
-                                <td>Volunteer</td>
-                            </tr>
+                            {displayAttendanceList(users)}
                         </tbody>
                     </table>
                 </Modal.Body>
