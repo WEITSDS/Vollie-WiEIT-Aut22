@@ -8,6 +8,7 @@ import {
     getAllShifts,
     getUserShifts,
     getAvailableShifts,
+    getShiftById,
 } from "./shift.controller";
 
 const router = express.Router();
@@ -19,4 +20,5 @@ router.delete("/:shiftid", deleteShift);
 router.get("/get-all-shifts", wrapAsync(getAllShifts));
 router.get("/get-user-shifts/:targetUserID/:statusType", wrapAsync(getUserShifts));
 router.get("/get-available-shifts", wrapAsync(getAvailableShifts));
+router.get("/shift/:shiftId", wrapAsync(getShiftById));
 export = router;

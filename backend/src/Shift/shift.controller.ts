@@ -20,7 +20,9 @@ export const createShift = (req: Request, res: Response) => {
         res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
         return;
     }
+
     const shiftFields = req.body as unknown;
+
     if (!isIBasicShift(shiftFields)) {
         res.status(400).json({ message: "New shift request body was not valid", success: false });
         return;
@@ -45,6 +47,11 @@ export const createShift = (req: Request, res: Response) => {
                 hours: shiftFields.hours,
                 address: shiftFields.address,
                 description: shiftFields.description,
+                numGeneralVolunteers: shiftFields.numGeneralVolunteers,
+                numUndergradAmbassadors: shiftFields.numUndergradAmbassadors,
+                numPostgradAmbassadors: shiftFields.numPostgradAmbassadors,
+                numSprouts: shiftFields.numSprouts,
+                numStaffAmbassadors: shiftFields.numStaffAmbassadors,
             });
 
             newShift.id = new mongoose.Types.ObjectId();
@@ -164,9 +171,11 @@ export const removeUser = async (req: Request, res: Response): Promise<void> => 
         });
 };
 
-export const getAllShifts = async (req: Request, res: Response): Promise<any> => {
+export const getAllShifts = async (_req: Request, res: Response): Promise<any> => {
     try {
-        const availableShifts = await Shift.find({ status: "Scheduled" });
+        const availableShifts = await Shift.find({ status: "Scheduled" }).sort({
+            createdAt: -1,
+        });
         return res.status(200).json({
             message: "success",
             data: availableShifts,
@@ -182,6 +191,27 @@ export const getAllShifts = async (req: Request, res: Response): Promise<any> =>
     }
 };
 
+export const getShiftById = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { _id: userID } = req.session.user || {};
+        if (!userID) return res.status(403).json({ message: "Authorization error", success: false });
+
+        const shift = await Shift.findOne({ _id: req.params.shiftId });
+        return res.status(200).json({
+            message: "got shift",
+            success: true,
+            data: shift,
+        });
+    } catch (error) {
+        console.log("error getting shfit by id", error);
+        return res.status(500).json({
+            message: "error getting shfit by id",
+            error,
+            success: false,
+        });
+    }
+};
+
 export const getAvailableShifts = async (req: Request, res: Response): Promise<any> => {
     try {
         const { _id: userID } = req.session.user || {};
@@ -190,12 +220,34 @@ export const getAvailableShifts = async (req: Request, res: Response): Promise<a
         if (!userID) return res.status(403).json({ message: "Authorization error", success: false });
 
         const userObj = await User.findOne({ _id: userID });
-        // const userRole = userObj?.role || "testRole"
-        const userRole = "testRole";
+        if (!userObj) return res.status(403).json({ message: "Could not find user object", success: false });
+        const userRole = userObj?.volunteerType;
+        let targetShiftAttribute = "numGeneralVolunteers";
 
-        const availableShifts = await Shift.find({
-            $and: [{ "roles.${userRole}": { $gt: 0 } }, { status: "scheduled" }],
-        });
+        switch (userRole) {
+            case "generalVolunteer":
+                targetShiftAttribute = "numGeneralVolunteers";
+                break;
+            case "undergradAmbassador":
+                targetShiftAttribute = "numUndergradAmbassadors";
+                break;
+            case "postgradAmbassador":
+                targetShiftAttribute = "numPostgradAmbassadors";
+                break;
+            case "staffAmbassador":
+                targetShiftAttribute = "numStaffAmbassadors";
+                break;
+            case "sprout":
+                targetShiftAttribute = "numSprouts";
+                break;
+            default:
+                break;
+        }
+
+        const numVolunteerQuery: any = { status: "Scheduled" };
+        numVolunteerQuery[`${targetShiftAttribute}`] = { $gt: 0 };
+
+        const availableShifts = await Shift.find({ ...numVolunteerQuery }).sort({ createdAt: -1 });
 
         return res.status(200).json({
             message: "success",
@@ -221,7 +273,9 @@ export const getUserShifts = async (req: Request, res: Response): Promise<any> =
             return res.status(403).json({ message: "Authorization error", success: false });
 
         // Default to show all shifts (including finished ones)
-        const availableShifts = await Shift.find({ users: { $all: [targetUserID] }, status: statusType || null });
+        const availableShifts = await Shift.find({ users: { $all: [targetUserID] }, status: statusType || null }).sort({
+            createdAt: -1,
+        });
 
         return res.status(200).json({
             message: "success",

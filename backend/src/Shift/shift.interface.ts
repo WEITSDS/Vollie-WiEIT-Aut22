@@ -7,8 +7,14 @@ export interface IBasicShift {
     endAt: string;
     hours: number;
     address: string;
+    addressDescription: string;
     description: string;
     status: string;
+    numGeneralVolunteers: number;
+    numUndergradAmbassadors: number;
+    numPostgradAmbassadors: number;
+    numStaffAmbassadors: number;
+    numSprouts: number;
 }
 
 export interface IShift extends Document, IBasicShift {
@@ -27,7 +33,13 @@ export function isIBasicShift(args: unknown): args is IBasicShift {
         typeof ishift.endAt === "string" &&
         typeof ishift.hours === "number" &&
         typeof ishift.address === "string" &&
-        typeof ishift.description === "string"
+        typeof ishift.addressDescription === "string" &&
+        typeof ishift.description === "string" &&
+        typeof ishift.numGeneralVolunteers === "number" &&
+        typeof ishift.numUndergradAmbassadors === "number" &&
+        typeof ishift.numPostgradAmbassadors === "number" &&
+        typeof ishift.numStaffAmbassadors === "number" &&
+        typeof ishift.numSprouts === "number"
     );
 }
 
@@ -43,6 +55,11 @@ export interface ShiftSummary {
     archivedAt: Date;
     status: string;
     createdAt: Date;
+    numGeneralVolunteers: number;
+    numUndergradAmbassadors: number;
+    numPostgradAmbassadors: number;
+    numStaffAmbassadors: number;
+    numSprouts: number;
 }
 
 export function mapShiftToShiftSummary({
@@ -57,6 +74,11 @@ export function mapShiftToShiftSummary({
     createdAt,
     archivedAt,
     isArchived,
+    numGeneralVolunteers,
+    numUndergradAmbassadors,
+    numPostgradAmbassadors,
+    numStaffAmbassadors,
+    numSprouts,
 }: IShift): ShiftSummary {
     return {
         _id: (_id as string) || "",
@@ -70,5 +92,10 @@ export function mapShiftToShiftSummary({
         createdAt: createdAt,
         isArchived: isArchived,
         archivedAt: archivedAt,
+        numGeneralVolunteers,
+        numUndergradAmbassadors,
+        numPostgradAmbassadors,
+        numStaffAmbassadors,
+        numSprouts,
     };
 }

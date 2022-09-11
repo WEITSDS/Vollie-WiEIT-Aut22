@@ -11,6 +11,7 @@ export interface IBasicUser {
     firstName: string;
     lastName: string;
     password: string;
+    volunteerType: string;
 }
 
 export interface IUser extends Document, IBasicUser {
@@ -45,6 +46,7 @@ export interface UserSummary {
     verified: boolean;
     isAdmin: boolean;
     tags: IBasicTag[];
+    volunteerType: string;
 }
 
 export function mapUserToUserSummary({
@@ -58,6 +60,7 @@ export function mapUserToUserSummary({
     createdAt,
     isAdmin,
     tags,
+    volunteerType,
 }: IUser): UserSummary {
     return {
         lastLogin: lastLogin ?? 0,
@@ -70,5 +73,6 @@ export function mapUserToUserSummary({
         registeredAt: createdAt.getTime(),
         isAdmin,
         tags: tags ? tags.map(convertTagToTagSummary) : [],
+        volunteerType,
     };
 }
