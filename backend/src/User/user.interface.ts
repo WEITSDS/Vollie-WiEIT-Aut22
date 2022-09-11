@@ -11,7 +11,6 @@ export interface IBasicUser {
     firstName: string;
     lastName: string;
     password: string;
-    volunteerType: string;
 }
 
 export interface IUser extends Document, IBasicUser {
@@ -22,6 +21,7 @@ export interface IUser extends Document, IBasicUser {
     qualifications: IQualification[];
     tags: ITag[];
     createdAt: Date;
+    volunteerType: string;
 }
 
 export function isIBasicUser(args: unknown): args is IBasicUser {

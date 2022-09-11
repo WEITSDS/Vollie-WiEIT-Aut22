@@ -16,7 +16,7 @@ const UserSchema: Schema = new Schema(
         qualifications: [{ type: mongoose.Types.ObjectId, ref: "Qualification" }],
         tags: [{ type: mongoose.Types.ObjectId, ref: "Tag" }],
         shifts: [{ type: mongoose.Types.ObjectId, ref: "Shift" }],
-        volunteerType: { type: String, required: true },
+        volunteerType: { type: String, default: "generalVolunteer", required: true },
     },
     {
         timestamps: true,
