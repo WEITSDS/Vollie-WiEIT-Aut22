@@ -1,0 +1,39 @@
+#block {
+    display: inline-block;
+    width: 300px;
+}
+
+h1 {
+    font-family: 'Inter' !important;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 42px;
+
+    color: #000000;
+}
+
+p {
+    /* width: 662px;
+    height: 126px;
+    left: 43px;
+    top: 353px; */
+
+    font-family: 'Inter' !important;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+
+    color: #000000;
+}
+
+h2 {
+    font-family: 'Inter' !important;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 30px;
+
+    color: #000000;
+}
