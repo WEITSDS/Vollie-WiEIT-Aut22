@@ -1,5 +1,4 @@
 import { Document } from "mongoose";
-import { UserSummary } from "../User/user.interface";
 
 export interface IBasicShift {
     name: string;
@@ -20,7 +19,7 @@ export interface IBasicShift {
 export interface IShift extends Document, IBasicShift {
     isArchived: boolean;
     archivedAt: Date;
-    users: UserSummary[];
+    users: string[];
     createdAt: Date;
 }
 
