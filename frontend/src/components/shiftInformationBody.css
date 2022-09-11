@@ -4,10 +4,10 @@
 }
 
 h1 {
-    font-family: 'Inter' !important;
+    font-family: 'Inter' Import !important;
     font-style: normal;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 20px;
     line-height: 42px;
 
     color: #000000;
@@ -19,21 +19,34 @@ p {
     left: 43px;
     top: 353px; */
 
-    font-family: 'Inter' !important;
+    font-family: 'Inter' Import !important;
     font-style: normal;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 20px;
     line-height: 17px;
+    text-align: justify;
 
     color: #000000;
 }
 
 h2 {
-    font-family: 'Inter' !important;
+    font-family: 'Inter' Import !important;
     font-style: normal;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 20px;
     line-height: 30px;
 
     color: #000000;
 }
+
+#Cancel-Button {
+    text-align: center;
+}
+
+body {
+    width: 80%;
+}
+/* 
+footer {
+    width: 90%;
+} */
