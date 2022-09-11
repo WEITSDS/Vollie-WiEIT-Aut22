@@ -14,16 +14,11 @@ h1 {
 }
 
 p {
-    /* width: 662px;
-    height: 126px;
-    left: 43px;
-    top: 353px; */
-
     font-family: 'Inter' Import !important;
     font-style: normal;
     font-weight: 400;
     font-size: 20px;
-    line-height: 17px;
+    line-height: 20px;
     text-align: justify;
 
     color: #000000;
@@ -39,14 +34,7 @@ h2 {
     color: #000000;
 }
 
-#Cancel-Button {
-    text-align: center;
-}
-
 body {
     width: 80%;
+    padding: 20px;
 }
-/* 
-footer {
-    width: 90%;
-} */
