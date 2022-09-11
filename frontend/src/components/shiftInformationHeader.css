@@ -1,0 +1,37 @@
+.header-container { 
+    width: 1340px;
+height: 112px;
+left: 25px;
+top: 140px;
+
+background: #FFFFFF;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+}
+
+.flex-container {
+    display: flex;
+}
+
+.flex-container > div {
+    margin: 6px;
+  }
+
+.address {
+    font-family: 'Lato';
+font-style: normal;
+font-weight: 400;
+font-size: 23px;
+line-height: 28px;
+
+color: #4D41D8;
+}
+
+.date{
+    font-family: 'Lato';
+font-style: normal;
+font-weight: 400;
+font-size: 23px;
+line-height: 28px;
+
+color: #000000;
+}
