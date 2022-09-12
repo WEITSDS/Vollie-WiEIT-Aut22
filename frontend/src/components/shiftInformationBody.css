@@ -35,6 +35,10 @@ h2 {
 }
 
 body {
-    width: 80%;
+    width: 70%;
     padding: 20px;
+}
+
+Button {
+    float: right;
 }

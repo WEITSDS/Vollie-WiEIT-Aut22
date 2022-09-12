@@ -1,4 +1,5 @@
 import "./shiftInformationBody.css";
+import { Button } from "react-bootstrap";
 
 const ShiftInformationBody = () => {
     return (
@@ -64,6 +65,7 @@ const ShiftInformationBody = () => {
                     <strong>Volunteer Numbers:</strong> 2
                 </p>
             </div>
+            <Button>Cancel</Button>
         </body>
     );
 };
