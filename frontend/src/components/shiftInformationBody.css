@@ -1,0 +1,39 @@
+h1 {
+    font-family: 'Inter' Import !important;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 42px;
+
+    color: #000000;
+}
+
+p {
+    font-family: 'Inter' Import !important;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 20px;
+    text-align: justify;
+
+    color: #000000;
+}
+
+h2 {
+    font-family: 'Inter' Import !important;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 30px;
+
+    color: #000000;
+}
+
+body {
+    width: 70%;
+    padding: 20px;
+}
+
+Button {
+    float: right;
+}
