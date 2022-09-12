@@ -1,8 +1,11 @@
 import React from "react";
 import logo from "../images/uts-logo.svg";
 import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
-import HelpModal from "./helpModal";
-import { logoutUser, User } from "../api/userApi";
+
+// import HelpModal from "./helpModal";
+import AttendanceListModal from "./attendanceList";
+import { logoutUser, User } from "../api/userAPI";
+
 import { getLoggedInUser } from "../protectedRoute";
 
 interface NavBarState {
@@ -53,7 +56,8 @@ export class NavigationBar extends React.Component<Record<string, never>, NavBar
                             </Nav.Link>
                         </Nav>
                         <Nav>
-                            <HelpModal />
+                            {/* Replace with HelpModal */}
+                            <AttendanceListModal />
 
                             <NavDropdown
                                 align="end"
