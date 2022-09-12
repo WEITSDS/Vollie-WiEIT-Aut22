@@ -1,5 +1,5 @@
 h1 {
-    font-family: 'Inter' Import !important;
+    font-family: "Inter" Import !important;
     font-style: normal;
     font-weight: bold;
     font-size: 20px;
@@ -8,8 +8,12 @@ h1 {
     color: #000000;
 }
 
+.body-container {
+    width: 50%;
+}
+
 p {
-    font-family: 'Inter' Import !important;
+    font-family: "Inter" Import !important;
     font-style: normal;
     font-weight: 400;
     font-size: 20px;
@@ -20,7 +24,7 @@ p {
 }
 
 h2 {
-    font-family: 'Inter' Import !important;
+    font-family: "Inter" Import !important;
     font-style: normal;
     font-weight: 400;
     font-size: 20px;
@@ -30,7 +34,6 @@ h2 {
 }
 
 body {
-    width: 70%;
     padding: 20px;
 }
 

@@ -1,7 +1,11 @@
+import ShiftInformationBody from "../components/shiftInformationBody";
+import { NavigationBar } from "../components/navbar";
+
 const ShiftInformation = () => {
     return (
         <div>
-            <h1>test</h1>
+            <NavigationBar />
+            <ShiftInformationBody />
         </div>
     );
 };
