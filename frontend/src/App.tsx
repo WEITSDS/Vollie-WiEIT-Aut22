@@ -14,9 +14,9 @@ import { VolunteersList } from "./admin/tags/volunteersList";
 import { AdminDashboard } from "./admin/adminDashboard";
 //import { ViewAvailableShifts } from "./profile/viewAvailableShifts";
 import { AdminViewAvailbleShifts } from "./admin/adminViewAvailbleShifts";
-import { MyShift } from "./profile/myShift";
+// import { MyShift } from "./profile/myShift";
 import { Modal } from "./profile/modal";
-
+import ShiftInformation from "./shiftInformation/shiftInformation";
 // import { VolunteerDetails } from "./admin/tags/volunteerDetails";
 
 import "./profile/data.json";
@@ -41,7 +41,7 @@ function App(): JSX.Element {
                     element={<ProtectedRoute needsAdmin={true} outlet={<AdminDashboard />} />}
                 ></Route>
                 <Route path="/allocate" element={<ProtectedRoute outlet={<AdminViewAvailbleShifts />} />}></Route>
-                <Route path="/myshifts" element={<ProtectedRoute outlet={<MyShift />} />}></Route>
+                <Route path="/myshifts" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
                 <Route path="/modal" element={<ProtectedRoute outlet={<Modal />} />}></Route>
                 <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>

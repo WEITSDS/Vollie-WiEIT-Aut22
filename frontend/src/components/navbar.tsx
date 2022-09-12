@@ -4,7 +4,7 @@ import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 
 // import HelpModal from "./helpModal";
 import AttendanceListModal from "./attendanceList";
-import { logoutUser, User } from "../api/userAPI";
+import { logoutUser, User } from "../api/userApi";
 
 import { getLoggedInUser } from "../protectedRoute";
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Nav } from "react-bootstrap";
 //import AttendanceList from "./attendanceList.json";
-import { getAllUsers, User } from "../api/userAPI";
+import { getAllUsers, User } from "../api/userApi";
 // import axios from "axios";
 
 export default function AttendanceListModal() {
