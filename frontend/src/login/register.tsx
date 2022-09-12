@@ -5,7 +5,7 @@ import ModalBody from "react-bootstrap/ModalBody";
 import ModalTitle from "react-bootstrap/ModalTitle";
 import { NewUserBody, registerUser } from "../api/userApi";
 import { SITE_NAME } from "../constants";
-import { emailIsValid, passwordIsValid, setPageTitle, stringValueIsValid } from "../utility";
+import { emailIsValid, passwordIsValid, setPageTitle, stringValueIsValid, volunteerTypeIsValid } from "../utility";
 import { WEITBackground } from "../components/background";
 
 interface RegisterState extends NewUserBody {
@@ -22,6 +22,7 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
         email: "",
         password: "",
         confirmPassword: "",
+        volunteerType: "generalVolunteer",
     };
 
     constructor(props: Record<string, never>) {
@@ -49,6 +50,10 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
         this.setState({ confirmPassword: e.target.value });
     };
 
+    onChangeVolunteerType = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        this.setState({ volunteerType: e.target.value });
+    };
+
     onSubmit = (e: React.FormEvent<HTMLFormElement> | undefined) => {
         e?.preventDefault();
         void this.performRegister();
@@ -57,7 +62,7 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
     private async performRegister() {
         // Reset any error states
         this.setState({ errorMessages: undefined, externalError: undefined });
-        const { firstName, lastName, email, password, confirmPassword } = this.state;
+        const { firstName, lastName, email, password, confirmPassword, volunteerType } = this.state;
         // Some of these checks are redundant as the form checks some of them, but good to have anyway
         const errorMessages: string[] = [];
         if (!firstName || !lastName) {
@@ -74,7 +79,7 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
             return;
         }
 
-        const registerAttempt = await registerUser({ firstName, lastName, email, password });
+        const registerAttempt = await registerUser({ firstName, lastName, email, password, volunteerType });
         if (registerAttempt.success) {
             window.location.href = "/home";
         } else {
@@ -83,12 +88,14 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
     }
 
     render() {
-        const { firstName, lastName, email, password, confirmPassword, errorMessages, repeatAttempt } = this.state;
+        const { firstName, lastName, email, password, confirmPassword, errorMessages, repeatAttempt, volunteerType } =
+            this.state;
         const firstNameInvalid = repeatAttempt && !stringValueIsValid(firstName);
         const lastNameInvalid = repeatAttempt && !stringValueIsValid(lastName);
         const emailInvalid = repeatAttempt && !emailIsValid(email);
         const passwordInvalid = repeatAttempt && !passwordIsValid(password);
         const confirmPasswordInvalid = repeatAttempt && password !== confirmPassword;
+        const volunteerTypeInvalid = !volunteerTypeIsValid(volunteerType);
         return (
             <WEITBackground>
                 <ModalBody className="form-body">
@@ -151,6 +158,20 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
                                     required
                                     isInvalid={confirmPasswordInvalid}
                                 />
+                            </Form.Group>
+                            <Form.Group controlId="formVolunteerType" className="mb-3">
+                                <Form.Select
+                                    onChange={this.onChangeVolunteerType}
+                                    aria-label="Volunteer type selection"
+                                    value={volunteerType}
+                                    isInvalid={volunteerTypeInvalid}
+                                >
+                                    <option value="generalVolunteer">General Volunteer</option>
+                                    <option value="undergradAmbassador">Undergrad Ambassador</option>
+                                    <option value="postgradAmbassador">Postgrad Ambassador</option>
+                                    <option value="staffAmbassador">Staff Ambassador</option>
+                                    <option value="sprout">SPROUT</option>
+                                </Form.Select>
                             </Form.Group>
                             <Button variant="primary" type="submit" className="w-100">
                                 Register

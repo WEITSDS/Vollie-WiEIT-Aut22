@@ -14,3 +14,14 @@ export function emailIsValid(val: string): boolean {
 export function passwordIsValid(val: string): boolean {
     return stringValueIsValid(val) && val.length >= 8 && val.length <= 64;
 }
+
+export function volunteerTypeIsValid(val: string): boolean {
+    const volunteerTypes = [
+        "generalVolunteer",
+        "undergradAmbassador",
+        "postgradAmbassador",
+        "staffAmbassador",
+        "sprout",
+    ];
+    return volunteerTypes.includes(val);
+}
