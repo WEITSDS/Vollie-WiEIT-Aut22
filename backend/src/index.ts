@@ -6,7 +6,7 @@ import userAdminRoutes from "./User/user.admin.route";
 import shiftRoutes from "./Shift/shift.route";
 import qualificationRoutes from "./Qualifications/qualifications.route";
 import tagRoutes from "./Tag/tag.route";
-import https = require("https");
+// import https = require("https");
 
 // Middleware
 import cors from "cors";
@@ -65,67 +65,67 @@ app.use("/api/users/admin", userAdminRoutes);
 app.use("/api/shifts", shiftRoutes);
 
 //Sling API Call to retrieve Auth Token
-app.get("/api/credentials/:email/:password", (request, response) => {
-    const email = request.params.email;
-    const password = request.params.password;
+// app.get("/api/credentials/:email/:password", (request, response) => {
+//     const email = request.params.email;
+//     const password = request.params.password;
 
-    const data = JSON.stringify({
-        email: email,
-        password: password,
-        snsToken: "",
-        snsPlatform: "",
-    });
+//     const data = JSON.stringify({
+//         email: email,
+//         password: password,
+//         snsToken: "",
+//         snsPlatform: "",
+//     });
 
-    const options = {
-        hostname: "api.sling.is",
-        port: 443,
-        path: "/v1/account/login",
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Content-Length": data.length,
-        },
-    };
+//     const options = {
+//         hostname: "api.sling.is",
+//         port: 443,
+//         path: "/v1/account/login",
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//             "Content-Length": data.length,
+//         },
+//     };
 
-    const req = https.request(options, (res) => {
-        response.json(res.headers.authorization);
-    });
+//     const req = https.request(options, (res) => {
+//         response.json(res.headers.authorization);
+//     });
 
-    req.on("error", (error) => {
-        console.error(error);
-    });
+//     req.on("error", (error) => {
+//         console.error(error);
+//     });
 
-    req.write(data);
-    req.end();
-});
+//     req.write(data);
+//     req.end();
+// });
 //Sling API Call to retrieve shift data
-app.get("/api/shifts/:token", (request, response) => {
-    const token = request.params.token;
-    let body = "";
+// app.get("/api/shifts/:token", (request, response) => {
+//     const token = request.params.token;
+//     let body = "";
 
-    const options = {
-        hostname: "api.sling.is",
-        port: 443,
-        path: "/v1/shifts/available?pagesize=20",
-        method: "GET",
-        credentials: "omit",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-        },
-    };
+//     const options = {
+//         hostname: "api.sling.is",
+//         port: 443,
+//         path: "/v1/shifts/available?pagesize=20",
+//         method: "GET",
+//         credentials: "omit",
+//         headers: {
+//             "Content-Type": "application/json",
+//             Authorization: token,
+//         },
+//     };
 
-    const req = https.request(options, (res) => {
-        res.on("data", (d) => {
-            response.json((body += d));
-        });
-    });
+//     const req = https.request(options, (res) => {
+//         res.on("data", (d) => {
+//             response.json((body += d));
+//         });
+//     });
 
-    req.on("error", (error) => {
-        console.error(error);
-    });
+//     req.on("error", (error) => {
+//         console.error(error);
+//     });
 
-    req.end();
-});
+//     req.end();
+// });
 /** Qualification Routes */
 app.use("/api/qualifications", qualificationRoutes);

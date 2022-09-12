@@ -154,6 +154,7 @@ export const createUser = (req: Request, res: Response) => {
                 firstName: userFields.firstName,
                 lastName: userFields.lastName,
                 lastLogin: 0,
+                volunteerType: userFields.volunteerType,
             });
 
             newUser.id = new mongoose.Types.ObjectId();
