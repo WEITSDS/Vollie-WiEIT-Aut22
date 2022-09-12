@@ -1,9 +1,11 @@
 import React from "react";
 import logo from "../images/uts-logo.svg";
 import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
+
 // import HelpModal from "./helpModal";
 import AttendanceListModal from "./attendanceList";
 import { logoutUser, User } from "../api/userAPI";
+
 import { getLoggedInUser } from "../protectedRoute";
 
 interface NavBarState {
