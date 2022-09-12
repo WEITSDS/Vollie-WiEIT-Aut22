@@ -55,6 +55,7 @@ export interface NewUserBody {
     lastName: string;
     email: string;
     password: string;
+    volunteerType: string;
 }
 
 export async function registerUser(newUser: NewUserBody): Promise<ResponseWithStatus> {
