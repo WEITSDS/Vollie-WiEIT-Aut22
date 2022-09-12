@@ -1,4 +1,4 @@
-h1 {
+.shift-body-container h1 {
     font-family: "Inter" Import !important;
     font-style: normal;
     font-weight: bold;
@@ -8,11 +8,14 @@ h1 {
     color: #000000;
 }
 
-.body-container {
-    width: 50%;
+.shift-body-container {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    margin-top: 50px !important;
 }
 
-p {
+.shift-body-container p {
     font-family: "Inter" Import !important;
     font-style: normal;
     font-weight: 400;
@@ -23,7 +26,7 @@ p {
     color: #000000;
 }
 
-h2 {
+.shift-body-container h2 {
     font-family: "Inter" Import !important;
     font-style: normal;
     font-weight: 400;
@@ -33,10 +36,12 @@ h2 {
     color: #000000;
 }
 
-body {
-    padding: 20px;
+.shift-body-container body {
+    padding: 20px !important;
 }
 
-Button {
-    float: right;
+.shift-body-container Button {
+    align-self: center;
+    margin-left: 40%;
+    margin-top: 30px;
 }

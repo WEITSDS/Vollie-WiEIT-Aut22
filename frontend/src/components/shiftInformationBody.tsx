@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 const ShiftInformationBody = () => {
     return (
         <body>
-            <div className="body-container">
+            <div className="shift-body-container">
                 <div>
                     <h1>Brief Description:</h1>
                     <p>
