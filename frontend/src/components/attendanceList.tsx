@@ -19,48 +19,47 @@ export default function AttendanceListModal() {
     //We say the users variable can be a User[] or null and then set the default to null
     //We later deal with this in displayAttendanceList where we say the parameter can be User[] or null
     const [users, setUsers] = useState<User[] | null>(null);
-    
 
-    //Will run on component mount (once it's inserted into the view). 
+    //Will run on component mount (once it's inserted into the view).
     //Run with blank list at end to ensure it is only run once. When variables/s inside list change, the useEffect is run again
     useEffect(() => {
         //Get the users from the userAPI in the interface User[] format
         const getUsers = async () => {
             //Wait for the response
-            let response = await getAllUsers();
-            //Since the response is in the format ResponseWithData<User[]> 
+            const response = await getAllUsers();
+            //Since the response is in the format ResponseWithData<User[]>
             // Retrieve the users from the data object (message, success, data) which is of type User[]
-            let users = response.data;
+            const users = response.data;
 
             //Use the useState functionality to set the users which is to be used later when rendering.
             setUsers(users);
-        }
+        };
         //Run the above function
-        getUsers();
+        void getUsers();
     }, []);
 
     /**
-     * 
+     *
      * @param attendanceList User[] or null (defined in ResponseWithData interface in the utility class)
      * @returns map of rows to render
-     * 
+     *
      */
 
     const displayAttendanceList = (attendanceList: User[] | null) => {
-        return (
-            attendanceList?.map((attendanceList, index) => (
-                <tr key={index}>
-                    <th scope="row">{index + 1}</th>
-                    <td>{attendanceList.firstName}&nbsp;{attendanceList.lastName}</td>
-                    <td>{attendanceList.isAdmin}</td>
-                </tr>
-            ))
-        )
-    }
+        return attendanceList?.map((attendanceList, index) => (
+            <tr key={index}>
+                <th scope="row">{index + 1}</th>
+                <td>
+                    {attendanceList.firstName}&nbsp;{attendanceList.lastName}
+                </td>
+                <td>{attendanceList.isAdmin}</td>
+            </tr>
+        ));
+    };
 
     return (
         <>
-            {/* Replace this with view attendance list button */}   
+            {/* Replace this with view attendance list button */}
             <Nav.Link href="#" onClick={handleShow} className="text-body me-1">
                 <i className="bi bi-question-circle" /> Help
             </Nav.Link>
@@ -85,9 +84,7 @@ export default function AttendanceListModal() {
                                 <th scope="col">Volunteer Type</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {displayAttendanceList(users)}
-                        </tbody>
+                        <tbody>{displayAttendanceList(users)}</tbody>
                     </table>
                 </Modal.Body>
                 <Modal.Footer>
