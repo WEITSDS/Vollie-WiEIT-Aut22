@@ -18,21 +18,12 @@ const ShiftInformationBody = () => {
                 <p>
                     <strong>Time:</strong> 8am - 12pm
                 </p>
-                {/* <h2>8am-12pm</h2> */}
             </div>
-            {/* <div id="block">
-            </div> */}
             <div>
                 <p>
                     <strong>Venue:</strong> Orange High School
                 </p>
             </div>
-            {/* <div id="block">
-                <h1>Venue:</h1>
-            </div>
-            <div id="block">
-                <h2>Orange High School</h2>
-            </div> */}
             <div>
                 <h1>Address Description:</h1>
                 <p>
@@ -43,23 +34,11 @@ const ShiftInformationBody = () => {
                     culpa qui officia deserunt mollit anim id est laborum.
                 </p>
             </div>
-            {/* <div id="block">
-                <h1>Volunteer Type:</h1>
-            </div>
-            <div id="block">
-                <h2>Teaching</h2>
-            </div> */}
             <div>
                 <p>
                     <strong>Volunteer Type:</strong> Teaching
                 </p>
             </div>
-            {/* <div id="block">
-                <h1>Volunteer Numbers:</h1>
-            </div>
-            <div id="block">
-                <h2>2</h2>
-            </div> */}
             <div>
                 <p>
                     <strong>Volunteer Numbers:</strong> 2
