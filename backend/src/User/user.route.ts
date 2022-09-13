@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/", getAllUsers);
 router.get("/self", wrapAsync(getOwnUser));
 router.get("/:id", getUserById);
-router.post("/create", createUser);
+router.post("/create", wrapAsync(createUser));
 router.post("/resetpassword", setUserPassword);
 router.get("/owntags", wrapAsync(getOwnTags));
 

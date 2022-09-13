@@ -130,51 +130,45 @@ export const setUserPassword = (req: Request, res: Response, _next: NextFunction
  * If a user has an existing account then throw an error to state that
  * Else send a request to the backend to sign them up
  */
-export const createUser = (req: Request, res: Response) => {
-    const userFields = req.body as unknown;
+export const createUser = async (req: Request, res: Response): Promise<any> => {
+    const userFields = req.body as IUser;
     if (!isIBasicUser(userFields)) {
-        res.status(400).json({ message: "New user request body was not valid", success: false });
-        return;
+        return res.status(400).json({ message: "New user request body was not valid", success: false });
     }
 
-    User.findOne({ email: userFields.email })
-        .exec()
-        .then((existingUser) => {
-            if (existingUser != null) {
-                logger.warn(existingUser);
-                res.json({
-                    message: "Email Already Exists",
-                    status: false,
-                });
-            }
+    try {
+        const existingUser = await User.findOne({ email: userFields.email });
 
-            const newUser = new User({
-                email: userFields.email,
-                password: userFields.password,
-                firstName: userFields.firstName,
-                lastName: userFields.lastName,
-                lastLogin: 0,
-                volunteerType: userFields.volunteerType,
+        if (existingUser) {
+            logger.warn(existingUser);
+            return res.status(400).json({
+                message: "User of that email already exists",
+                success: false,
+                data: null,
             });
+        }
 
-            newUser.id = new mongoose.Types.ObjectId();
-            logger.info(newUser);
-            newUser
-                .save()
-                .then((results) => {
-                    return res.status(200).json({
-                        message: "User register success",
-                        data: mapUserToUserSummary(results),
-                        success: true,
-                    });
-                })
-                .catch((err: unknown) => {
-                    handleError(logger, res, err, "User registration failed");
-                });
-        })
-        .catch((err: unknown) => {
-            handleError(logger, res, err, "User registration failed");
+        const newUser = new User({
+            email: userFields.email,
+            password: userFields.password,
+            firstName: userFields.firstName,
+            lastName: userFields.lastName,
+            lastLogin: 0,
+            volunteerType: userFields.volunteerType,
         });
+
+        newUser.id = new mongoose.Types.ObjectId();
+        logger.info(newUser);
+
+        const createdUser = await newUser.save();
+        return res.status(200).json({
+            message: "User register success",
+            data: mapUserToUserSummary(createdUser),
+            success: true,
+        });
+    } catch (err) {
+        return handleError(logger, res, err, "User registration failed");
+    }
 };
 
 interface LoginDetails {

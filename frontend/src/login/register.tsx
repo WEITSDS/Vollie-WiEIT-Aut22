@@ -83,13 +83,23 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
         if (registerAttempt.success) {
             window.location.href = "/home";
         } else {
+            console.log(registerAttempt);
             this.setState({ externalError: registerAttempt.message });
         }
     }
 
     render() {
-        const { firstName, lastName, email, password, confirmPassword, errorMessages, repeatAttempt, volunteerType } =
-            this.state;
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            confirmPassword,
+            errorMessages,
+            externalError,
+            repeatAttempt,
+            volunteerType,
+        } = this.state;
         const firstNameInvalid = repeatAttempt && !stringValueIsValid(firstName);
         const lastNameInvalid = repeatAttempt && !stringValueIsValid(lastName);
         const emailInvalid = repeatAttempt && !emailIsValid(email);
@@ -185,6 +195,14 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
                                         {errorMessages.map((err, index) => (
                                             <li key={`err-message-${index}`}>{err}</li>
                                         ))}
+                                    </ul>
+                                </>
+                            )}
+                            {externalError && (
+                                <>
+                                    <br></br>
+                                    <ul>
+                                        <li key={`err-message-external`}>{externalError}</li>
                                     </ul>
                                 </>
                             )}
