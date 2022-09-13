@@ -19,7 +19,12 @@ const defaultFormFields = [
         shiftAddress: "",
         shiftVenue: "",
         addressDescription: "",
-        shiftHours: " ",
+        shiftHours: "",
+        general: "",
+        undergrad: "",
+        postgrad: "",
+        staff: "",
+        sprout: "",
     },
 ];
 export const AdminViewAvailbleShifts = () => {

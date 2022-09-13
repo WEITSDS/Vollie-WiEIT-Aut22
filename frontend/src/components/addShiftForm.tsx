@@ -51,23 +51,23 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSub
                 <div className="type-container">
                     <div className="type">
                         <label>General volunteer:</label>
-                        <input type="text" name="type1" min="0" onChange={handleEvent} />
+                        <input type="text" name="general" min="0" onChange={handleEvent} />
                     </div>
                     <div className="type">
                         <label>Undergraduate ambassadors:</label>
-                        <input type="text" name="type1" min="0" onChange={handleEvent} />
+                        <input type="text" name="undergrad" min="0" onChange={handleEvent} />
                     </div>
                     <div className="type">
                         <label>Postgradute ambassadors:</label>
-                        <input type="text" name="type1" min="0" onChange={handleEvent} />
+                        <input type="text" name="postgrad" min="0" onChange={handleEvent} />
                     </div>
                     <div className="type">
                         <label>Staff ambassadors:</label>
-                        <input type="text" name="type1" min="0" onChange={handleEvent} />
+                        <input type="text" name="staff" min="0" onChange={handleEvent} />
                     </div>
                     <div className="type">
                         <label>Sprouts:</label>
-                        <input type="text" name="type1" min="0" onChange={handleEvent} />
+                        <input type="text" name="sprout" min="0" onChange={handleEvent} />
                     </div>
                 </div>
                 <div className="error-message" hidden={handleError}>
