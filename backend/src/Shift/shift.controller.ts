@@ -80,7 +80,6 @@ export const createShift = (req: Request, res: Response) => {
             });
 
             newShift.id = new mongoose.Types.ObjectId();
-            logger.info(newShift);
             newShift
                 .save()
                 .then((results) => {

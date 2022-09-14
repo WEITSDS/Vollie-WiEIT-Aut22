@@ -8,11 +8,11 @@ type formProps = {
     handleClose: any;
     handleSubmit: any;
     isLoading: boolean;
-    handleError: boolean;
+    responseMsg: string;
     // ...rest of your props
 };
 
-const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSubmit, isLoading, handleError }) => {
+const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSubmit, isLoading, responseMsg }) => {
     return (
         <div>
             <form className="add-shift-form">
@@ -20,58 +20,82 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSub
                     <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
                 </div>
                 <label className="title">Title</label>
-                <input type="text" name="shiftTitle" onChange={handleEvent} />
+                <input type="text" name="name" onChange={handleEvent} />
 
                 <label>Description</label>
-                <textarea name="shiftDescription" onChange={handleEvent} />
+                <textarea name="description" onChange={handleEvent} />
 
-                <label>Select Start Date</label>
-                <input type="date" name="startDate" onChange={handleEvent} />
+                <label>Start Date</label>
+                <input type="date" name="startAt" onChange={handleEvent} />
 
-                <label>Select End Date</label>
-                <input type="date" name="endDate" onChange={handleEvent} />
+                <label>End Date</label>
+                <input type="date" name="endAt" onChange={handleEvent} />
 
-                <label>Time</label>
-                <input type="text" name="shiftTime" onChange={handleEvent} />
+                {/* <label>Time</label>
+                <input type="text" name="shiftTime" onChange={handleEvent} /> */}
 
                 <label>Address</label>
-                <input type="text" name="shiftAddress" onChange={handleEvent} />
+                <input type="text" name="address" onChange={handleEvent} />
 
-                <label>Venue</label>
-                <input type="text" name="shiftVenue" onChange={handleEvent} />
+                {/* <label>Venue</label>
+                <input type="text" name="shiftVenue" onChange={handleEvent} /> */}
 
                 <label>Address Description</label>
                 <input type="text" name="addressDescription" onChange={handleEvent} />
 
                 <label>Hours</label>
-                <input type="text" name="shiftHours" onChange={handleEvent} />
+                <input type="number" min={0} defaultValue={0} name="hours" onChange={handleEvent} />
 
-                <h1 className="type-header">Volunteer Type Numbers</h1>
+                <h1 className="type-header">Volunteer Type Allocations</h1>
                 <hr className="type-line" />
                 <div className="type-container">
                     <div className="type">
                         <label>General volunteer:</label>
-                        <input type="text" name="general" min="0" onChange={handleEvent} />
+                        <input
+                            type="number"
+                            name="numGeneralVolunteers"
+                            min={0}
+                            defaultValue={0}
+                            onChange={handleEvent}
+                        />
                     </div>
                     <div className="type">
                         <label>Undergraduate ambassadors:</label>
-                        <input type="text" name="undergrad" min="0" onChange={handleEvent} />
+                        <input
+                            type="number"
+                            name="numUndergradAmbassadors"
+                            min={0}
+                            defaultValue={0}
+                            onChange={handleEvent}
+                        />
                     </div>
                     <div className="type">
                         <label>Postgradute ambassadors:</label>
-                        <input type="text" name="postgrad" min="0" onChange={handleEvent} />
+                        <input
+                            type="number"
+                            name="numPostgradAmbassadors"
+                            min={0}
+                            defaultValue={0}
+                            onChange={handleEvent}
+                        />
                     </div>
                     <div className="type">
                         <label>Staff ambassadors:</label>
-                        <input type="text" name="staff" min="0" onChange={handleEvent} />
+                        <input type="number" name="numSprouts" min={0} defaultValue={0} onChange={handleEvent} />
                     </div>
                     <div className="type">
                         <label>Sprouts:</label>
-                        <input type="text" name="sprout" min="0" onChange={handleEvent} />
+                        <input
+                            type="number"
+                            name="numStaffAmbassadors"
+                            min={0}
+                            defaultValue={0}
+                            onChange={handleEvent}
+                        />
                     </div>
                 </div>
-                <div className="error-message" hidden={handleError}>
-                    <p>There was an error adding the shift please try again.</p>
+                <div className="error-message" hidden={responseMsg === ""}>
+                    {responseMsg !== "" && <p>{responseMsg}</p>}
                 </div>
                 <div className="btn-container">
                     <button className="cancel-btn" onClick={handleClose}>

@@ -41,24 +41,24 @@ export default function ShiftCard({ shiftData, isAdmin }: ShiftCardProps) {
         name,
         startAt,
         address,
-        status,
-        numGeneralVolunteers,
-        numUndergradAmbassadors,
-        numPostgradAmbassadors,
-        numStaffAmbassadors,
-        numSprouts,
+        // status,
+        // numGeneralVolunteers,
+        // numUndergradAmbassadors,
+        // numPostgradAmbassadors,
+        // numStaffAmbassadors,
+        // numSprouts,
     } = shiftData;
-    console.log(
-        shiftId,
-        address,
-        status,
-        numGeneralVolunteers,
-        numUndergradAmbassadors,
-        numPostgradAmbassadors,
-        numStaffAmbassadors,
-        numSprouts,
-        isAdmin
-    );
+    // console.log(
+    //     shiftId,
+    //     address,
+    //     status,
+    //     numGeneralVolunteers,
+    //     numUndergradAmbassadors,
+    //     numPostgradAmbassadors,
+    //     numStaffAmbassadors,
+    //     numSprouts,
+    //     isAdmin
+    // );
 
     const dateString = new Date(startAt).toUTCString();
 

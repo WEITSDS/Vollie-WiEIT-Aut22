@@ -16,20 +16,20 @@ async function patchBasicResponse(url: string): Promise<ResponseWithStatus> {
     }
 }
 
-async function postBasicResponse(url: string, data: Record<string, unknown>): Promise<ResponseWithStatus> {
-    let response: Response | null = null;
-    try {
-        response = await post(url, data);
-        const resp = (await response.json()) as unknown;
-        if (!isBasicResponse(resp)) {
-            throw new Error("Unexpected response format");
-        }
-        return { ...resp, status: response.status };
-    } catch (error) {
-        console.error(error);
-        return { success: false, message: "An unexpected error occured", status: response?.status || 500 };
-    }
-}
+// async function postBasicResponse(url: string, data: Record<string, unknown>): Promise<ResponseWithStatus> {
+//     let response: Response | null = null;
+//     try {
+//         response = await post(url, data);
+//         const resp = (await response.json()) as unknown;
+//         if (!isBasicResponse(resp)) {
+//             throw new Error("Unexpected response format");
+//         }
+//         return { ...resp, status: response.status };
+//     } catch (error) {
+//         console.error(error);
+//         return { success: false, message: "An unexpected error occured", status: response?.status || 500 };
+//     }
+// }
 
 async function deleteBasicResponse(url: string): Promise<ResponseWithStatus> {
     let response: Response | null = null;
@@ -60,17 +60,34 @@ export async function unassignUserFromShift(req: AssignmentUserDetails): Promise
 }
 
 interface ShiftDetails {
-    _id: string;
     name: string;
-    startAt: Date;
-    endAt: Date;
+    startAt: string;
+    endAt: string;
     hours: number;
     address: string;
     description: string;
+    numGeneralVolunteers: number;
+    numUndergradAmbassadors: number;
+    numPostgradAmbassadors: number;
+    numSprouts: number;
+    numStaffAmbassadors: number;
 }
 
-export function createShift(req: ShiftDetails): Promise<ResponseWithStatus> {
-    return postBasicResponse(`${ROOT_URL}/api/shifts/create`, { body: req });
+export async function createShift(req: ShiftDetails): Promise<ResponseWithData<ShiftSummary | null>> {
+    // return postBasicResponse(`${ROOT_URL}/api/shifts/create`, { body: req });
+
+    // let response: ResponseWithData<ShiftSummary> | null = null;
+    try {
+        const response = await post(`${ROOT_URL}/api/shifts/create`, { ...req });
+        const resp = (await response.json()) as ResponseWithData<ShiftSummary>;
+        if (!isBasicResponse(resp)) {
+            throw new Error("Unexpected response format");
+        }
+        return { ...resp };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: "An unexpected error occured", data: null };
+    }
 }
 
 interface DeleteDetails {
@@ -103,6 +120,21 @@ export interface ShiftSummary {
 
 export async function getAvailableShifts(): Promise<ResponseWithData<ShiftSummary[]>> {
     return await getDataResponse(`${ROOT_URL}/api/shifts/get-available-shifts`);
+}
+
+export async function getAllShifts(): Promise<ResponseWithData<ShiftSummary[]>> {
+    return await getDataResponse(`${ROOT_URL}/api/shifts/get-all-shifts`);
+}
+
+// being explicit with undefined check for userId, for why, see type safety with enabled
+// https://tkdodo.eu/blog/react-query-and-type-script
+export async function getMyShifts(
+    userId: string | undefined,
+    shiftStatus: string
+): Promise<ResponseWithData<ShiftSummary[]>> {
+    return typeof userId === "undefined"
+        ? Promise.reject(new Error("Invalid id"))
+        : await getDataResponse(`${ROOT_URL}/api/shifts/get-user-shifts/${userId}/${shiftStatus}`);
 }
 
 export async function getShiftById(shiftId: string): Promise<ResponseWithData<ShiftSummary>> {

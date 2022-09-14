@@ -15,7 +15,7 @@ import { VolunteersList } from "./admin/tags/volunteersList";
 import { AdminDashboard } from "./admin/adminDashboard";
 
 //import { ViewAvailableShifts } from "./profile/viewAvailableShifts";
-import { AdminViewAvailbleShifts } from "./admin/adminViewAvailbleShifts";
+// import { AdminViewAvailbleShifts } from "./admin/adminViewAvailbleShifts";
 // import { MyShift } from "./profile/myShift";
 
 import { Modal } from "./profile/modal";
@@ -45,14 +45,23 @@ function App(): JSX.Element {
                         path="/tags"
                         element={<ProtectedRoute needsAdmin={true} outlet={<TagManagement />} />}
                     ></Route>
-                    <Route path="/home" element={<ProtectedRoute outlet={<HomePage />} />}></Route>
+                    <Route
+                        path="/home"
+                        element={<ProtectedRoute outlet={<HomePage shiftType={"available"} />} />}
+                    ></Route>
                     <Route
                         path="/dashboard"
                         element={<ProtectedRoute needsAdmin={true} outlet={<AdminDashboard />} />}
                     ></Route>
 
-                    <Route path="/allocate" element={<ProtectedRoute outlet={<AdminViewAvailbleShifts />} />}></Route>
-                    <Route path="/myshifts" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
+                    <Route
+                        path="/allshifts"
+                        element={<ProtectedRoute outlet={<HomePage shiftType={"allShifts"} />} />}
+                    ></Route>
+                    <Route
+                        path="/myshifts"
+                        element={<ProtectedRoute outlet={<HomePage shiftType={"myShifts"} />} />}
+                    ></Route>
 
                     <Route path="/shift/:shiftId" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
 
