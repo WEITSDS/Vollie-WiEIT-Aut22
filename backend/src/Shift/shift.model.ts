@@ -11,7 +11,7 @@ const ShiftSchema: Schema = new Schema(
         address: { type: String, required: true },
         addressDescription: { type: String, required: false },
         description: { type: String, required: false },
-        status: { type: String, default: "Scheduled" },
+        status: { type: String, default: "Scheduled", required: true },
         users: [{ type: mongoose.Types.ObjectId, ref: "User", required: false }],
         isArchived: { type: Boolean, default: false, required: true },
         archivedAt: { type: Date, required: false },

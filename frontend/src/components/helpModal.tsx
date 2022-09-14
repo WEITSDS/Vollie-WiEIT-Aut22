@@ -13,7 +13,7 @@ export default function HelpModal() {
 
             <Modal show={modalBox} onHide={handleClose} backdrop="static">
                 <Modal.Header closeButton>
-                    <Modal.Title>Attendance List</Modal.Title>
+                    <Modal.Title>Information</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <strong>Contact us</strong> <br />

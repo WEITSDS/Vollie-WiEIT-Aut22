@@ -61,40 +61,65 @@ export interface ShiftSummary {
     numSprouts: number;
 }
 
-export function mapShiftToShiftSummary({
-    _id,
-    name,
-    startAt,
-    endAt,
-    hours,
-    address,
-    description,
-    status,
-    createdAt,
-    archivedAt,
-    isArchived,
-    numGeneralVolunteers,
-    numUndergradAmbassadors,
-    numPostgradAmbassadors,
-    numStaffAmbassadors,
-    numSprouts,
-}: IShift): ShiftSummary {
+export interface ShiftSummaryAdmin {
+    _id: string;
+    name: string;
+    startAt: Date;
+    endAt: string;
+    hours: number;
+    address: string;
+    description: string;
+    isArchived: boolean;
+    archivedAt: Date;
+    status: string;
+    createdAt: Date;
+    numGeneralVolunteers: number;
+    numUndergradAmbassadors: number;
+    numPostgradAmbassadors: number;
+    numStaffAmbassadors: number;
+    numSprouts: number;
+    users: Array<string>;
+}
+
+export function mapShiftToShiftSummary(shift: IShift): ShiftSummary {
     return {
-        _id: (_id as string) || "",
-        name: name,
-        startAt: startAt,
-        endAt: endAt,
-        hours: hours,
-        address: address,
-        description: description,
-        status: status,
-        createdAt: createdAt,
-        isArchived: isArchived,
-        archivedAt: archivedAt,
-        numGeneralVolunteers,
-        numUndergradAmbassadors,
-        numPostgradAmbassadors,
-        numStaffAmbassadors,
-        numSprouts,
+        _id: (shift._id as string) || "",
+        name: shift.name,
+        startAt: shift.startAt,
+        endAt: shift.endAt,
+        hours: shift.hours,
+        address: shift.address,
+        description: shift.description,
+        status: shift.status,
+        createdAt: shift.createdAt,
+        isArchived: shift.isArchived,
+        archivedAt: shift.archivedAt,
+        numGeneralVolunteers: shift.numGeneralVolunteers,
+        numUndergradAmbassadors: shift.numUndergradAmbassadors,
+        numPostgradAmbassadors: shift.numPostgradAmbassadors,
+        numStaffAmbassadors: shift.numStaffAmbassadors,
+        numSprouts: shift.numSprouts,
+    };
+}
+
+export function mapShiftToShiftSummaryAdmin(shift: IShift): ShiftSummaryAdmin {
+    return {
+        _id: (shift._id as string) || "",
+        name: shift.name,
+        startAt: shift.startAt,
+        endAt: shift.endAt,
+        hours: shift.hours,
+        address: shift.address,
+        description: shift.description,
+        status: shift.status,
+        createdAt: shift.createdAt,
+        isArchived: shift.isArchived,
+        archivedAt: shift.archivedAt,
+        numGeneralVolunteers: shift.numGeneralVolunteers,
+        numUndergradAmbassadors: shift.numUndergradAmbassadors,
+        numPostgradAmbassadors: shift.numPostgradAmbassadors,
+        numStaffAmbassadors: shift.numStaffAmbassadors,
+        numSprouts: shift.numSprouts,
+        users: shift.users,
     };
 }

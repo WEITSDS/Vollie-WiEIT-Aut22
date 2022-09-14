@@ -1,5 +1,4 @@
-import { isBasicResponse, patch, ResponseWithStatus, post, del } from "./utility";
-
+import { isBasicResponse, patch, ResponseWithStatus, post, del, getDataResponse, ResponseWithData } from "./utility";
 const ROOT_URL = window.location.origin;
 
 async function patchBasicResponse(url: string): Promise<ResponseWithStatus> {
@@ -80,4 +79,44 @@ interface DeleteDetails {
 
 export function deleteShift(req: DeleteDetails): Promise<ResponseWithStatus> {
     return deleteBasicResponse(`${ROOT_URL}/api/shifts/${req._id}`);
+}
+
+export interface ShiftSummary {
+    _id: string;
+    name: string;
+    startAt: Date;
+    endAt: string;
+    hours: number;
+    address: string;
+    description: string;
+    isArchived: boolean;
+    archivedAt: Date;
+    status: string;
+    createdAt: Date;
+    numGeneralVolunteers: number;
+    numUndergradAmbassadors: number;
+    numPostgradAmbassadors: number;
+    numStaffAmbassadors: number;
+    numSprouts: number;
+    users: string[];
+}
+
+export async function getAvailableShifts(): Promise<ResponseWithData<ShiftSummary[]>> {
+    return await getDataResponse(`${ROOT_URL}/api/shifts/get-available-shifts`);
+}
+
+export async function getShiftById(shiftId: string): Promise<ResponseWithData<ShiftSummary>> {
+    return await getDataResponse(`${ROOT_URL}/api/shifts/shift/${shiftId}`);
+}
+
+export interface AttendaceSummary {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    volunteerType: string;
+}
+
+export async function getShiftAttendanceList(shiftId: string): Promise<ResponseWithData<AttendaceSummary[]>> {
+    return await getDataResponse(`${ROOT_URL}/api/shifts/attendance-list/${shiftId}`);
 }

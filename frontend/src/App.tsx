@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -6,7 +7,7 @@ import "./App.css";
 import ProtectedRoute from "./protectedRoute";
 import { RegisterPage } from "./login/register";
 import { LoginPage } from "./login/login";
-import { VolunteerLandingPage } from "./profile/volunteer/landingPage";
+// import { VolunteerLandingPage } from "./profile/volunteer/landingPage";
 import { ResetPaswordForm } from "./forms/resetPassword/resetPasswordForm";
 import { ProfilePage } from "./profile/profile";
 import { TagManagement } from "./admin/tags/tagManagement";
@@ -22,34 +23,44 @@ import ShiftInformation from "./shiftInformation/shiftInformation";
 // import { VolunteerDetails } from "./admin/tags/volunteerDetails";
 
 import "./profile/data.json";
+import { HomePage } from "./homepage/homepage";
+
+const queryClient = new QueryClient();
 
 function App(): JSX.Element {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/login" element={<LoginPage />}></Route>
-                <Route path="/forgotpassword" element={<ResetPaswordForm redirectTo="/home" />}></Route>
-                <Route path="/register" element={<RegisterPage />}></Route>
-                <Route
-                    path="/volunteers"
-                    element={<ProtectedRoute needsAdmin={true} outlet={<VolunteersList />} />}
-                ></Route>
-                <Route path="/profile" element={<ProtectedRoute outlet={<ProfilePage />} />}></Route>
-                <Route path="/profile/:id" element={<ProtectedRoute outlet={<ProfilePage />} />}></Route>
-                <Route path="/tags" element={<ProtectedRoute needsAdmin={true} outlet={<TagManagement />} />}></Route>
-                <Route path="/home" element={<ProtectedRoute outlet={<VolunteerLandingPage />} />}></Route>
-                <Route
-                    path="/dashboard"
-                    element={<ProtectedRoute needsAdmin={true} outlet={<AdminDashboard />} />}
-                ></Route>
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/login" element={<LoginPage />}></Route>
+                    <Route path="/forgotpassword" element={<ResetPaswordForm redirectTo="/home" />}></Route>
+                    <Route path="/register" element={<RegisterPage />}></Route>
+                    <Route
+                        path="/volunteers"
+                        element={<ProtectedRoute needsAdmin={true} outlet={<VolunteersList />} />}
+                    ></Route>
+                    <Route path="/profile" element={<ProtectedRoute outlet={<ProfilePage />} />}></Route>
+                    <Route path="/profile/:id" element={<ProtectedRoute outlet={<ProfilePage />} />}></Route>
+                    <Route
+                        path="/tags"
+                        element={<ProtectedRoute needsAdmin={true} outlet={<TagManagement />} />}
+                    ></Route>
+                    <Route path="/home" element={<ProtectedRoute outlet={<HomePage />} />}></Route>
+                    <Route
+                        path="/dashboard"
+                        element={<ProtectedRoute needsAdmin={true} outlet={<AdminDashboard />} />}
+                    ></Route>
 
-                <Route path="/allocate" element={<ProtectedRoute outlet={<AdminViewAvailbleShifts />} />}></Route>
-                <Route path="/myshifts" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
+                    <Route path="/allocate" element={<ProtectedRoute outlet={<AdminViewAvailbleShifts />} />}></Route>
+                    <Route path="/myshifts" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
 
-                <Route path="/modal" element={<ProtectedRoute outlet={<Modal />} />}></Route>
-                <Route path="*" element={<Navigate to="/home" replace />} />
-            </Routes>
-        </BrowserRouter>
+                    <Route path="/shift/:shiftId" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
+
+                    <Route path="/modal" element={<ProtectedRoute outlet={<Modal />} />}></Route>
+                    <Route path="*" element={<Navigate to="/home" replace />} />
+                </Routes>
+            </BrowserRouter>
+        </QueryClientProvider>
     );
 }
 

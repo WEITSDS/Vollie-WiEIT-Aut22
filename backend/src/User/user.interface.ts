@@ -22,6 +22,7 @@ export interface IUser extends Document, IBasicUser {
     tags: ITag[];
     createdAt: Date;
     volunteerType: string;
+    shifts: string[];
 }
 
 export function isIBasicUser(args: unknown): args is IBasicUser {
@@ -47,6 +48,7 @@ export interface UserSummary {
     isAdmin: boolean;
     tags: IBasicTag[];
     volunteerType: string;
+    shifts: string[];
 }
 
 export function mapUserToUserSummary({
@@ -61,6 +63,7 @@ export function mapUserToUserSummary({
     isAdmin,
     tags,
     volunteerType,
+    shifts,
 }: IUser): UserSummary {
     return {
         lastLogin: lastLogin ?? 0,
@@ -74,5 +77,23 @@ export function mapUserToUserSummary({
         isAdmin,
         tags: tags ? tags.map(convertTagToTagSummary) : [],
         volunteerType,
+        shifts,
+    };
+}
+export interface AttendaceSummary {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    volunteerType: string;
+}
+
+export function mapUserToAttendanceSummary(userData: IUser): AttendaceSummary {
+    return {
+        _id: userData._id,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        volunteerType: userData.volunteerType,
     };
 }

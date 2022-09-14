@@ -3,3 +3,92 @@
     flex-direction: column;
     margin-left: 30px;
 }
+.shift-header-container {
+    width: 99%;
+    height: 112px;
+    margin-top: 30px;
+    background: #ffffff;
+}
+
+.box-shadow {
+    display: flex;
+    flex-direction: column;
+    height: 100px;
+    width: 100%;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.shift-header-container h1 {
+    text-align: left;
+    margin: 0 0 0 0 !important;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.address {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 28px;
+    margin-right: 10px;
+
+    color: #4d41d8;
+}
+
+.date {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+
+    color: #000000;
+}
+.shift-body-container h1 {
+    font-family: "Inter" Import !important;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 42px;
+
+    color: #000000;
+}
+
+.shift-body-container {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    margin-top: 50px !important;
+}
+
+.shift-body-container p {
+    font-family: "Inter" Import !important;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 20px;
+    text-align: justify;
+    color: #000000;
+}
+
+.shift-body-container h2 {
+    font-family: "Inter" Import !important;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 30px;
+
+    color: #000000;
+}
+
+.shift-body-container body {
+    padding: 20px !important;
+}
+
+.shift-body-container Button {
+    align-self: center;
+    margin-left: 40%;
+    margin-top: 30px;
+}

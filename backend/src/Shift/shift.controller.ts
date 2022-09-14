@@ -4,7 +4,8 @@ import Shift from "./Shift.model";
 import mongoose from "mongoose";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
-import { isIBasicShift, mapShiftToShiftSummary } from "./shift.interface";
+import { isIBasicShift, mapShiftToShiftSummary, mapShiftToShiftSummaryAdmin } from "./shift.interface";
+import { mapUserToAttendanceSummary } from "../User/user.interface";
 
 const logger = new Logger({ name: "shift.controller" });
 
@@ -127,8 +128,11 @@ export const deleteShift = (req: Request, res: Response) => {
 
 export const assignUser = async (req: Request, res: Response): Promise<any> => {
     try {
-        const isAdmin = req.session.user?.isAdmin || false;
-        const sessionUserId = req.session.user?._id;
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) return res.status(404).json({ message: "User not found", success: false });
+
+        const isAdmin = userObj?.isAdmin || false;
+        const sessionUserId = userObj._id;
         if (!isAdmin && sessionUserId !== req.params.userid) {
             return res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
         }
@@ -138,7 +142,6 @@ export const assignUser = async (req: Request, res: Response): Promise<any> => {
             return res.status(401).json({ message: "Cannot double assign shift", success: false });
         }
 
-        const userObj = await User.findOne({ _id: req.params.userid });
         const targetShiftAttribute = getAttributeFromVolunteerType(userObj?.volunteerType);
 
         if (targetShift[`${targetShiftAttribute}`] <= 0) {
@@ -257,11 +260,16 @@ export const getShiftById = async (req: Request, res: Response): Promise<any> =>
         const { _id: userID } = req.session.user || {};
         if (!userID) return res.status(403).json({ message: "Authorization error", success: false });
 
+        const userObj = await User.findOne({ _id: userID });
+        if (!userObj) return res.status(403).json({ message: "Could not find user object", success: false });
+
         const shift = await Shift.findOne({ _id: req.params.shiftId });
+        if (!shift) return res.status(404).json({ message: "Shift not found", success: false });
+
         return res.status(200).json({
             message: "got shift",
             success: true,
-            data: shift,
+            data: userObj.isAdmin ? mapShiftToShiftSummaryAdmin(shift) : mapShiftToShiftSummary(shift),
         });
     } catch (error) {
         console.log("error getting shfit by id", error);
@@ -287,11 +295,15 @@ export const getAvailableShifts = async (req: Request, res: Response): Promise<a
         const numVolunteerQuery: any = { status: "Scheduled" };
         numVolunteerQuery[`${targetShiftAttribute}`] = { $gt: 0 };
 
+        console.log(numVolunteerQuery);
+
         const availableShifts = await Shift.find({ ...numVolunteerQuery }).sort({ createdAt: -1 });
 
         return res.status(200).json({
             message: "success",
-            data: availableShifts,
+            data: userObj.isAdmin
+                ? availableShifts.map(mapShiftToShiftSummaryAdmin)
+                : availableShifts.map(mapShiftToShiftSummary),
             success: true,
         });
     } catch (error) {
@@ -308,8 +320,11 @@ export const getUserShifts = async (req: Request, res: Response): Promise<any> =
     try {
         const { targetUserID, statusType } = req.params;
 
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) return res.status(403).json({ message: "Could not find user object", success: false });
+
         // users can get their own shifts, if request is looking for user other than themselve, they must be admin
-        if (targetUserID !== req.session.user?._id && !req.session.user?.isAdmin)
+        if (targetUserID !== userObj._id && !userObj.isAdmin)
             return res.status(403).json({ message: "Authorization error", success: false });
 
         // Default to show all shifts (including finished ones)
@@ -319,13 +334,45 @@ export const getUserShifts = async (req: Request, res: Response): Promise<any> =
 
         return res.status(200).json({
             message: "success",
-            data: availableShifts,
+            data: userObj.isAdmin
+                ? availableShifts.map(mapShiftToShiftSummaryAdmin)
+                : availableShifts.map(mapShiftToShiftSummary),
             success: true,
         });
     } catch (error) {
         console.log("get user shifts error", error);
         return res.status(500).json({
             message: "get user shifts error",
+            error,
+            success: false,
+        });
+    }
+};
+
+export const getShiftAttendanceList = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) return res.status(403).json({ message: "Could not find user object", success: false });
+
+        // only admin can view participants
+        if (!userObj.isAdmin) return res.status(403).json({ message: "Authorization error", success: false });
+
+        const { shiftId } = req.params;
+        if (!shiftId) return res.status(403).json({ message: "No shift ID provided", success: false });
+
+        const shift = await Shift.findOne({ _id: shiftId });
+
+        const participants = await User.find({ _id: { $in: shift?.users || [] } });
+
+        return res.status(200).json({
+            message: "success",
+            data: participants.map(mapUserToAttendanceSummary),
+            success: true,
+        });
+    } catch (error) {
+        console.log("get shift attendance list error", error);
+        return res.status(500).json({
+            message: "get shift attendance list error",
             error,
             success: false,
         });
