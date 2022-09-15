@@ -36,29 +36,7 @@ const buttonTextStyle = {
 type ShiftCardProps = { shiftData: ShiftSummaryAdmin; isAdmin: boolean | undefined };
 
 export default function ShiftCard({ shiftData, isAdmin }: ShiftCardProps) {
-    const {
-        _id: shiftId,
-        name,
-        startAt,
-        address,
-        // status,
-        // numGeneralVolunteers,
-        // numUndergradAmbassadors,
-        // numPostgradAmbassadors,
-        // numStaffAmbassadors,
-        // numSprouts,
-    } = shiftData;
-    // console.log(
-    //     shiftId,
-    //     address,
-    //     status,
-    //     numGeneralVolunteers,
-    //     numUndergradAmbassadors,
-    //     numPostgradAmbassadors,
-    //     numStaffAmbassadors,
-    //     numSprouts,
-    //     isAdmin
-    // );
+    const { _id: shiftId, name, startAt, address } = shiftData;
 
     const dateString = new Date(startAt).toUTCString();
 

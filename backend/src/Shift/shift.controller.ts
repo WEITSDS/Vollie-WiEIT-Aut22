@@ -4,13 +4,13 @@ import Shift from "./Shift.model";
 import mongoose from "mongoose";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
-import { isIBasicShift, mapShiftToShiftSummary, mapShiftToShiftSummaryAdmin } from "./shift.interface";
+import { isIBasicShift, mapShiftToShiftSummary, mapShiftToShiftSummaryAdmin, IShift } from "./shift.interface";
 import { mapUserToAttendanceSummary } from "../User/user.interface";
 
 const logger = new Logger({ name: "shift.controller" });
 
-const getAttributeFromVolunteerType = (userRole: string | undefined): string => {
-    let targetShiftAttribute = "numGeneralVolunteers";
+const getAttributeFromVolunteerType = (userRole: string | undefined): keyof IShift => {
+    let targetShiftAttribute: keyof IShift = "numGeneralVolunteers";
     switch (userRole) {
         case "generalVolunteer":
             targetShiftAttribute = "numGeneralVolunteers";
@@ -125,7 +125,7 @@ export const deleteShift = (req: Request, res: Response) => {
         });
 };
 
-export const assignUser = async (req: Request, res: Response): Promise<any> => {
+export const assignUser = async (req: Request, res: Response): Promise<Response> => {
     try {
         const userObj = await User.findOne({ _id: req.session.user?._id });
         if (!userObj) return res.status(404).json({ message: "User not found", success: false });
@@ -136,22 +136,23 @@ export const assignUser = async (req: Request, res: Response): Promise<any> => {
             return res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
         }
 
-        const targetShift: any = await Shift.findOne({ _id: req.params.shiftid });
+        const targetShift = await Shift.findOne({ _id: req.params.shiftid });
         if (targetShift?.users?.includes(req.params.userid)) {
             return res.status(401).json({ message: "Cannot double assign shift", success: false });
         }
 
         const targetShiftAttribute = getAttributeFromVolunteerType(userObj?.volunteerType);
 
-        if (targetShift[`${targetShiftAttribute}`] <= 0) {
+        if (targetShift && targetShift[`${targetShiftAttribute}`] <= 0) {
             return res.status(401).json({ message: "No volunteer type slots available", success: false });
         }
 
         // for decrementing the relevant volunteer type of the shift
-        const decAction: any = {
-            $inc: {},
+        const decAction = {
+            $inc: {
+                [targetShiftAttribute]: -1,
+            },
         };
-        decAction.$inc[`${targetShiftAttribute}`] = -1;
 
         const assignUserResponse = await Shift.findOneAndUpdate(
             { _id: req.params.shiftid },
@@ -171,17 +172,16 @@ export const assignUser = async (req: Request, res: Response): Promise<any> => {
             return res.status(404).json({ message: "User not found", success: true });
         }
     } catch (err) {
-        handleError(logger, res, err, "User assignment to shift failed");
+        return handleError(logger, res, err, "User assignment to shift failed");
     }
 };
 
-export const removeUser = async (req: Request, res: Response): Promise<any> => {
+export const removeUser = async (req: Request, res: Response): Promise<Response> => {
     try {
         const isAdmin = req.session.user?.isAdmin || false;
         const sessionUserId = req.session.user?._id;
         if (!isAdmin && sessionUserId !== req.params.userid) {
-            res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
-            return;
+            return res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
         }
 
         const targetShift = await Shift.findOne({ _id: req.params.shiftid });
@@ -199,11 +199,13 @@ export const removeUser = async (req: Request, res: Response): Promise<any> => {
 
         const userObj = await User.findOne({ _id: req.params.userid });
         const targetShiftAttribute = getAttributeFromVolunteerType(userObj?.volunteerType);
+
         // for incrementing the relevant volunteer type of the shift as user is not taking up that spot
-        const incAction: any = {
-            $inc: {},
+        const incAction = {
+            $inc: {
+                [targetShiftAttribute]: 1,
+            },
         };
-        incAction.$inc[`${targetShiftAttribute}`] = 1;
 
         await Shift.findOneAndUpdate(
             { _id: req.params.shiftid },
@@ -234,7 +236,7 @@ export const removeUser = async (req: Request, res: Response): Promise<any> => {
     }
 };
 
-export const getAllShifts = async (_req: Request, res: Response): Promise<any> => {
+export const getAllShifts = async (_req: Request, res: Response): Promise<Response> => {
     try {
         const availableShifts = await Shift.find({ status: "Scheduled" }).sort({
             createdAt: -1,
@@ -254,7 +256,7 @@ export const getAllShifts = async (_req: Request, res: Response): Promise<any> =
     }
 };
 
-export const getShiftById = async (req: Request, res: Response): Promise<any> => {
+export const getShiftById = async (req: Request, res: Response): Promise<Response> => {
     try {
         const { _id: userID } = req.session.user || {};
         if (!userID) return res.status(403).json({ message: "Authorization error", success: false });
@@ -280,7 +282,7 @@ export const getShiftById = async (req: Request, res: Response): Promise<any> =>
     }
 };
 
-export const getAvailableShifts = async (req: Request, res: Response): Promise<any> => {
+export const getAvailableShifts = async (req: Request, res: Response): Promise<Response> => {
     try {
         const { _id: userID } = req.session.user || {};
 
@@ -291,8 +293,8 @@ export const getAvailableShifts = async (req: Request, res: Response): Promise<a
         if (!userObj) return res.status(403).json({ message: "Could not find user object", success: false });
         const userRole = userObj?.volunteerType;
         const targetShiftAttribute = getAttributeFromVolunteerType(userRole);
-        const numVolunteerQuery: any = { status: "Scheduled" };
-        numVolunteerQuery[`${targetShiftAttribute}`] = { $gt: 0 };
+        const numVolunteerQuery = { status: "Scheduled", [targetShiftAttribute]: { $gt: 0 } };
+        // numVolunteerQuery[`${targetShiftAttribute}`] = { $gt: 0 };
 
         // console.log(numVolunteerQuery);
 
@@ -315,7 +317,7 @@ export const getAvailableShifts = async (req: Request, res: Response): Promise<a
     }
 };
 
-export const getUserShifts = async (req: Request, res: Response): Promise<any> => {
+export const getUserShifts = async (req: Request, res: Response): Promise<Response> => {
     try {
         const { targetUserID, statusType } = req.params;
 
@@ -348,7 +350,7 @@ export const getUserShifts = async (req: Request, res: Response): Promise<any> =
     }
 };
 
-export const getShiftAttendanceList = async (req: Request, res: Response): Promise<any> => {
+export const getShiftAttendanceList = async (req: Request, res: Response): Promise<Response> => {
     try {
         const userObj = await User.findOne({ _id: req.session.user?._id });
         if (!userObj) return res.status(403).json({ message: "Could not find user object", success: false });

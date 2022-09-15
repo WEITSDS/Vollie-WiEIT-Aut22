@@ -59,7 +59,6 @@ const HomePage = ({ shiftType }: HomePageProps) => {
     const [formFields, setFormFields] = useState(shiftFormFields);
     const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
     const [responseMsg, setresponseMsg] = useState("");
-    // const [components, setComponents] = useState([formFields]);
 
     const handleChange = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
         event.preventDefault();
@@ -145,7 +144,6 @@ const HomePage = ({ shiftType }: HomePageProps) => {
                             {isError && <p>There was a server error while loading available shifts... {error}</p>}
                             {data?.data && data?.data?.length > 0 ? (
                                 data?.data?.map((shiftData) => {
-                                    // console.log(shiftData);
                                     return (
                                         <ShiftCard
                                             key={shiftData._id}
