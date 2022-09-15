@@ -111,7 +111,7 @@ const ShiftInformation = () => {
                                         <td>{numStaffAmbassadors}</td>
                                     </tr>
                                     <tr key={4}>
-                                        <td>Sprouts</td>
+                                        <td>SPROUT</td>
                                         <td>{numSprouts}</td>
                                     </tr>
                                 </tbody>
