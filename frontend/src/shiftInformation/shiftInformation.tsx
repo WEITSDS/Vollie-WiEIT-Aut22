@@ -30,7 +30,7 @@ const ShiftInformation = () => {
         name,
         startAt,
         // endAt,
-        address,
+        // address,
         // status,
         description,
         // hours,
@@ -48,67 +48,88 @@ const ShiftInformation = () => {
         <div className="page-background">
             <NavigationBar />
             {data.success && (
-                <div className="shift-page-container">
-                    <div className="header-button-container">
-                        <div className="header-flex">
-                            <div className="left-btns">
-                                <button className="back-btn">Back to shifts</button>
+                <div className="page-container">
+                    <div className="left-box-container">
+                        <div className="header-button-container">
+                            <div className="header-flex">
+                                <div className="left-btns">
+                                    <button className="back-btn">Back to shifts</button>
+                                </div>
+                                <div className="right-btns">
+                                    <button className="edit-btn">Edit</button>
+                                    <button className="apply-btn">Apply to Shift</button>
+                                </div>
                             </div>
-                            <div className="right-btns">
-                                <button className="edit-btn">Edit</button>
-                                <button className="apply-btn">Apply to Shift</button>
+                        </div>
+                        <hr className="header-divider" />
+                        <div className="information-container">
+                            <h1 className="shift-name">{name}</h1>
+                            <div className="information-body-container">
+                                <div className="info-box">
+                                    <div className="info-box-left-container">
+                                        <img className="venueIcon" src={venueIcon}></img>
+                                        <h2 className="info-title">Venue</h2>
+                                    </div>
+
+                                    <div className="info-box-right-container">
+                                        <h3 className="info-body">Orange High School</h3>
+                                    </div>
+                                </div>
+
+                                <div className="info-box">
+                                    <div className="info-box-left-container">
+                                        <img className="addressIcon" src={addressIcon}></img>
+                                        <h2 className="info-title">Address</h2>
+                                    </div>
+
+                                    <div className="info-box-right-container">
+                                        <h3 className="info-body">Orange High School</h3>
+                                    </div>
+                                </div>
+
+                                <div className="info-box">
+                                    <div className="info-box-left-container">
+                                        <img className="dateIcon" src={dateIcon}></img>
+                                        <h2 className="info-title">Date</h2>
+                                    </div>
+
+                                    <div className="info-box-right-container">
+                                        <h3 className="info-body">{dateStringStart}</h3>
+                                    </div>
+                                </div>
+
+                                <div className="info-box">
+                                    <div className="info-box-left-container">
+                                        <img className="timeIcon" src={timeIcon}></img>
+                                        <h2 className="info-title">Time</h2>
+                                    </div>
+
+                                    <div className="info-box-right-container">
+                                        <h3 className="info-body">Orange High School</h3>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <hr className="header-divider" />
-                    <div className="information-container">
-                        <h1 className="shift-name">{name}</h1>
-                        <div className="info-box">
-                            <img src={venueIcon}></img>
-                            <h2 className="info-title">Venue</h2>
-                            <div className="line"></div>
-                            <h3 className="info-body">Orange High School</h3>
+                        <hr className="info-divider" />
+                        <div className="description-container">
+                            <div className="description-body-container">
+                                <h1 className="description-title">Description</h1>
+                                <p>{description}</p>
+                            </div>
                         </div>
-
-                        <div className="info-box">
-                            <img src={addressIcon}></img>
-                            <h2 className="info-title">Address</h2>
-                            <div className="line"></div>
-                            <h3 className="info-body">{address}</h3>
+                        <hr className="description-divider" />
+                        <div className="notes-container">
+                            <div className="description-body-container">
+                                <h1 className="description-title">Notes</h1>
+                                <p>{description}</p>
+                            </div>
                         </div>
-
-                        <div className="info-box">
-                            <img src={dateIcon}></img>
-                            <h2 className="info-title">Date</h2>
-                            <div className="line"></div>
-                            <h3 className="info-body">{dateStringStart}</h3>
-                        </div>
-
-                        <div className="info-box">
-                            <img src={timeIcon}></img>
-                            <h2 className="info-title">Time</h2>
-                            <div className="line"></div>
-                            <h3 className="info-body">Orange High School</h3>
+                        <hr className="notes-divider" />
+                        <div className="footer-container">
+                            <button className="cancel-shift-btn">Cancel shift</button>
                         </div>
                     </div>
-                    <hr className="info-divider" />
-                    <div className="description-container">
-                        <div className="description-body-container">
-                            <h1 className="description-title">Description</h1>
-                            <p>{description}</p>
-                        </div>
-                    </div>
-                    <hr className="description-divider" />
-                    <div className="notes-container">
-                        <div className="description-body-container">
-                            <h1 className="description-title">Notes</h1>
-                            <p>{description}</p>
-                        </div>
-                    </div>
-                    <hr className="notes-divider" />
-                    <div className="footer-container">
-                        <button className="cancel-shift-btn">Cancel shift</button>
-                    </div>
+                    <div className="right-box-container"></div>
                 </div>
             )}
         </div>

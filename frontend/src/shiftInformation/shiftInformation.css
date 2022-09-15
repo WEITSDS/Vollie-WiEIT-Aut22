@@ -5,12 +5,25 @@
     background-color: #fafafa;
 }
 
-.shift-page-container {
+.page-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.left-box-container {
     width: 745px;
     height: 95%;
-    left: 46px;
-    top: 82px;
-    margin-left: 5%;
+    margin-top: 19px;
+    background: #ffffff;
+    border: 1px solid #bab7b7;
+    border-radius: 5px;
+}
+.right-box-container {
+    width: 745px;
+    height: 955px;
+
+    margin-left: 19px;
     margin-top: 19px;
     background: #ffffff;
     border: 1px solid #bab7b7;
@@ -96,27 +109,37 @@
 .info-box {
     display: flex;
     justify-content: flex-start;
+}
+
+.information-body-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-box-left-container {
+    display: flex;
+    justify-content: center;
     margin-bottom: 13px;
 
     width: 664px;
     height: 25px;
     left: 88px;
     top: 218px;
-    display: flex;
     margin-left: 42px;
     background: #ffffff;
     border: 1px solid #dcdee1;
-    border-radius: 5px;
+    border-radius: 5px 0px 0px 5px;
+    width: 120px;
 }
 
-.line {
-    width: 24px;
-    height: 0px;
-
-    margin-top: 11px;
-    margin-left: 30px;
-    border: 0.5px solid #dcdee1;
-    transform: rotate(90deg);
+.info-box-right-container {
+    display: flex;
+    justify-content: flex-start;
+    background: #ffffff;
+    border: 1px solid #dcdee1;
+    border-radius: 0px 5px 5px 0px;
+    width: 544px;
+    height: 25px;
 }
 
 .shift-name {
@@ -137,7 +160,6 @@
 }
 
 .info-title {
-    margin-left: 50px;
     width: 47px;
     height: 18px;
     left: 126px;
@@ -157,6 +179,7 @@
     width: 400px;
     height: 15px;
     margin-bottom: 0px !important;
+    margin-left: 4px;
     align-self: center;
     font-family: "Inter";
     font-style: normal;
@@ -213,4 +236,32 @@
     font-size: 14px;
     line-height: 17px;
     color: #ffffff;
+}
+
+.addressIcon {
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
+    margin-top: 2px;
+}
+
+.venueIcon {
+    width: 12px;
+    height: 12px;
+    margin-right: 7px;
+    margin-top: 5px;
+}
+
+.dateIcon {
+    width: 12px;
+    height: 12px;
+    margin-right: 7px;
+    margin-top: 5px;
+}
+
+.timeIcon {
+    width: 13px;
+    height: 13px;
+    margin-right: 7px;
+    margin-top: 5px;
 }
