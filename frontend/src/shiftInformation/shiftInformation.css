@@ -1,8 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&display=swap");
 
+.page-background {
+    height: 1024px;
+    background-color: #fafafa;
+}
+
 .shift-page-container {
     width: 745px;
-    height: 915px;
+    height: 95%;
     left: 46px;
     top: 82px;
     margin-left: 5%;
@@ -14,7 +19,73 @@
 
 .header-button-container {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 85px;
+}
+
+.header-flex {
+    display: flex;
+    width: 662px;
+    align-self: center;
     justify-content: space-between;
+}
+
+.right-btns {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.back-btn {
+    width: 127px;
+    height: 39px;
+    left: 88px;
+    top: 108px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #bab7b7;
+    border-radius: 5px;
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #000000;
+}
+
+.edit-btn {
+    width: 79px;
+    height: 39px;
+    left: 468px;
+    top: 108px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #bab7b7;
+    border-radius: 5px;
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #000000;
+}
+
+.apply-btn {
+    width: 191px;
+    height: 39px;
+    left: 561px;
+    top: 108px;
+    box-sizing: border-box;
+    background: #2462eb;
+    border: 1px solid #bab7b7;
+    border-radius: 5px;
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #ffffff;
+    margin-left: 14px;
 }
 
 .information-container {
@@ -24,11 +95,11 @@
 
 .info-box {
     display: flex;
-
+    justify-content: flex-start;
     margin-bottom: 13px;
 
     width: 664px;
-    height: 26px;
+    height: 25px;
     left: 88px;
     top: 218px;
     display: flex;
@@ -41,10 +112,9 @@
 .line {
     width: 24px;
     height: 0px;
-    left: 208px;
-    top: 219px;
+
     margin-top: 11px;
-    margin-left: 120px;
+    margin-left: 30px;
     border: 0.5px solid #dcdee1;
     transform: rotate(90deg);
 }
@@ -67,11 +137,13 @@
 }
 
 .info-title {
+    margin-left: 50px;
     width: 47px;
     height: 18px;
     left: 126px;
     top: 222px;
-
+    align-self: center;
+    margin-bottom: 0px !important;
     font-family: "Inter" !important;
     font-style: normal;
     font-weight: 400;
@@ -82,11 +154,10 @@
 }
 
 .info-body {
-    width: 151px;
+    width: 400px;
     height: 15px;
-    left: 215px;
-    top: 223px;
-
+    margin-bottom: 0px !important;
+    align-self: center;
     font-family: "Inter";
     font-style: normal;
     font-weight: 400;
@@ -94,4 +165,52 @@
     line-height: 17px;
 
     color: #000000;
+}
+
+.description-container {
+    display: flex;
+    justify-content: center;
+}
+
+.description-body-container {
+    width: 667px;
+    height: 241px;
+}
+
+.description-title {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 25px;
+
+    color: #000000;
+}
+
+.notes-container {
+    display: flex;
+    justify-content: center;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: center;
+    height: 65px;
+}
+
+.cancel-shift-btn {
+    width: 191px;
+    height: 39px;
+    left: 319px;
+    top: 945px;
+    background: #2462eb;
+    border: 1px solid #bab7b7;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #ffffff;
 }
