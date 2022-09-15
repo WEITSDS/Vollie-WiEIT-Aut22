@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "main": "src/index.ts",
   "scripts": {
-    "tsc": "tsc",
+    "start": "node dist/index.js",
+    "build": "npm run schema:build && tsc",
+    "start:dev": "nodemon -L dist/index.js",
+    "build:dev": "tsc --watch --preserveWatchOutput",
+    "dev": "concurrently \"npm:build:dev\" \"npm:start:dev\"",
     "format": "npx prettier --write \"**/*.ts\"",
-    "dev": "ts-node-dev src/index.ts",
-    "lint": "eslint --ext .ts .",
-    "start": "node build/index.js"
+    "lint": "npx eslint . --ext ts"
   },
   "dependencies": {
     "cloudinary": "^1.29.1",

@@ -61,9 +61,9 @@ const HomePage = ({ shiftType }: HomePageProps) => {
     const [responseMsg, setresponseMsg] = useState("");
     // const [components, setComponents] = useState([formFields]);
 
-    const handleChange = (e: React.FormEvent<HTMLInputElement>): void => {
-        e.preventDefault();
-        const target = e.target as HTMLInputElement;
+    const handleChange = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+        event.preventDefault();
+        const target = event.target as HTMLInputElement;
         const value = target.type === "number" ? parseInt(target.value) : target.value;
         setFormFields((prevFormFields) => {
             return { ...prevFormFields, [`${target.name}`]: value };
@@ -86,32 +86,23 @@ const HomePage = ({ shiftType }: HomePageProps) => {
         console.log("button3");
     };
 
-    const handleSubmit = async () => {
-        setIsLoadingSubmit(true);
-        // setComponents([...components, formFields]);
-        console.log(formFields);
+    const handleSubmit = async (): Promise<void> => {
+        try {
+            setIsLoadingSubmit(true);
+            console.log(formFields);
 
-        const createResponse = await createShift(formFields);
-        setIsLoadingSubmit(false);
-        console.log(createResponse);
-        if (createResponse.success && createResponse?.data?._id) {
-            closeAddShift();
-            navigate(`/shift/${createResponse.data._id}`);
-        } else {
-            setresponseMsg(createResponse.message || "");
+            const createResponse = await createShift(formFields);
+            setIsLoadingSubmit(false);
+            console.log(createResponse);
+            if (createResponse.success && createResponse?.data?._id) {
+                closeAddShift();
+                navigate(`/shift/${createResponse.data._id}`);
+            } else {
+                setresponseMsg(createResponse.message || "");
+            }
+        } catch (error) {
+            console.log(error);
         }
-
-        // fetch("https://jsonplaceholder.typicode.com/todos/1")
-        //     .then((response) => response.json())
-        //     .then((response) => {
-        //         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        //         console.log(response.data);
-        //         setIsLoadingSubmit(false);
-        //     })
-        //     .catch(() => {
-        //         setErrorShow(false);
-        //         console.log("error");
-        //     });
     };
 
     return (

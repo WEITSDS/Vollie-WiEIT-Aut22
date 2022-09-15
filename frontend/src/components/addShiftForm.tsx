@@ -3,13 +3,16 @@
 // import { Button } from "react-bootstrap/lib/InputGroup";
 import "./addShiftForm.css";
 import LoadingSpinner from "../components/loadingSpinner";
+
+type HandleChangeFunction = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+type HandleClose = () => void;
+type HandleSubmit = () => Promise<void>;
 type formProps = {
-    handleEvent: any;
-    handleClose: any;
-    handleSubmit: any;
+    handleEvent: HandleChangeFunction;
+    handleClose: HandleClose;
+    handleSubmit: HandleSubmit;
     isLoading: boolean;
     responseMsg: string;
-    // ...rest of your props
 };
 
 const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSubmit, isLoading, responseMsg }) => {
@@ -102,7 +105,14 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSub
                         Cancel
                     </button>
                     {!isLoading && (
-                        <button className="add-btn" type="submit" onClick={handleSubmit}>
+                        <button
+                            className="add-btn"
+                            type="submit"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleSubmit().catch((err) => console.log(err));
+                            }}
+                        >
                             Add
                         </button>
                     )}
