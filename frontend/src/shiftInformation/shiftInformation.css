@@ -5,9 +5,9 @@
     background-color: #fafafa;
 }
 
-.page-container {
-    display: flex;
-    flex-direction: row;
+.shift-info-page-container {
+    display: flex !important;
+    flex-direction: row !important;
     justify-content: center;
 }
 
@@ -21,8 +21,6 @@
 }
 .right-box-container {
     width: 745px;
-    height: 955px;
-
     margin-left: 19px;
     margin-top: 19px;
     background: #ffffff;
@@ -34,13 +32,14 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 85px;
+    height: 70px;
 }
 
 .header-flex {
     display: flex;
     width: 662px;
     align-self: center;
+    margin-top: 20px;
     justify-content: space-between;
 }
 
@@ -166,7 +165,7 @@
     top: 222px;
     align-self: center;
     margin-bottom: 0px !important;
-    font-family: "Inter" !important;
+    font-family: "Segoe UI" !important;
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
@@ -181,7 +180,7 @@
     margin-bottom: 0px !important;
     margin-left: 4px;
     align-self: center;
-    font-family: "Inter";
+    font-family: "Segoe UI";
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
@@ -264,4 +263,66 @@
     height: 13px;
     margin-right: 7px;
     margin-top: 5px;
+}
+
+.header-right-box-container {
+    display: flex;
+    justify-content: space-around;
+    height: 70px;
+}
+
+.right-box-header-flex {
+    display: flex;
+    width: 662px;
+    align-self: center;
+    justify-content: space-between;
+}
+
+.right-box-title {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 27px;
+    margin-bottom: 0px !important;
+    margin-top: 6px;
+
+    color: #000000;
+}
+
+.participants-btn {
+    width: 155px;
+    height: 39px;
+    left: 1223px;
+    top: 108px;
+    box-sizing: border-box;
+    background: #2462eb;
+    border: 1px solid #bab7b7;
+    border-radius: 5px;
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #ffffff;
+}
+
+.right-box-header-divider {
+    margin-bottom: 0px !important;
+}
+
+.volunteer-table-container {
+    height: 230px;
+}
+
+.calender-title {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 27px;
+    margin-bottom: 0px !important;
+    margin-top: 6px;
+    margin-left: 35px;
+    color: #000000;
 }
