@@ -1,4 +1,4 @@
-import { Button } from "react-bootstrap";
+// import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 // import { ShiftSummaryAdmin } from "../../../backend/src/Shift/shift.interface";
 import { NavigationBar } from "../components/navbar";
@@ -24,102 +24,64 @@ const ShiftInformation = () => {
 
     const {
         name,
-        startAt,
-        endAt,
+        // startAt,
+        // endAt,
         address,
-        status,
-        description,
-        hours,
-        numGeneralVolunteers,
-        numUndergradAmbassadors,
-        numPostgradAmbassadors,
-        numStaffAmbassadors,
-        numSprouts,
+        // status,
+        // description,
+        // hours,
+        // numGeneralVolunteers,
+        // numUndergradAmbassadors,
+        // numPostgradAmbassadors,
+        // numStaffAmbassadors,
+        // numSprouts,
     } = data?.data || {};
 
-    const dateStringStart = new Date(startAt).toUTCString();
-    const dateStringEnd = new Date(endAt).toUTCString();
+    // const dateStringStart = new Date(startAt).toUTCString();
+    // const dateStringEnd = new Date(endAt).toUTCString();
 
     return (
         <div>
             <NavigationBar />
             {data.success && (
                 <div className="shift-page-container">
-                    <div className="shift-header-container">
-                        <div className="box-shadow">
-                            <h1>{name}</h1>
-                            <div className="flex-container">
-                                <div className="address">{address}</div>
-                                <div className="date">
-                                    {dateStringStart} - {dateStringEnd}
-                                </div>
-                            </div>
+                    <div className="header-button-container">
+                        <div className="left-btns">
+                            <button>Back to shifts</button>
+                        </div>
+                        <div className="right-btns">
+                            <button>Edit</button>
+                            <button>Apply to Shift</button>
                         </div>
                     </div>
-                    <div className="shift-body-container">
-                        <div>
-                            <h1>Description:</h1>
-                            <p>{description}</p>
+                    <hr className="header-divider" />
+                    <div className="information-container">
+                        <h1 className="shift-name">{name}</h1>
+                        <div className="info-box">
+                            <h2 className="info-title">Venue</h2>
+                            <div className="line"></div>
+                            <h3 className="info-body">Orange High School</h3>
                         </div>
-                        <div>
-                            <p>
-                                <strong>Hours:</strong> {hours}
-                            </p>
+
+                        <div className="info-box">
+                            <h2 className="info-title">{address}</h2>
+                            <div className="line"></div>
+                            <h3 className="info-body">Orange High School</h3>
                         </div>
-                        <div>
-                            <p>
-                                <strong>Status:</strong> {status}
-                            </p>
+
+                        <div className="info-box">
+                            <h2 className="info-title">Venue</h2>
+                            <div className="line"></div>
+                            <h3 className="info-body">Orange High School</h3>
                         </div>
-                        {/* <div>
-                            <p>
-                                <strong>Venue:</strong> Orange High School
-                            </p>
-                        </div> */}
-                        {/* <div>
-                            <h1>Address Description:</h1>
-                            <p>
-                                {address}
-                            </p>
-                        </div> */}
-                        <div>
-                            <p>
-                                <strong>Volunteer Allocations</strong>
-                            </p>
-                            <table className="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Type</th>
-                                        <th scope="col">Available Slots</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr key={0}>
-                                        <td>General Volunteers</td>
-                                        <td>{numGeneralVolunteers}</td>
-                                    </tr>
-                                    <tr key={1}>
-                                        <td>Undergrad Ambassadors</td>
-                                        <td>{numUndergradAmbassadors}</td>
-                                    </tr>
-                                    <tr key={2}>
-                                        <td>Postgrad Ambassadors</td>
-                                        <td>{numPostgradAmbassadors}</td>
-                                    </tr>
-                                    <tr key={3}>
-                                        <td>Staff Ambassadors</td>
-                                        <td>{numStaffAmbassadors}</td>
-                                    </tr>
-                                    <tr key={4}>
-                                        <td>Sprouts</td>
-                                        <td>{numSprouts}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+
+                        <div className="info-box">
+                            <h2 className="info-title">Venue</h2>
+                            <div className="line"></div>
+                            <h3 className="info-body">Orange High School</h3>
                         </div>
-                        <Button>Apply to Shift</Button>
-                        <Button>Cancel Shift</Button>
                     </div>
+                    <hr className="info-divider" />
                 </div>
             )}
         </div>
