@@ -137,7 +137,7 @@ export const assignUser = async (req: Request, res: Response): Promise<any> => {
         }
 
         const targetShift: any = await Shift.findOne({ _id: req.params.shiftid });
-        if (targetShift?.users.includes(req.params.userid)) {
+        if (targetShift?.users?.includes(req.params.userid)) {
             return res.status(401).json({ message: "Cannot double assign shift", success: false });
         }
 
@@ -294,7 +294,7 @@ export const getAvailableShifts = async (req: Request, res: Response): Promise<a
         const numVolunteerQuery: any = { status: "Scheduled" };
         numVolunteerQuery[`${targetShiftAttribute}`] = { $gt: 0 };
 
-        console.log(numVolunteerQuery);
+        // console.log(numVolunteerQuery);
 
         const availableShifts = await Shift.find({ ...numVolunteerQuery }).sort({ createdAt: -1 });
 
