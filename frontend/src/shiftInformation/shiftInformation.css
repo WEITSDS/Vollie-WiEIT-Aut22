@@ -49,6 +49,10 @@
 }
 
 .back-btn {
+    display: flex;
+    justify-content: space-evenly;
+    align-content: center;
+    flex-wrap: wrap;
     width: 127px;
     height: 39px;
     left: 88px;
@@ -65,7 +69,15 @@
     color: #000000;
 }
 
+.back-btn:hover {
+    border: 1px solid #7b7982;
+}
+
 .edit-btn {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
     width: 79px;
     height: 39px;
     left: 468px;
@@ -80,6 +92,15 @@
     font-size: 14px;
     line-height: 17px;
     color: #000000;
+}
+
+.edit-icon {
+    margin-top: 3px;
+    margin-right: 5px;
+}
+
+.edit-btn:hover {
+    border: 1px solid #7b7982;
 }
 
 .apply-btn {
@@ -98,6 +119,10 @@
     line-height: 17px;
     color: #ffffff;
     margin-left: 14px;
+}
+
+.apply-btn:hover {
+    background: #0c50e3;
 }
 
 .information-container {
@@ -237,6 +262,10 @@
     color: #ffffff;
 }
 
+.cancel-shift-btn:hover {
+    background: #0c50e3;
+}
+
 .addressIcon {
     width: 18px;
     height: 18px;
@@ -305,6 +334,10 @@
     font-size: 14px;
     line-height: 17px;
     color: #ffffff;
+}
+
+.participants-btn:hover {
+    background: #0c50e3;
 }
 
 .right-box-header-divider {

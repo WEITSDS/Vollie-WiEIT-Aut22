@@ -9,6 +9,8 @@ import venueIcon from "../assets/venueIcon.svg";
 import addressIcon from "../assets/addressIcon.svg";
 import dateIcon from "../assets/dateIcon.svg";
 import timeIcon from "../assets/timeIcon.svg";
+import backIcon from "../assets/backIcon.svg";
+import editIcon from "../assets/editIcon.svg";
 
 const ShiftInformation = () => {
     const { shiftId } = useParams();
@@ -44,6 +46,25 @@ const ShiftInformation = () => {
     const dateStringStart = new Date(startAt).toUTCString();
     // const dateStringEnd = new Date(endAt).toUTCString();
 
+    const handleBack = () => {
+        console.log("");
+    };
+
+    const handleEdit = () => {
+        console.log("");
+    };
+    const handleApply = () => {
+        console.log("");
+    };
+
+    const handleParticipants = () => {
+        console.log("");
+    };
+
+    const handleCancel = () => {
+        console.log("");
+    };
+
     return (
         <div className="page-background">
             <NavigationBar />
@@ -53,11 +74,19 @@ const ShiftInformation = () => {
                         <div className="header-button-container">
                             <div className="header-flex">
                                 <div className="left-btns">
-                                    <button className="back-btn">Back to shifts</button>
+                                    <button className="back-btn" onClick={handleBack}>
+                                        <img src={backIcon} />
+                                        Back to shifts
+                                    </button>
                                 </div>
                                 <div className="right-btns">
-                                    <button className="edit-btn">Edit</button>
-                                    <button className="apply-btn">Apply to Shift</button>
+                                    <button className="edit-btn" onClick={handleEdit}>
+                                        <img src={editIcon} className="edit-icon" />
+                                        Edit
+                                    </button>
+                                    <button className="apply-btn" onClick={handleApply}>
+                                        Apply to Shift
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -126,14 +155,18 @@ const ShiftInformation = () => {
                         </div>
                         <hr className="notes-divider" />
                         <div className="footer-container">
-                            <button className="cancel-shift-btn">Cancel shift</button>
+                            <button className="cancel-shift-btn" onClick={handleCancel}>
+                                Cancel shift
+                            </button>
                         </div>
                     </div>
                     <div className="right-box-container">
                         <div className="header-right-box-container">
                             <div className="header-flex">
                                 <h1 className="right-box-title">Volunteer allocations</h1>
-                                <button className="participants-btn">Participants</button>
+                                <button className="participants-btn" onClick={handleParticipants}>
+                                    Participants
+                                </button>
                             </div>
                         </div>
                         <hr className="right-box-header-divider" />
