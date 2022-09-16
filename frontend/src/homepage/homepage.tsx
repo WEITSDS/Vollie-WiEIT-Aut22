@@ -7,41 +7,19 @@ import ShiftCard from "../components/shiftCard";
 import { useAvailableShifts } from "../hooks/useAvailableShifts";
 import { useOwnUser } from "../hooks/useOwnUser";
 import { useMyShifts } from "../hooks/useMyShifts";
-
-import { AvailableShiftsBtn } from "../components/availableShiftsBtn";
 import AddShiftForm from "../components/addShiftForm";
-// import "./adminViewAvailableShifts.css";
 import addShiftIcon from "../assets/addShiftIcon.svg";
 import deleteIcon from "../assets/deleteIcon.svg";
 import filterIcon from "../assets/filterIcon.svg";
 import Modal from "react-bootstrap/Modal";
 import { useState } from "react";
-import LoadingSpinner from "../components/loadingSpinner";
 import { useAllShifts } from "../hooks/useAllShifts";
-import { createShift } from "../api/shiftApi";
-import { useNavigate } from "react-router-dom";
 
 type HomePageProps = {
     shiftType: string;
 };
 
-const shiftFormFields = {
-    name: "",
-    startAt: "",
-    endAt: "",
-    hours: 0,
-    address: "",
-    description: "",
-    addressDescription: "",
-    numGeneralVolunteers: 0,
-    numUndergradAmbassadors: 0,
-    numPostgradAmbassadors: 0,
-    numSprouts: 0,
-    numStaffAmbassadors: 0,
-};
-
 const HomePage = ({ shiftType }: HomePageProps) => {
-    const navigate = useNavigate();
     const { data: userData } = useOwnUser();
 
     const {
@@ -52,22 +30,10 @@ const HomePage = ({ shiftType }: HomePageProps) => {
     } = shiftType === "available"
         ? useAvailableShifts()
         : shiftType === "myShifts"
-        ? useMyShifts(userData?.data?._id, "Scheduled")
+        ? useMyShifts(userData?.data?._id)
         : useAllShifts();
 
     const [show, setShow] = useState(false);
-    const [formFields, setFormFields] = useState(shiftFormFields);
-    const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
-    const [responseMsg, setresponseMsg] = useState("");
-
-    const handleChange = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        event.preventDefault();
-        const target = event.target as HTMLInputElement;
-        const value = target.type === "number" ? parseInt(target.value) : target.value;
-        setFormFields((prevFormFields) => {
-            return { ...prevFormFields, [`${target.name}`]: value };
-        });
-    };
 
     const openAddShift = () => {
         setShow(true);
@@ -85,25 +51,6 @@ const HomePage = ({ shiftType }: HomePageProps) => {
         console.log("button3");
     };
 
-    const handleSubmit = async (): Promise<void> => {
-        try {
-            setIsLoadingSubmit(true);
-            console.log(formFields);
-
-            const createResponse = await createShift(formFields);
-            setIsLoadingSubmit(false);
-            console.log(createResponse);
-            if (createResponse.success && createResponse?.data?._id) {
-                closeAddShift();
-                navigate(`/shift/${createResponse.data._id}`);
-            } else {
-                setresponseMsg(createResponse.message || "");
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     return (
         <>
             <NavigationBar />
@@ -111,31 +58,22 @@ const HomePage = ({ shiftType }: HomePageProps) => {
                 <ModalBody className="form-body">
                     <div className="page-container">
                         <div className="header-container">
-                            <h1>Available Shifts</h1>
+                            <h1>Shifts</h1>
                             <div className="btn-container">
-                                {isLoadingSubmit && <LoadingSpinner />}
-                                <AvailableShiftsBtn
-                                    className="admin-btn"
-                                    btnText="Add Shift"
-                                    btnIcon={addShiftIcon}
-                                    onClickHandler={openAddShift}
-                                    isLoading={isLoadingSubmit}
-                                />
+                                <button id="whiteButton" className={"admin-btn"} onClick={openAddShift}>
+                                    <img className="btn-icon" src={addShiftIcon} />
+                                    {"Add Shift"}
+                                </button>
 
-                                <AvailableShiftsBtn
-                                    className="admin-btn"
-                                    btnText="Delete Selected"
-                                    btnIcon={deleteIcon}
-                                    onClickHandler={deleteSelected}
-                                    isLoading={false}
-                                />
-                                <AvailableShiftsBtn
-                                    className="admin-btn"
-                                    btnText="Filters"
-                                    btnIcon={filterIcon}
-                                    onClickHandler={handleFilter}
-                                    isLoading={false}
-                                />
+                                <button id="whiteButton" className={"admin-btn"} onClick={deleteSelected}>
+                                    <img className="btn-icon" src={deleteIcon} />
+                                    {"Delete Selected"}
+                                </button>
+
+                                <button id="whiteButton" className={"admin-btn"} onClick={handleFilter}>
+                                    <img className="btn-icon" src={filterIcon} />
+                                    {"Filters"}
+                                </button>
                             </div>
                         </div>
                         {/* container for when shifts are added */}
@@ -158,13 +96,7 @@ const HomePage = ({ shiftType }: HomePageProps) => {
                         </div>
                     </div>
                     <Modal show={show}>
-                        <AddShiftForm
-                            handleEvent={handleChange}
-                            handleClose={closeAddShift}
-                            handleSubmit={handleSubmit}
-                            isLoading={isLoadingSubmit}
-                            responseMsg={responseMsg}
-                        />
+                        <AddShiftForm handleClose={closeAddShift} />
                     </Modal>
                 </ModalBody>
             </WEITBackground>

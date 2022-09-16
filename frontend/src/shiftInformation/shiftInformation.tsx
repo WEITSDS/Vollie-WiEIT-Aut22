@@ -1,6 +1,5 @@
 import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-// import { ShiftSummaryAdmin } from "../../../backend/src/Shift/shift.interface";
 import { NavigationBar } from "../components/navbar";
 import { useOwnUser } from "../hooks/useOwnUser";
 import { useShiftById } from "../hooks/useShiftById";
@@ -26,10 +25,13 @@ const ShiftInformation = () => {
         name,
         startAt,
         endAt,
+        venue,
         address,
-        status,
         description,
-        hours,
+        notes,
+        // users,
+        category,
+        requiresWWCC,
         numGeneralVolunteers,
         numUndergradAmbassadors,
         numPostgradAmbassadors,
@@ -63,25 +65,27 @@ const ShiftInformation = () => {
                         </div>
                         <div>
                             <p>
-                                <strong>Hours:</strong> {hours}
+                                <strong>Hours:</strong> Get from start-end
                             </p>
                         </div>
                         <div>
                             <p>
-                                <strong>Status:</strong> {status}
+                                <strong>Venue:</strong> {venue}
                             </p>
                         </div>
-                        {/* <div>
+                        <div>
                             <p>
-                                <strong>Venue:</strong> Orange High School
+                                <strong>Category:</strong> {category}
                             </p>
-                        </div> */}
-                        {/* <div>
-                            <h1>Address Description:</h1>
-                            <p>
-                                {address}
-                            </p>
-                        </div> */}
+                        </div>
+                        <div>
+                            <h1>Additional Notes:</h1>
+                            <p>{notes}</p>
+                        </div>
+                        <div>
+                            <h1>Requires WWCC:</h1>
+                            <p>{requiresWWCC ? "Yes" : "No"}</p>
+                        </div>
                         <div>
                             <p>
                                 <strong>Volunteer Allocations</strong>

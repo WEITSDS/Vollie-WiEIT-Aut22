@@ -1,21 +1,75 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
-// import { Button } from "react-bootstrap/lib/InputGroup";
-import "./addShiftForm.css";
+import React, { useState } from "react";
+import { createShift } from "../api/shiftApi";
 import LoadingSpinner from "../components/loadingSpinner";
+import { useNavigate } from "react-router-dom";
+import Form from "react-bootstrap/Form";
+import "./addShiftForm.css";
 
-type HandleChangeFunction = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 type HandleClose = () => void;
-type HandleSubmit = () => Promise<void>;
 type formProps = {
-    handleEvent: HandleChangeFunction;
     handleClose: HandleClose;
-    handleSubmit: HandleSubmit;
-    isLoading: boolean;
-    responseMsg: string;
 };
 
-const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSubmit, isLoading, responseMsg }) => {
+const shiftFormFields = {
+    name: "",
+    startAt: "",
+    endAt: "",
+    venue: "",
+    address: "",
+    description: "",
+    notes: "",
+    category: "Other",
+    requiresWWCC: false,
+    numGeneralVolunteers: 0,
+    numUndergradAmbassadors: 0,
+    numPostgradAmbassadors: 0,
+    numStaffAmbassadors: 0,
+    numSprouts: 0,
+};
+
+const AddShiftForm: React.FC<formProps> = ({ handleClose }) => {
+    const navigate = useNavigate();
+    const [formFields, setFormFields] = useState(shiftFormFields);
+    const [isLoading, setIsLoading] = useState(false);
+    const [responseMsg, setresponseMsg] = useState("");
+
+    const handleChange = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
+        event.preventDefault();
+        const target = event.target as HTMLInputElement | HTMLSelectElement;
+        const value = target.type === "number" ? parseInt(target.value) : target.value;
+        console.log(value);
+        setFormFields((prevFormFields) => {
+            return { ...prevFormFields, [`${target.name}`]: value };
+        });
+    };
+
+    const handleCheckbox = (event: React.FormEvent<HTMLInputElement>): void => {
+        // event.preventDefault();
+        const target = event.target as HTMLInputElement;
+        console.log(target.checked);
+        setFormFields((prevFormFields) => {
+            return { ...prevFormFields, requiresWWCC: target.checked };
+        });
+    };
+
+    const handleSubmit = async (): Promise<void> => {
+        try {
+            setIsLoading(true);
+            console.log(formFields);
+            const createResponse = await createShift(formFields);
+            setIsLoading(false);
+            console.log(createResponse);
+            if (createResponse.success && createResponse?.data?._id) {
+                handleClose();
+                navigate(`/shift/${createResponse.data._id}`);
+            } else {
+                setresponseMsg(createResponse.message || "");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <div>
             <form className="add-shift-form">
@@ -23,31 +77,41 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSub
                     <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
                 </div>
                 <label className="title">Title</label>
-                <input type="text" name="name" onChange={handleEvent} />
-
-                <label>Description</label>
-                <textarea name="description" onChange={handleEvent} />
+                <input type="text" name="name" onChange={handleChange} />
 
                 <label>Start Date</label>
-                <input type="date" name="startAt" onChange={handleEvent} />
+                <input type="datetime-local" name="startAt" onChange={handleChange} />
 
                 <label>End Date</label>
-                <input type="date" name="endAt" onChange={handleEvent} />
+                <input type="datetime-local" name="endAt" onChange={handleChange} />
 
-                {/* <label>Time</label>
-                <input type="text" name="shiftTime" onChange={handleEvent} /> */}
+                <label>Venue</label>
+                <input type="text" name="venue" onChange={handleChange} />
 
                 <label>Address</label>
-                <input type="text" name="address" onChange={handleEvent} />
+                <input type="text" name="address" onChange={handleChange} />
 
-                {/* <label>Venue</label>
-                <input type="text" name="shiftVenue" onChange={handleEvent} /> */}
+                <label>Description</label>
+                <textarea name="description" onChange={handleChange} />
 
-                <label>Address Description</label>
-                <input type="text" name="addressDescription" onChange={handleEvent} />
+                <label>Notes</label>
+                <input type="text" name="notes" onChange={handleChange} />
 
-                <label>Hours</label>
-                <input type="number" min={0} defaultValue={0} name="hours" onChange={handleEvent} />
+                <label>Category</label>
+                <Form.Select onChange={handleChange} aria-label="Shift category" defaultValue={"Other"}>
+                    <option value="Other">Other</option>
+                    <option value="School Outreach">School Outreach</option>
+                    <option value="Event">Event</option>
+                    <option value="Committee">Committee</option>
+                </Form.Select>
+
+                <label>Requires WWCC?</label>
+                <input
+                    type="checkbox"
+                    checked={formFields.requiresWWCC}
+                    name="requiresWWCC"
+                    onChange={handleCheckbox}
+                />
 
                 <h1 className="type-header">Volunteer Type Allocations</h1>
                 <hr className="type-line" />
@@ -59,7 +123,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSub
                             name="numGeneralVolunteers"
                             min={0}
                             defaultValue={0}
-                            onChange={handleEvent}
+                            onChange={handleChange}
                         />
                     </div>
                     <div className="type">
@@ -69,7 +133,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSub
                             name="numUndergradAmbassadors"
                             min={0}
                             defaultValue={0}
-                            onChange={handleEvent}
+                            onChange={handleChange}
                         />
                     </div>
                     <div className="type">
@@ -79,21 +143,21 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSub
                             name="numPostgradAmbassadors"
                             min={0}
                             defaultValue={0}
-                            onChange={handleEvent}
+                            onChange={handleChange}
                         />
                     </div>
                     <div className="type">
                         <label>Staff ambassadors:</label>
-                        <input type="number" name="numSprouts" min={0} defaultValue={0} onChange={handleEvent} />
+                        <input type="number" name="numSprouts" min={0} defaultValue={0} onChange={handleChange} />
                     </div>
                     <div className="type">
-                        <label>Sprouts:</label>
+                        <label>SPROUT:</label>
                         <input
                             type="number"
                             name="numStaffAmbassadors"
                             min={0}
                             defaultValue={0}
-                            onChange={handleEvent}
+                            onChange={handleChange}
                         />
                     </div>
                 </div>
@@ -101,7 +165,13 @@ const AddShiftForm: React.FC<formProps> = ({ handleEvent, handleClose, handleSub
                     {responseMsg !== "" && <p>{responseMsg}</p>}
                 </div>
                 <div className="btn-container">
-                    <button className="cancel-btn" onClick={handleClose}>
+                    <button
+                        className="cancel-btn"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleClose();
+                        }}
+                    >
                         Cancel
                     </button>
                     {!isLoading && (

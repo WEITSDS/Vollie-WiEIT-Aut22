@@ -39,12 +39,13 @@ const getAttributeFromVolunteerType = (userRole: string | undefined): keyof IShi
  * Else return a 500 error with the error message or indicate insufficient privileges 401
  */
 
-export const createShift = async (req: Request, res: Response): Promise<Response> => {
+export const createShift = async (req: Request, res: Response) => {
     // Get user obj to check if admin
     const userObj = await User.findOne({ _id: req.session.user?._id });
 
     if (!userObj || !userObj?.isAdmin) {
-        return handleError(logger, res, null, "Unauthorized", 401);
+        handleError(logger, res, null, "Unauthorized", 401);
+        return;
     }
 
     const shiftFields = req.body as IShift;
@@ -58,63 +59,75 @@ export const createShift = async (req: Request, res: Response): Promise<Response
 
         const savedShift = await newShift.save();
 
-        return res.status(200).json({
+        res.status(200).json({
             message: "Shift created",
             data: savedShift,
             success: true,
         });
+        return;
     } catch (error) {
-        return handleError(logger, res, error, "Shift creation failed");
+        handleError(logger, res, error, "Shift creation failed");
+        return;
     }
 };
 
-export const deleteShift = async (req: Request, res: Response): Promise<Response> => {
+export const deleteShift = async (req: Request, res: Response) => {
     try {
         // Get user obj to check if admin
         const userObj = await User.findOne({ _id: req.session.user?._id });
 
         if (!userObj || !userObj?.isAdmin) {
-            return handleError(logger, res, null, "Unauthorized", 401);
+            handleError(logger, res, null, "Unauthorized", 401);
+            return;
         }
 
         const deletionResult = await Shift.deleteOne({ _id: req.params.shiftid });
 
         if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
-            return res.status(200).json({
+            res.status(200).json({
                 message: "Shift deleted",
                 success: true,
             });
+            return;
         } else {
-            return res.status(404).json({
+            res.status(404).json({
                 message: "Shift id not found",
                 success: false,
             });
+            return;
         }
     } catch (error) {
-        return handleError(logger, res, error, "Shift deletion failed");
+        handleError(logger, res, error, "Shift deletion failed");
+        return;
     }
 };
 
-export const assignUser = async (req: Request, res: Response): Promise<Response> => {
+export const assignUser = async (req: Request, res: Response) => {
     try {
         const userObj = await User.findOne({ _id: req.session.user?._id });
-        if (!userObj) return res.status(404).json({ message: "User not found", success: false });
+        if (!userObj) {
+            res.status(404).json({ message: "User not found", success: false });
+            return;
+        }
 
         const isAdmin = userObj?.isAdmin || false;
         const sessionUserId = userObj._id;
         if (!isAdmin && sessionUserId !== req.params.userid) {
-            return res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+            res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+            return;
         }
 
         const targetShift = await Shift.findOne({ _id: req.params.shiftid });
         if (targetShift?.users?.includes(req.params.userid)) {
-            return res.status(401).json({ message: "Cannot double assign shift", success: false });
+            res.status(401).json({ message: "Cannot double assign shift", success: false });
+            return;
         }
 
         const targetShiftAttribute = getAttributeFromVolunteerType(userObj?.volunteerType);
 
         if (targetShift && targetShift[`${targetShiftAttribute}`] <= 0) {
-            return res.status(401).json({ message: "No volunteer type slots available", success: false });
+            res.status(401).json({ message: "No volunteer type slots available", success: false });
+            return;
         }
 
         // for decrementing the relevant volunteer type of the shift
@@ -129,7 +142,8 @@ export const assignUser = async (req: Request, res: Response): Promise<Response>
             { $addToSet: { users: req.params.userid }, ...decAction }
         );
         if (!assignUserResponse) {
-            return res.status(404).json({ message: "Shift not found", success: false });
+            res.status(404).json({ message: "Shift not found", success: false });
+            return;
         }
 
         const assignShiftResponse = await User.findOneAndUpdate(
@@ -137,34 +151,40 @@ export const assignUser = async (req: Request, res: Response): Promise<Response>
             { $addToSet: { shifts: req.params.shiftid } }
         );
         if (assignShiftResponse) {
-            return res.status(200).json({ message: "User assigned to shift", success: true });
+            res.status(200).json({ message: "User assigned to shift", success: true });
+            return;
         } else {
-            return res.status(404).json({ message: "User not found", success: true });
+            res.status(404).json({ message: "User not found", success: true });
+            return;
         }
     } catch (err) {
-        return handleError(logger, res, err, "User assignment to shift failed");
+        handleError(logger, res, err, "User assignment to shift failed");
+        return;
     }
 };
 
-export const removeUser = async (req: Request, res: Response): Promise<Response> => {
+export const removeUser = async (req: Request, res: Response) => {
     try {
         const isAdmin = req.session.user?.isAdmin || false;
         const sessionUserId = req.session.user?._id;
         if (!isAdmin && sessionUserId !== req.params.userid) {
-            return res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+            res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+            return;
         }
 
         const targetShift = await Shift.findOne({ _id: req.params.shiftid });
 
         if (!targetShift) {
-            return res.status(404).json({
+            res.status(404).json({
                 message: "Shift not found",
                 success: true,
             });
+            return;
         }
 
         if (!targetShift?.users.includes(req.params.userid)) {
-            return res.status(401).json({ message: "User doesn't exist in this shift", success: false });
+            res.status(401).json({ message: "User doesn't exist in this shift", success: false });
+            return;
         }
 
         const userObj = await User.findOne({ _id: req.params.userid });
@@ -187,161 +207,203 @@ export const removeUser = async (req: Request, res: Response): Promise<Response>
             { $pull: { shifts: req.params.shiftid } }
         );
         if (assignShiftResponse) {
-            return res.status(200).json({
+            res.status(200).json({
                 message: "User removed from shift",
                 success: true,
             });
+            return;
         } else {
-            return res.status(404).json({
+            res.status(404).json({
                 message: "User not found",
                 success: true,
             });
+            return;
         }
     } catch (error) {
-        return res.status(500).json({
+        res.status(500).json({
             message: "error removing unassigning user",
             error,
             success: false,
         });
+        return;
     }
 };
 
-export const getAllShifts = async (_req: Request, res: Response): Promise<Response> => {
+export const getAllShifts = async (_req: Request, res: Response) => {
     try {
-        const availableShifts = await Shift.find({ status: "Scheduled" }).sort({
-            createdAt: -1,
+        const availableShifts = await Shift.find().sort({
+            startAt: 1,
         });
-        return res.status(200).json({
+        res.status(200).json({
             message: "success",
             data: availableShifts,
             success: true,
         });
+        return;
     } catch (error) {
         console.log("get all shifts error", error);
-        return res.status(500).json({
+        res.status(500).json({
             message: "get all shifts error",
             error,
             success: false,
         });
+        return;
     }
 };
 
-export const getShiftById = async (req: Request, res: Response): Promise<Response> => {
+export const getShiftById = async (req: Request, res: Response) => {
     try {
         const { _id: userID } = req.session.user || {};
-        if (!userID) return res.status(403).json({ message: "Authorization error", success: false });
+        if (!userID) {
+            res.status(403).json({ message: "Authorization error", success: false });
+            return;
+        }
 
         const userObj = await User.findOne({ _id: userID });
-        if (!userObj) return res.status(403).json({ message: "Could not find user object", success: false });
+        if (!userObj) {
+            res.status(403).json({ message: "Could not find user object", success: false });
+            return;
+        }
 
         const shift = await Shift.findOne({ _id: req.params.shiftId });
-        if (!shift) return res.status(404).json({ message: "Shift not found", success: false });
+        if (!shift) {
+            res.status(404).json({ message: "Shift not found", success: false });
+            return;
+        }
 
-        return res.status(200).json({
+        res.status(200).json({
             message: "got shift",
             success: true,
             data: shift,
         });
+        return;
     } catch (error) {
         console.log("error getting shfit by id", error);
-        return res.status(500).json({
+        res.status(500).json({
             message: "error getting shfit by id",
             error,
             success: false,
         });
+        return;
     }
 };
 
-export const getAvailableShifts = async (req: Request, res: Response): Promise<Response> => {
+export const getAvailableShifts = async (req: Request, res: Response) => {
     try {
         const { _id: userID } = req.session.user || {};
 
         // users can get their own shifts, if request is looking for user other than themselve, they must be admin
-        if (!userID) return res.status(403).json({ message: "Authorization error", success: false });
+        if (!userID) {
+            res.status(403).json({ message: "Authorization error", success: false });
+            return;
+        }
 
         const userObj = await User.findOne({ _id: userID });
-        if (!userObj) return res.status(403).json({ message: "Could not find user object", success: false });
+        if (!userObj) {
+            res.status(403).json({ message: "Could not find user object", success: false });
+            return;
+        }
         const userRole = userObj?.volunteerType;
         const targetShiftAttribute = getAttributeFromVolunteerType(userRole);
-        const numVolunteerQuery = { status: "Scheduled", [targetShiftAttribute]: { $gt: 0 } };
+        const numVolunteerQuery = { [targetShiftAttribute]: { $gt: 0 } };
         // numVolunteerQuery[`${targetShiftAttribute}`] = { $gt: 0 };
 
         // console.log(numVolunteerQuery);
 
         const availableShifts = await Shift.find({ ...numVolunteerQuery }).sort({ createdAt: -1 });
 
-        return res.status(200).json({
+        res.status(200).json({
             message: "success",
             data: availableShifts,
             success: true,
         });
+        return;
     } catch (error) {
         console.log("get available shifts error", error);
-        return res.status(500).json({
+        res.status(500).json({
             message: "get available shifts error",
             error,
             success: false,
         });
+        return;
     }
 };
 
-export const getUserShifts = async (req: Request, res: Response): Promise<Response> => {
+export const getUserShifts = async (req: Request, res: Response) => {
     try {
-        const { targetUserID, statusType } = req.params;
+        const { targetUserID } = req.params;
 
         const userObj = await User.findOne({ _id: req.session.user?._id });
-        if (!userObj) return res.status(403).json({ message: "Could not find user object", success: false });
+        if (!userObj) {
+            res.status(403).json({ message: "Could not find user object", success: false });
+            return;
+        }
 
         // users can get their own shifts, if request is looking for user other than themselve, they must be admin
-        if (targetUserID !== userObj._id && !userObj.isAdmin)
-            return res.status(403).json({ message: "Authorization error", success: false });
+        if (targetUserID !== userObj._id && !userObj.isAdmin) {
+            res.status(403).json({ message: "Authorization error", success: false });
+            return;
+        }
 
         // Default to show all shifts (including finished ones)
-        const availableShifts = await Shift.find({ users: { $all: [targetUserID] }, status: statusType || null }).sort({
+        const availableShifts = await Shift.find({ users: { $all: [targetUserID] } }).sort({
             createdAt: -1,
         });
 
-        return res.status(200).json({
+        res.status(200).json({
             message: "success",
             data: availableShifts,
             success: true,
         });
+        return;
     } catch (error) {
         console.log("get user shifts error", error);
-        return res.status(500).json({
+        res.status(500).json({
             message: "get user shifts error",
             error,
             success: false,
         });
+        return;
     }
 };
 
-export const getShiftAttendanceList = async (req: Request, res: Response): Promise<Response> => {
+export const getShiftAttendanceList = async (req: Request, res: Response) => {
     try {
         const userObj = await User.findOne({ _id: req.session.user?._id });
-        if (!userObj) return res.status(403).json({ message: "Could not find user object", success: false });
+        if (!userObj) {
+            res.status(403).json({ message: "Could not find user object", success: false });
+            return;
+        }
 
         // only admin can view participants
-        if (!userObj.isAdmin) return res.status(403).json({ message: "Authorization error", success: false });
+        if (!userObj.isAdmin) {
+            res.status(403).json({ message: "Authorization error", success: false });
+            return;
+        }
 
         const { shiftId } = req.params;
-        if (!shiftId) return res.status(403).json({ message: "No shift ID provided", success: false });
+        if (!shiftId) {
+            res.status(403).json({ message: "No shift ID provided", success: false });
+            return;
+        }
 
         const shift = await Shift.findOne({ _id: shiftId });
 
         const participants = await User.find({ _id: { $in: shift?.users || [] } });
 
-        return res.status(200).json({
+        res.status(200).json({
             message: "success",
             data: participants.map(mapUserToAttendanceSummary),
             success: true,
         });
+        return;
     } catch (error) {
         console.log("get shift attendance list error", error);
-        return res.status(500).json({
+        res.status(500).json({
             message: "get shift attendance list error",
             error,
             success: false,
         });
+        return;
     }
 };
