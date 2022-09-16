@@ -32,14 +32,14 @@ const ShiftInformation = () => {
         startAt,
 
         // endAt,
-        // venue,
+        venue,
         address,
 
         description,
-        // notes,
+        notes,
         // users,
-        // category,
-        // requiresWWCC,
+        category,
+        requiresWWCC,
         numGeneralVolunteers,
         numUndergradAmbassadors,
         numPostgradAmbassadors,
@@ -105,7 +105,7 @@ const ShiftInformation = () => {
                                     </div>
 
                                     <div className="info-box-right-container">
-                                        <h3 className="info-body">Orange High School</h3>
+                                        <h3 className="info-body">{venue}</h3>
                                     </div>
                                 </div>
 
@@ -141,6 +141,26 @@ const ShiftInformation = () => {
                                         <h3 className="info-body">hours</h3>
                                     </div>
                                 </div>
+                                <div className="info-box">
+                                    <div className="info-box-left-container">
+                                        <img className="venueIcon" src={venueIcon}></img>
+                                        <h2 className="info-title">Catergory</h2>
+                                    </div>
+
+                                    <div className="info-box-right-container">
+                                        <h3 className="info-body">{category}</h3>
+                                    </div>
+                                </div>
+                                <div className="info-box">
+                                    <div className="info-box-left-container">
+                                        <img className="venueIcon" src={venueIcon}></img>
+                                        <h2 className="info-title">Requires WWCC?</h2>
+                                    </div>
+
+                                    <div className="info-box-right-container">
+                                        <h3 className="info-body">{requiresWWCC ? "Yes" : "No"}</h3>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <hr className="info-divider" />
@@ -154,7 +174,7 @@ const ShiftInformation = () => {
                         <div className="notes-container">
                             <div className="description-body-container">
                                 <h1 className="description-title">Notes</h1>
-                                <p>{description}</p>
+                                <p>{notes}</p>
                             </div>
                         </div>
                         <hr className="notes-divider" />
