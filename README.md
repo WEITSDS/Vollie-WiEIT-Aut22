@@ -10,6 +10,12 @@ insert overview here :]
 * Express (version 4.17.3) (backend)
 
 ## Getting Started
+Ensure latest LTS of nodeJS is installed. 
+
+### Note
+Run the following in the terminal (any directory) before trying to run the front/back-end.
+
+> npm install -g typescript ts-node ts-node-dev eslint
 
 ### Basic Installation Requirements
 * [node.js (v16.14.2)](https://nodejs.org/en/)

@@ -1,6 +1,5 @@
 // import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-// import { ShiftSummaryAdmin } from "../../../backend/src/Shift/shift.interface";
 import { NavigationBar } from "../components/navbar";
 import { useOwnUser } from "../hooks/useOwnUser";
 import { useShiftById } from "../hooks/useShiftById";
@@ -31,11 +30,16 @@ const ShiftInformation = () => {
     const {
         name,
         startAt,
-        // endAt,
+
+        endAt,
+        venue,
         address,
-        // status,
+
         description,
-        hours,
+        notes,
+        // users,
+        category,
+        requiresWWCC,
         numGeneralVolunteers,
         numUndergradAmbassadors,
         numPostgradAmbassadors,
@@ -169,6 +173,7 @@ const ShiftInformation = () => {
                                 </button>
                             </div>
                         </div>
+
                         <hr className="right-box-header-divider" />
                         <div className="volunteer-table-container">
                             <table className="table table-striped table-hover">
@@ -196,7 +201,7 @@ const ShiftInformation = () => {
                                         <td>{numStaffAmbassadors}</td>
                                     </tr>
                                     <tr key={4}>
-                                        <td>Sprouts</td>
+                                        <td>SPROUT</td>
                                         <td>{numSprouts}</td>
                                     </tr>
                                 </tbody>

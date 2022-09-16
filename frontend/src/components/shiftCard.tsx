@@ -2,7 +2,7 @@ import { Button, Card, Form, Stack } from "react-bootstrap";
 import locationIcon from "../assets/location.svg";
 import calendarIcon from "../assets/calendar.svg";
 import editIcon from "../assets/edit.svg";
-import { ShiftSummaryAdmin } from "../../../backend/src/Shift/shift.interface";
+import { IShift } from "../api/shiftApi";
 import { Link } from "react-router-dom";
 import AttendanceListModal from "./attendanceList";
 
@@ -33,32 +33,10 @@ const buttonTextStyle = {
     ...latoFont,
 };
 
-type ShiftCardProps = { shiftData: ShiftSummaryAdmin; isAdmin: boolean | undefined };
+type ShiftCardProps = { shiftData: IShift; isAdmin: boolean | undefined };
 
 export default function ShiftCard({ shiftData, isAdmin }: ShiftCardProps) {
-    const {
-        _id: shiftId,
-        name,
-        startAt,
-        address,
-        // status,
-        // numGeneralVolunteers,
-        // numUndergradAmbassadors,
-        // numPostgradAmbassadors,
-        // numStaffAmbassadors,
-        // numSprouts,
-    } = shiftData;
-    // console.log(
-    //     shiftId,
-    //     address,
-    //     status,
-    //     numGeneralVolunteers,
-    //     numUndergradAmbassadors,
-    //     numPostgradAmbassadors,
-    //     numStaffAmbassadors,
-    //     numSprouts,
-    //     isAdmin
-    // );
+    const { name, startAt, address } = shiftData;
 
     const dateString = new Date(startAt).toUTCString();
 
@@ -97,7 +75,7 @@ export default function ShiftCard({ shiftData, isAdmin }: ShiftCardProps) {
                         <img style={{ margin: "0 5px 0 0" }} src={calendarIcon} alt="date icon" />
                         {dateString}
                     </Card.Text>
-                    <Link to={`/shift/${shiftId}`}>
+                    <Link to={`/shift/${shiftData._id}`}>
                         <Button style={{ borderRadius: "4rem", padding: "0.5rem 1.5rem", ...buttonTextStyle }}>
                             {"View"}
                         </Button>{" "}

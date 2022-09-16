@@ -1,8 +1,8 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { getAvailableShifts } from "../api/shiftApi";
 import { ResponseWithData } from "../api/utility";
-import { ShiftSummaryAdmin } from "../../../backend/src/Shift/shift.interface";
+import { IShift } from "../api/shiftApi";
 
-export const useAvailableShifts = (): UseQueryResult<ResponseWithData<ShiftSummaryAdmin[]>, Error> => {
+export const useAvailableShifts = (): UseQueryResult<ResponseWithData<IShift[]>, Error> => {
     return useQuery(["available-shifts"], getAvailableShifts);
 };
