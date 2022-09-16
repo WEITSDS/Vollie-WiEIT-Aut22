@@ -31,15 +31,15 @@ const ShiftInformation = () => {
         name,
         startAt,
 
-        endAt,
-        venue,
+        // endAt,
+        // venue,
         address,
 
         description,
-        notes,
+        // notes,
         // users,
-        category,
-        requiresWWCC,
+        // category,
+        // requiresWWCC,
         numGeneralVolunteers,
         numUndergradAmbassadors,
         numPostgradAmbassadors,
@@ -138,7 +138,7 @@ const ShiftInformation = () => {
                                     </div>
 
                                     <div className="info-box-right-container">
-                                        <h3 className="info-body">{hours}</h3>
+                                        <h3 className="info-body">hours</h3>
                                     </div>
                                 </div>
                             </div>
