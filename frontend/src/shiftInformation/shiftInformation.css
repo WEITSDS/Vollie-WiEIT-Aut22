@@ -71,6 +71,7 @@
 
 .back-btn:hover {
     border: 1px solid #7b7982;
+    background: #f9fafa;
 }
 
 .edit-btn {
@@ -101,6 +102,7 @@
 
 .edit-btn:hover {
     border: 1px solid #7b7982;
+    background: #f9fafa;
 }
 
 .apply-btn {

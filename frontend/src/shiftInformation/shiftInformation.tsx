@@ -154,7 +154,7 @@ const ShiftInformation = () => {
                                 <div className="info-box">
                                     <div className="info-box-left-container">
                                         <img className="venueIcon" src={venueIcon}></img>
-                                        <h2 className="info-title">Requires WWCC?</h2>
+                                        <h2 className="info-title">WWCC?</h2>
                                     </div>
 
                                     <div className="info-box-right-container">
