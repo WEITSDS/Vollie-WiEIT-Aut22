@@ -33,10 +33,14 @@ const buttonTextStyle = {
     ...latoFont,
 };
 
-type ShiftCardProps = { shiftData: IShift; isAdmin: boolean | undefined };
+type ShiftCardProps = {
+    shiftData: IShift;
+    isAdmin: boolean | undefined;
+    handleSelected: (id: string, checkStatus: boolean) => void;
+};
 
-export default function ShiftCard({ shiftData, isAdmin }: ShiftCardProps) {
-    const { name, startAt, address } = shiftData;
+export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftCardProps) {
+    const { name, startAt, address, _id } = shiftData;
 
     const dateString = new Date(startAt).toUTCString();
 
@@ -60,7 +64,12 @@ export default function ShiftCard({ shiftData, isAdmin }: ShiftCardProps) {
                                 <Button size="sm" variant="light" style={{ borderRadius: "50%" }}>
                                     <img src={editIcon} alt="edit shift icon" />
                                 </Button>
-                                <Form.Check aria-label="option 1" />
+                                <Form.Check
+                                    onChange={(e) => {
+                                        handleSelected(_id, e.target.checked);
+                                    }}
+                                    aria-label="Shift selection checkbox"
+                                />
                             </>
                         )}
                     </Stack>
