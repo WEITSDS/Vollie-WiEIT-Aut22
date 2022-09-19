@@ -62,8 +62,8 @@ export async function unassignUserFromShift(req: AssignmentUserDetails): Promise
 export interface IShift extends Document {
     _id: string;
     name: string;
-    startAt: Date;
-    endAt: Date;
+    startAt: string;
+    endAt: string;
     venue: string;
     address: string;
     description: string;
@@ -89,6 +89,20 @@ export async function createShift(shiftBody: object): Promise<ResponseWithData<I
     } catch (error) {
         console.error(error);
         return { success: false, message: "An unexpected error occured", data: null };
+    }
+}
+
+export async function updateShift(shiftBody: object, shiftId: string): Promise<ResponseWithData<IShift | null>> {
+    try {
+        const response = await post(`${ROOT_URL}/api/shifts/update/${shiftId}`, { ...shiftBody });
+        const resp = (await response.json()) as ResponseWithData<IShift>;
+        if (!isBasicResponse(resp)) {
+            throw new Error("Unexpected response format");
+        }
+        return { ...resp };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: "Error updating shift information", data: null };
     }
 }
 
