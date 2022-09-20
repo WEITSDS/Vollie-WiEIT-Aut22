@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&display=swap");
 
 .page-background {
-    height: 1024px;
+    height: 1440px;
     background-color: #fafafa;
 }
 
@@ -350,7 +350,7 @@
     height: 230px;
 }
 
-.calender-title {
+.calendar-title {
     font-family: "Open Sans";
     font-style: normal;
     font-weight: 600;
@@ -360,4 +360,12 @@
     margin-top: 6px;
     margin-left: 35px;
     color: #000000;
+}
+
+.calendar-title-divider {
+    margin-top: 10px !important;
+}
+
+.calender-title-box {
+    height: 50px;
 }

@@ -10,6 +10,8 @@ import dateIcon from "../assets/dateIcon.svg";
 import timeIcon from "../assets/timeIcon.svg";
 import backIcon from "../assets/backIcon.svg";
 import editIcon from "../assets/editIcon.svg";
+import categoryIcon from "../assets/categoryIcon.svg";
+import checkIcon from "../assets/checkIcon.svg";
 
 const ShiftInformation = () => {
     const { shiftId } = useParams();
@@ -143,7 +145,7 @@ const ShiftInformation = () => {
                                 </div>
                                 <div className="info-box">
                                     <div className="info-box-left-container">
-                                        <img className="venueIcon" src={venueIcon}></img>
+                                        <img className="venueIcon" src={categoryIcon}></img>
                                         <h2 className="info-title">Catergory</h2>
                                     </div>
 
@@ -153,7 +155,7 @@ const ShiftInformation = () => {
                                 </div>
                                 <div className="info-box">
                                     <div className="info-box-left-container">
-                                        <img className="venueIcon" src={venueIcon}></img>
+                                        <img className="venueIcon" src={checkIcon}></img>
                                         <h2 className="info-title">WWCC?</h2>
                                     </div>
 
@@ -228,8 +230,10 @@ const ShiftInformation = () => {
                             </table>
                         </div>
                         <hr className="table-divider" />
-                        <h1 className="calender-title">Calendar</h1>
-                        <hr className="calendar-title-divider" />
+                        <div className="calender-title-box">
+                            <h1 className="calendar-title">Calendar</h1>
+                            <hr className="calendar-title-divider" />
+                        </div>
                     </div>
                 </div>
             )}
