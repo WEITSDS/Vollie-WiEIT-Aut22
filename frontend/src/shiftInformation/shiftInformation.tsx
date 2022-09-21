@@ -258,9 +258,11 @@ const ShiftInformation = () => {
                             <div className="header-right-box-container">
                                 <div className="header-flex">
                                     <h1 className="right-box-title">Volunteer allocations</h1>
-                                    <button className="participants-btn" onClick={handleParticipants}>
-                                        Participants
-                                    </button>
+                                    {userObj?.isAdmin && (
+                                        <button className="participants-btn" onClick={handleParticipants}>
+                                            Participants
+                                        </button>
+                                    )}
                                 </div>
                             </div>
 

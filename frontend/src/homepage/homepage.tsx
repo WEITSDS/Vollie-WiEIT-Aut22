@@ -89,32 +89,38 @@ const HomePage = ({ shiftType }: HomePageProps) => {
                 <ModalBody className="form-body">
                     <div className="page-container">
                         <div className="header-container">
-                            <h1>Shifts</h1>
+                            <h1>
+                                {shiftType == "available" ? "Available" : shiftType == "myShifts" ? "My" : "All"} Shifts
+                            </h1>
                             <div className="btn-container">
-                                <button id="whiteButton" className={"admin-btn"} onClick={openAddShift}>
-                                    <img className="btn-icon" src={addShiftIcon} />
-                                    {"Add Shift"}
-                                </button>
-                                <button
-                                    id="whiteButton"
-                                    className={"admin-btn"}
-                                    onClick={() => {
-                                        void deleteSelected();
-                                    }}
-                                    disabled={isDeleteLoading}
-                                >
-                                    {isDeleteLoading ? (
-                                        <>
-                                            <LoadingSpinner />
-                                            {"Loading"}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <img className="btn-icon" src={deleteIcon} />
-                                            {"Delete Selected"}
-                                        </>
-                                    )}
-                                </button>
+                                {userData?.data?.isAdmin && (
+                                    <>
+                                        <button id="whiteButton" className={"admin-btn"} onClick={openAddShift}>
+                                            <img className="btn-icon" src={addShiftIcon} />
+                                            {"Add Shift"}
+                                        </button>
+                                        <button
+                                            id="whiteButton"
+                                            className={"admin-btn"}
+                                            onClick={() => {
+                                                void deleteSelected();
+                                            }}
+                                            disabled={isDeleteLoading}
+                                        >
+                                            {isDeleteLoading ? (
+                                                <>
+                                                    <LoadingSpinner />
+                                                    {"Loading"}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <img className="btn-icon" src={deleteIcon} />
+                                                    {"Delete Selected"}
+                                                </>
+                                            )}
+                                        </button>
+                                    </>
+                                )}
 
                                 <button id="whiteButton" className={"admin-btn"} onClick={handleFilter}>
                                     <img className="btn-icon" src={filterIcon} />
