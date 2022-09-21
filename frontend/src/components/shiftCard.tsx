@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button, Card, Form, Stack, Modal } from "react-bootstrap";
 import locationIcon from "../assets/location.svg";
 import calendarIcon from "../assets/calendar.svg";
@@ -5,7 +6,7 @@ import editIcon from "../assets/edit.svg";
 import { IShift } from "../api/shiftApi";
 import { Link } from "react-router-dom";
 import AttendanceListModal from "./attendanceList";
-import { useState } from "react";
+
 import AddShiftForm from "./addShiftForm";
 
 const latoFont = {

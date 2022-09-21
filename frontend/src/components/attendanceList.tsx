@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { AttendaceSummary } from "../api/shiftApi";
 import participantsIcon from "../assets/participants.svg";
@@ -8,9 +8,12 @@ import { useAttendanceList } from "../hooks/useAttendanceList";
 
 type AttendanceListProps = {
     shiftId: string;
+    showModal?: boolean;
+    hideButton?: boolean;
+    setShowModal?: () => void;
 };
 
-export default function AttendanceListModal({ shiftId }: AttendanceListProps) {
+export default function AttendanceListModal({ shiftId, showModal, setShowModal, hideButton }: AttendanceListProps) {
     /*For Testing Purposes, the Attendance List Modal/Table is mapped to the help button on the NAV bar
     To revert to previous state, 
     1) Link helpModal.ts to Navbar.TSX (All Under Components Folder)
@@ -20,7 +23,11 @@ export default function AttendanceListModal({ shiftId }: AttendanceListProps) {
     const handleClose = () => setModalBox(false);
     const handleShow = () => setModalBox(true);
 
-    const { data: attendanceListUsers, isLoading, isError } = useAttendanceList(shiftId || "");
+    const { data: attendanceListUsers, isLoading, isError, refetch } = useAttendanceList(shiftId || "");
+
+    useEffect(() => {
+        void refetch();
+    }, [showModal, modalBox]);
 
     //With typescript, we should be defining a type for the users variable because it's a non standard datatype.
     //We set this type prior to setting the default value. Where null is the default. since we cant set a type, User[], as the default
@@ -71,16 +78,19 @@ export default function AttendanceListModal({ shiftId }: AttendanceListProps) {
             {/* <Nav.Link href="#" onClick={handleShow} className="text-body me-1">
                 <i className="bi bi-question-circle" /> Help
             </Nav.Link> */}
-            <Button size="sm" onClick={handleShow} variant="light" style={{ borderRadius: "50%" }}>
-                <img src={participantsIcon} alt="participants icon" />
-            </Button>
+            {!hideButton && (
+                <Button size="sm" onClick={handleShow} variant="light" style={{ borderRadius: "50%" }}>
+                    <img src={participantsIcon} alt="participants icon" />
+                </Button>
+            )}
+
             {/* Table template for attendance list */}
             <Modal
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
-                show={modalBox}
-                onHide={handleClose}
+                show={showModal || modalBox}
+                onHide={setShowModal || handleClose}
                 backdrop="static"
             >
                 <Modal.Header closeButton>
@@ -103,7 +113,7 @@ export default function AttendanceListModal({ shiftId }: AttendanceListProps) {
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={handleClose}>Close</Button>
+                    <Button onClick={setShowModal || handleClose}>Close</Button>
                 </Modal.Footer>
             </Modal>
         </>
