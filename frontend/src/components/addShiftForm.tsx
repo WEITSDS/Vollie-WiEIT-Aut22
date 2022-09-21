@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createShift } from "../api/shiftApi";
+import { createShift, updateShift, IShift } from "../api/shiftApi";
 import LoadingSpinner from "../components/loadingSpinner";
 import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
@@ -8,6 +8,7 @@ import "./addShiftForm.css";
 type HandleClose = () => void;
 type formProps = {
     handleClose: HandleClose;
+    previousShiftFields?: IShift | undefined;
 };
 
 const shiftFormFields = {
@@ -27,9 +28,15 @@ const shiftFormFields = {
     numSprouts: 0,
 };
 
-const AddShiftForm: React.FC<formProps> = ({ handleClose }) => {
+const dateStringToHTML = (date: string) => {
+    const d = new Date(date);
+    const dateTimeLocalValue = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, -1);
+    return dateTimeLocalValue;
+};
+
+const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields }) => {
     const navigate = useNavigate();
-    const [formFields, setFormFields] = useState(shiftFormFields);
+    const [formFields, setFormFields] = useState(previousShiftFields || shiftFormFields);
     const [isLoading, setIsLoading] = useState(false);
     const [responseMsg, setresponseMsg] = useState("");
 
@@ -56,14 +63,22 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose }) => {
         try {
             setIsLoading(true);
             console.log(formFields);
-            const createResponse = await createShift(formFields);
-            setIsLoading(false);
-            console.log(createResponse);
-            if (createResponse.success && createResponse?.data?._id) {
-                handleClose();
-                navigate(`/shift/${createResponse.data._id}`);
+            let response;
+            if (previousShiftFields) {
+                // do update
+                response = await updateShift(formFields, previousShiftFields._id);
             } else {
-                setresponseMsg(createResponse.message || "");
+                // do create
+                response = await createShift(formFields);
+            }
+
+            setIsLoading(false);
+            console.log(response);
+            if (response.success && response?.data?._id) {
+                handleClose();
+                navigate(`/shift/${response.data._id}`);
+            } else {
+                setresponseMsg(response.message || "");
             }
         } catch (error) {
             console.log(error);
@@ -77,28 +92,38 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose }) => {
                     <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
                 </div>
                 <label className="title">Title</label>
-                <input type="text" name="name" onChange={handleChange} />
+                <input type="text" defaultValue={formFields.name} name="name" onChange={handleChange} />
 
                 <label>Start Date</label>
-                <input type="datetime-local" name="startAt" onChange={handleChange} />
+                <input
+                    type="datetime-local"
+                    defaultValue={formFields.startAt ? dateStringToHTML(formFields.startAt) : undefined}
+                    name="startAt"
+                    onChange={handleChange}
+                />
 
                 <label>End Date</label>
-                <input type="datetime-local" name="endAt" onChange={handleChange} />
+                <input
+                    type="datetime-local"
+                    defaultValue={formFields.startAt ? dateStringToHTML(formFields.endAt) : undefined}
+                    name="endAt"
+                    onChange={handleChange}
+                />
 
                 <label>Venue</label>
-                <input type="text" name="venue" onChange={handleChange} />
+                <input type="text" defaultValue={formFields.venue} name="venue" onChange={handleChange} />
 
                 <label>Address</label>
-                <input type="text" name="address" onChange={handleChange} />
+                <input type="text" defaultValue={formFields.address} name="address" onChange={handleChange} />
 
                 <label>Description</label>
-                <textarea name="description" onChange={handleChange} />
+                <textarea name="description" defaultValue={formFields.description} onChange={handleChange} />
 
                 <label>Notes</label>
-                <input type="text" name="notes" onChange={handleChange} />
+                <input type="text" defaultValue={formFields.notes} name="notes" onChange={handleChange} />
 
                 <label>Category</label>
-                <Form.Select onChange={handleChange} aria-label="Shift category" defaultValue={"Other"}>
+                <Form.Select onChange={handleChange} aria-label="Shift category" defaultValue={formFields.category}>
                     <option value="Other">Other</option>
                     <option value="School Outreach">School Outreach</option>
                     <option value="Event">Event</option>
@@ -122,7 +147,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose }) => {
                             type="number"
                             name="numGeneralVolunteers"
                             min={0}
-                            defaultValue={0}
+                            defaultValue={formFields.numGeneralVolunteers}
                             onChange={handleChange}
                         />
                     </div>
@@ -132,7 +157,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose }) => {
                             type="number"
                             name="numUndergradAmbassadors"
                             min={0}
-                            defaultValue={0}
+                            defaultValue={formFields.numUndergradAmbassadors}
                             onChange={handleChange}
                         />
                     </div>
@@ -142,13 +167,19 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose }) => {
                             type="number"
                             name="numPostgradAmbassadors"
                             min={0}
-                            defaultValue={0}
+                            defaultValue={formFields.numPostgradAmbassadors}
                             onChange={handleChange}
                         />
                     </div>
                     <div className="type">
                         <label>Staff ambassadors:</label>
-                        <input type="number" name="numSprouts" min={0} defaultValue={0} onChange={handleChange} />
+                        <input
+                            type="number"
+                            name="numSprouts"
+                            min={0}
+                            defaultValue={formFields.numStaffAmbassadors}
+                            onChange={handleChange}
+                        />
                     </div>
                     <div className="type">
                         <label>SPROUT:</label>
@@ -156,7 +187,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose }) => {
                             type="number"
                             name="numStaffAmbassadors"
                             min={0}
-                            defaultValue={0}
+                            defaultValue={formFields.numSprouts}
                             onChange={handleChange}
                         />
                     </div>
@@ -183,7 +214,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose }) => {
                                 handleSubmit().catch((err) => console.log(err));
                             }}
                         >
-                            Add
+                            {previousShiftFields ? "Update" : "Add"}
                         </button>
                     )}
                     {isLoading && (

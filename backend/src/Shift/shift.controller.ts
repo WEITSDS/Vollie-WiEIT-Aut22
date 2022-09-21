@@ -71,6 +71,39 @@ export const createShift = async (req: Request, res: Response) => {
     }
 };
 
+export const updateShift = async (req: Request, res: Response) => {
+    // Get user obj to check if admin
+    const userObj = await User.findOne({ _id: req.session.user?._id });
+
+    if (!userObj || !userObj?.isAdmin) {
+        handleError(logger, res, null, "Unauthorized", 401);
+        return;
+    }
+
+    const shiftId: string = req.params.shiftId;
+
+    if (!shiftId) {
+        handleError(logger, res, null, "No shift ID provided for update", 401);
+        return;
+    }
+
+    const shiftFields = req.body as IShift;
+
+    try {
+        const updatedShift = await Shift.findOneAndUpdate({ _id: shiftId }, shiftFields);
+
+        res.status(200).json({
+            message: "Shift updated",
+            data: updatedShift,
+            success: true,
+        });
+        return;
+    } catch (error) {
+        handleError(logger, res, error, "Shift update failed");
+        return;
+    }
+};
+
 export const deleteShift = async (req: Request, res: Response) => {
     try {
         // Get user obj to check if admin

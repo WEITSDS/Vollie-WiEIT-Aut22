@@ -10,11 +10,13 @@ import {
     getAvailableShifts,
     getShiftById,
     getShiftAttendanceList,
+    updateShift,
 } from "./shift.controller";
 
 const router = express.Router();
 
 router.post("/create", wrapAsync(createShift));
+router.post("/update/:shiftId", wrapAsync(updateShift));
 router.patch("/:shiftid/assign-user/:userid", wrapAsync(assignUser));
 router.patch("/:shiftid/unassign-user/:userid", wrapAsync(removeUser));
 router.delete("/:shiftid", wrapAsync(deleteShift));
