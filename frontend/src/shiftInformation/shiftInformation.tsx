@@ -1,3 +1,4 @@
+// import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { useParams } from "react-router-dom";
@@ -42,14 +43,12 @@ const ShiftInformation = () => {
     const {
         name,
         startAt,
-
-        // endAt,
+        endAt,
         venue,
         address,
-
         description,
+        hours,
         notes,
-        // users,
         category,
         requiresWWCC,
         numGeneralVolunteers,
@@ -58,9 +57,6 @@ const ShiftInformation = () => {
         numStaffAmbassadors,
         numSprouts,
     } = data?.data || {};
-
-    const dateStringStart = new Date(startAt).toUTCString();
-    // const dateStringEnd = new Date(endAt).toUTCString();
 
     const handleBack = () => {
         console.log("");
@@ -105,6 +101,9 @@ const ShiftInformation = () => {
             console.log("error assigning user", error);
         }
     };
+
+    const startDate = new Date(startAt);
+    const endDate = new Date(endAt);
 
     return (
         <div className="page-background">
@@ -171,22 +170,37 @@ const ShiftInformation = () => {
                                     <div className="info-box">
                                         <div className="info-box-left-container">
                                             <img className="dateIcon" src={dateIcon}></img>
-                                            <h2 className="info-title">Date</h2>
+                                            <h2 className="info-title">Event Start</h2>
                                         </div>
 
                                         <div className="info-box-right-container">
-                                            <h3 className="info-body">{dateStringStart}</h3>
+                                            <h3 className="info-body">
+                                                {startDate.toLocaleDateString()} {startDate.toLocaleTimeString()}
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <div className="info-box">
+                                        <div className="info-box-left-container">
+                                            <img className="dateIcon" src={dateIcon}></img>
+                                            <h2 className="info-title">Event End</h2>
+                                        </div>
+
+                                        <div className="info-box-right-container">
+                                            <h3 className="info-body">
+                                                {endDate.toLocaleDateString()} {endDate.toLocaleTimeString()}
+                                            </h3>
                                         </div>
                                     </div>
 
                                     <div className="info-box">
                                         <div className="info-box-left-container">
                                             <img className="timeIcon" src={timeIcon}></img>
-                                            <h2 className="info-title">Hours</h2>
+                                            <h2 className="info-title">Work Hours</h2>
                                         </div>
 
                                         <div className="info-box-right-container">
-                                            <h3 className="info-body">hours</h3>
+                                            <h3 className="info-body">{hours} hours</h3>
                                         </div>
                                     </div>
                                     <div className="info-box">

@@ -10,6 +10,7 @@ const ShiftSchema: Schema = new Schema(
         venue: { type: String, required: true },
         address: { type: String, required: true },
         description: { type: String, default: "" },
+        hours: { type: Number, default: 0 },
         notes: { type: String, default: "" },
         users: [{ type: mongoose.Types.ObjectId, ref: "User", default: [] }],
         category: { type: String, default: "Other" },

@@ -1,4 +1,4 @@
-import "react-big-calendar/lib/css/react-big-calendar.css";
+// import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./homepage.css";
 import { NavigationBar } from "../components/navbar";
 import { WEITBackground } from "../components/background";

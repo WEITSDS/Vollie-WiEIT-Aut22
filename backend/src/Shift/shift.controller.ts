@@ -339,11 +339,11 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
         const userRole = userObj?.volunteerType;
         const targetShiftAttribute = getAttributeFromVolunteerType(userRole);
         const numVolunteerQuery = { [targetShiftAttribute]: { $gt: 0 } };
-        // numVolunteerQuery[`${targetShiftAttribute}`] = { $gt: 0 };
 
-        // console.log(numVolunteerQuery);
-
-        const availableShifts = await Shift.find({ ...numVolunteerQuery }).sort({ createdAt: -1 });
+        // Only show events that are UPCOMING and sort by upcoming start at dates
+        const availableShifts = await Shift.find({ ...numVolunteerQuery, startAt: { $gte: Date.now() } }).sort({
+            startAt: 1,
+        });
 
         res.status(200).json({
             message: "success",
