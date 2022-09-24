@@ -1,0 +1,19 @@
+.remove-btn { 
+    background: #c13d3d;
+    border-radius: 7px;
+    height: 35px;
+    width: 35px;
+    border-style: none;
+    margin-left: 18%;
+}
+
+.remove-btn:hover {
+    background: #a13333;
+}
+
+.remove-icon {
+    height: 16px;
+    width: 16px;
+    margin-bottom: 3.5px;
+    border-radius: 0px;
+}

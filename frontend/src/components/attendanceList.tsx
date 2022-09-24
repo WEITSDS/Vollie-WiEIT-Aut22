@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Nav } from "react-bootstrap";
 import { AttendaceSummary } from "../api/shiftApi";
 import participantsIcon from "../assets/participants.svg";
 //import AttendanceList from "./attendanceList.json";
 import { useAttendanceList } from "../hooks/useAttendanceList";
+import removeIcon from "../assets/removeIcon.svg";
 // import axios from "axios";
+import "./attendanceList.css";
 
 type AttendanceListProps = {
     shiftId: string;
@@ -65,9 +67,16 @@ export default function AttendanceListModal({ shiftId, showModal, setShowModal, 
             <tr key={user._id}>
                 <th scope="row">{index + 1}</th>
                 <td>
-                    {user.firstName}&nbsp;{user.lastName}
+                    <Nav.Link href="/profile">
+                        {user.firstName}&nbsp;{user.lastName}
+                    </Nav.Link>
                 </td>
                 <td>{user.volunteerType}</td>
+                <td>
+                    <button className="remove-btn">
+                        <img className="remove-icon" src={removeIcon}></img>
+                    </button>
+                </td>
             </tr>
         ));
     };
@@ -106,6 +115,7 @@ export default function AttendanceListModal({ shiftId, showModal, setShowModal, 
                                     <th scope="col">#</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Volunteer Type</th>
+                                    <th scope="col">Remove User</th>
                                 </tr>
                             </thead>
                             <tbody>{displayAttendanceList(attendanceListUsers?.data || [])}</tbody>
