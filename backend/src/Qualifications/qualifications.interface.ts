@@ -1,4 +1,6 @@
 import { Document } from "mongoose";
+import { IQualificationType } from "../QualificationType/qualificationType.interface";
+import { IUser } from "../User/user.interface";
 
 export function isIBasicQualification(args: unknown): args is IBasicQualification {
     const p = args as Partial<IBasicQualification>;
@@ -17,7 +19,9 @@ export interface IBasicQualification {
     description: string;
     filePath: string;
     fileId: string;
-    user: string;
+    user: IUser["_id"];
+    qualificationType: IQualificationType["_id"];
+    approvalStatus: boolean;
 }
 
 export interface IQualification extends Document, IBasicQualification {}
@@ -27,6 +31,8 @@ export interface QualificationSummary {
     title: string;
     description: string;
     filePath: string;
+    qualificationType: IQualificationType["_id"];
+    approvalStatus: boolean;
 }
 
 export function mapQualificationToQualificationSummary({
@@ -34,6 +40,15 @@ export function mapQualificationToQualificationSummary({
     title,
     description,
     filePath,
+    qualificationType,
+    approvalStatus,
 }: IQualification): QualificationSummary {
-    return { title, description, filePath, _id: (_id as string) || "" };
+    return {
+        title,
+        description,
+        filePath,
+        _id: (_id as string) || "",
+        qualificationType: qualificationType as string,
+        approvalStatus,
+    };
 }

@@ -12,24 +12,25 @@ const ShiftSchema: Schema = new Schema(
         description: { type: String, default: "" },
         hours: { type: Number, default: 0 },
         notes: { type: String, default: "" },
-        users: [{
-            user: { type: mongoose.Types.ObjectId, ref: "User", default: [] },
-            approved: { type: Boolean, default: false },
-        }],
+        users: [
+            {
+                user: { type: mongoose.Types.ObjectId, ref: "User", default: [] },
+                chosenQualification: { type: mongoose.Types.ObjectId, ref: "QualificationType", required: true },
+            },
+        ],
         category: { type: String, default: "Other" },
-        requiredQualifications: [{
-            qualificationType: { type: String, enum: ["General Volunteer", "Sprout", "Undergrad Ambassador", "Postgrad Ambassador", "Staff Ambassador"], default: []},
-        }],
-        requiresWWCC: { type: Boolean, default: false }, //use requiredQualifications instead of this?
-        volunteerTypes: [{
-            type: { type: String, enum: ["General Volunteer", "Sprout", "Undergrad Ambassador", "Postgrad Ambassador", "Staff Ambassador"]},
-            number: { type: Number, default: 0 },
-        }], //Use volunteerTypes?? instead of below
-        //numGeneralVolunteers: { type: Number, default: 0 },
-        //numUndergradAmbassadors: { type: Number, default: 0 },
-        //numPostgradAmbassadors: { type: Number, default: 0 },
-        //numStaffAmbassadors: { type: Number, default: 0 },
-        //numSprouts: { type: Number, default: 0 },
+        requiredQualifications: [
+            {
+                qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType", required: true },
+                numRequired: { type: Number, default: 0 },
+            },
+        ],
+        volunteerTypeAllocations: [
+            {
+                type: { type: mongoose.Types.ObjectId, ref: "VolunteerType", required: true },
+                numMembers: { type: Number, default: 0 },
+            },
+        ],
     },
     {
         timestamps: true,
