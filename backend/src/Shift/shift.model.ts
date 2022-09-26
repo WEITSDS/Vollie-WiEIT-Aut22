@@ -12,14 +12,24 @@ const ShiftSchema: Schema = new Schema(
         description: { type: String, default: "" },
         hours: { type: Number, default: 0 },
         notes: { type: String, default: "" },
-        users: [{ type: mongoose.Types.ObjectId, ref: "User", default: [] }],
+        users: [{
+            user: { type: mongoose.Types.ObjectId, ref: "User", default: [] },
+            approved: { type: Boolean, default: false },
+        }],
         category: { type: String, default: "Other" },
-        requiresWWCC: { type: Boolean, default: false },
-        numGeneralVolunteers: { type: Number, default: 0 },
-        numUndergradAmbassadors: { type: Number, default: 0 },
-        numPostgradAmbassadors: { type: Number, default: 0 },
-        numStaffAmbassadors: { type: Number, default: 0 },
-        numSprouts: { type: Number, default: 0 },
+        requiredQualifications: [{
+            qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType", default: []},
+        }],
+        requiresWWCC: { type: Boolean, default: false }, //use requiredQualifications instead of this?
+        volunteerTypes: [{
+            type: { type: String, enum: ["General Volunteer", "Sprout", "Undergrad Ambassador", "Postgrad Ambassador", "Staff Ambassador"]},
+            number: { type: Number, default: 0 },
+        }], //Use volunteerTypes?? instead of below
+        //numGeneralVolunteers: { type: Number, default: 0 },
+        //numUndergradAmbassadors: { type: Number, default: 0 },
+        //numPostgradAmbassadors: { type: Number, default: 0 },
+        //numStaffAmbassadors: { type: Number, default: 0 },
+        //numSprouts: { type: Number, default: 0 },
     },
     {
         timestamps: true,

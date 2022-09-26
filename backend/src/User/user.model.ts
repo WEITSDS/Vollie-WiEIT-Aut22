@@ -13,10 +13,17 @@ const UserSchema: Schema = new Schema(
         lastLogin: { type: Number, required: true },
         verified: { type: Boolean, default: false, required: true },
         isAdmin: { type: Boolean, default: false, required: true },
-        qualifications: [{ type: mongoose.Types.ObjectId, ref: "Qualification" }],
+        qualifications: [{
+            qualification: { type: mongoose.Types.ObjectId, ref: "Qualification" },
+            approved: { type: Boolean, default: false},
+        }],
         tags: [{ type: mongoose.Types.ObjectId, ref: "Tag" }],
-        shifts: [{ type: mongoose.Types.ObjectId, ref: "Shift" }],
-        volunteerType: { type: String, default: "generalVolunteer", required: true },
+        shifts: [{
+            shift: { type: mongoose.Types.ObjectId, ref: "Shift" },
+            approved: { type: Boolean, default: false },
+            volunteeType: { type: String, enum: ["General Volunteer", "Sprout", "Undergrad Ambassador", "Postgrad Ambassador", "Staff Ambassador"], default: "General Volunteer", requred: true}
+        }],
+        //volunteerTypes: { type: String, default: "generalVolunteer", required: true }, -Hector, remove this because person has to approve user as selected type for shift?
     },
     {
         timestamps: true,
