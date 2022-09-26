@@ -18,7 +18,7 @@ const ShiftSchema: Schema = new Schema(
         }],
         category: { type: String, default: "Other" },
         requiredQualifications: [{
-            qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType", default: []},
+            qualificationType: { type: String, enum: ["General Volunteer", "Sprout", "Undergrad Ambassador", "Postgrad Ambassador", "Staff Ambassador"], default: []},
         }],
         requiresWWCC: { type: Boolean, default: false }, //use requiredQualifications instead of this?
         volunteerTypes: [{
