@@ -18,7 +18,7 @@ const ShiftSchema: Schema = new Schema(
                 chosenQualification: { type: mongoose.Types.ObjectId, ref: "QualificationType", required: true },
             },
         ],
-        category: { type: String, default: "Other" },
+        category: { type: String, enum: ["School Outreach", "Event", "Committee", "Other"], default: "Other" },
         requiredQualifications: [
             {
                 qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType", required: true },
