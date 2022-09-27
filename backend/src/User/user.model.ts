@@ -17,14 +17,15 @@ const UserSchema: Schema = new Schema(
         tags: [{ type: mongoose.Types.ObjectId, ref: "Tag" }],
         shifts: [
             {
-                shiftId: { type: mongoose.Types.ObjectId, ref: "Shift" },
-                chosenQualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType", required: true },
+                shift: { type: mongoose.Types.ObjectId, ref: "Shift" },
+                chosenQualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType", required: true }, //Do we need this or can we just return it with the shift?
+                volunteerType: { type: mongoose.Types.ObjectId, ref: "VolunteerType" } // as above
             },
         ],
         volunteerTypes: [
             {
                 type: { type: mongoose.Types.ObjectId, ref: "VolunteerType" },
-                approvalStatus: { type: Boolean, default: false },
+                approved: { type: Boolean, default: false },
             },
         ],
     },

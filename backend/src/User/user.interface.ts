@@ -4,7 +4,10 @@ import {
     mapQualificationToQualificationSummary,
     QualificationSummary,
 } from "../Qualifications/qualifications.interface";
+import { IQualificationType } from "../QualificationType/qualificationType.interface";
+import { IShift } from "../Shift/shift.interface";
 import { convertTagToTagSummary, IBasicTag, ITag } from "../Tag/tag.interface";
+import { IVolunteerType } from "../VolunteerType/volunteerType.interface";
 
 export interface IBasicUser {
     email: string;
@@ -22,7 +25,19 @@ export interface IUser extends Document, IBasicUser {
     tags: ITag[];
     createdAt: Date;
     volunteerType: string;
-    shifts: string[];
+    shifts: IUserShift[];
+    volunteerTypes: IUserVolunteerType[]
+}
+
+export interface IUserVolunteerType {
+    type: IVolunteerType;
+    approved: Boolean;
+}
+
+export interface IUserShift {
+    shift: IShift;
+    chosenQualificationType: IQualificationType;
+    volunteerType: IVolunteerType;
 }
 
 export function isIBasicUser(args: unknown): args is IBasicUser {
@@ -47,8 +62,8 @@ export interface UserSummary {
     verified: boolean;
     isAdmin: boolean;
     tags: IBasicTag[];
-    volunteerType: string;
-    shifts: string[];
+    volunteerTypes: IUserVolunteerType[];
+    shifts: IUserShift[];
 }
 
 export function mapUserToUserSummary({
@@ -62,7 +77,7 @@ export function mapUserToUserSummary({
     createdAt,
     isAdmin,
     tags,
-    volunteerType,
+    volunteerTypes,
     shifts,
 }: IUser): UserSummary {
     return {
@@ -76,7 +91,7 @@ export function mapUserToUserSummary({
         registeredAt: createdAt.getTime(),
         isAdmin,
         tags: tags ? tags.map(convertTagToTagSummary) : [],
-        volunteerType,
+        volunteerTypes,
         shifts,
     };
 }
