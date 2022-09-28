@@ -1,18 +1,17 @@
 import { Document } from "mongoose";
 import { IQualification } from "../Qualifications/qualifications.interface";
-import { IQualificationType } from "../QualificationType/qualificationType.interface";
 import { IUser } from "../User/user.interface";
 import { IVolunteerType } from "../VolunteerType/volunteerType.interface";
 
 export interface IShift extends Document {
-    name: String;
+    name: string;
     startAt: Date;
     endAt: Date;
-    venue: String;
-    address: String;
-    description: String;
-    hours: Number;
-    notes: String;
+    venue: string;
+    address: string;
+    description: string;
+    hours: number;
+    notes: string;
     users: Array<IShiftUser>;
     category: "School Outreach" | "Event" | "Committee" | "Other";
     requiredQualifications: Array<IShiftRequiredQualification>;
@@ -21,21 +20,20 @@ export interface IShift extends Document {
 
 export interface IShiftRequiredQualification {
     qualificationType: IQualification["_id"];
-    numRequired: Number;
+    numRequired: number;
 }
 
 export interface IShiftQualificationAllocations {
     type: IVolunteerType["_id"];
-    numMembers: Number
+    numMembers: number;
 }
 
 export interface IShiftUser {
     user: IUser["_id"];
-    chosenQualification: IQualificationType["_id"];
-    volunteerType: IShiftUserVolunteerType;
+    chosenVolunteerType: IVolunteerType["_id"];
 }
 
 export interface IShiftUserVolunteerType {
     volunteerType: IVolunteerType;
-    approved: Boolean;
+    approved: boolean;
 }

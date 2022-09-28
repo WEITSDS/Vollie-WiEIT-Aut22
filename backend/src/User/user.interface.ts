@@ -4,7 +4,6 @@ import {
     mapQualificationToQualificationSummary,
     QualificationSummary,
 } from "../Qualifications/qualifications.interface";
-import { IQualificationType } from "../QualificationType/qualificationType.interface";
 import { IShift } from "../Shift/shift.interface";
 import { convertTagToTagSummary, IBasicTag, ITag } from "../Tag/tag.interface";
 import { IVolunteerType } from "../VolunteerType/volunteerType.interface";
@@ -25,19 +24,13 @@ export interface IUser extends Document, IBasicUser {
     tags: ITag[];
     createdAt: Date;
     volunteerType: string;
-    shifts: IUserShift[];
-    volunteerTypes: IUserVolunteerType[]
+    shifts: Array<IShift["_id"]>;
+    volunteerTypes: IUserVolunteerType[];
 }
 
 export interface IUserVolunteerType {
     type: IVolunteerType;
-    approved: Boolean;
-}
-
-export interface IUserShift {
-    shift: IShift;
-    chosenQualificationType: IQualificationType;
-    volunteerType: IVolunteerType;
+    approved: boolean;
 }
 
 export function isIBasicUser(args: unknown): args is IBasicUser {
@@ -63,7 +56,7 @@ export interface UserSummary {
     isAdmin: boolean;
     tags: IBasicTag[];
     volunteerTypes: IUserVolunteerType[];
-    shifts: IUserShift[];
+    shifts: Array<IShift["_id"]>;
 }
 
 export function mapUserToUserSummary({
