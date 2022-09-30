@@ -12,15 +12,15 @@
 }
 
 .left-box-container {
-    width: 745px;
-    height: 95%;
     width: 45%;
+    height: 70%;
     margin-top: 19px;
     background: #ffffff;
     border: 1px solid #bab7b7;
     border-radius: 5px;
 }
 .right-box-container {
+    width: 45%;
     margin-left: 19px;
     margin-top: 19px;
     background: #ffffff;
