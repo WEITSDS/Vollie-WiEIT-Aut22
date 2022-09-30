@@ -14,13 +14,13 @@
 .left-box-container {
     width: 745px;
     height: 95%;
+    width: 45%;
     margin-top: 19px;
     background: #ffffff;
     border: 1px solid #bab7b7;
     border-radius: 5px;
 }
 .right-box-container {
-    width: 745px;
     margin-left: 19px;
     margin-top: 19px;
     background: #ffffff;
@@ -33,11 +33,12 @@
     flex-direction: column;
     justify-content: center;
     height: 70px;
+    width: auto;
 }
 
 .header-flex {
     display: flex;
-    width: 662px;
+    width: 90%;
     align-self: center;
     margin-top: 20px;
     justify-content: space-between;
@@ -130,6 +131,8 @@
 .information-container {
     display: flex;
     flex-direction: column;
+
+    width: 90%;
 }
 
 .info-box {
@@ -151,11 +154,11 @@
     height: 25px;
     left: 88px;
     top: 218px;
-    margin-left: 42px;
+    margin-left: 30px;
     background: #ffffff;
     border: 1px solid #dcdee1;
     border-radius: 5px 0px 0px 5px;
-    width: 120px;
+    width: 25%;
 }
 
 .info-box-right-container {
@@ -164,7 +167,7 @@
     background: #ffffff;
     border: 1px solid #dcdee1;
     border-radius: 0px 5px 5px 0px;
-    width: 544px;
+    width: 70%;
     height: 25px;
 }
 
@@ -186,7 +189,7 @@
 }
 
 .info-title {
-    width: 47px;
+    width: auto;
     height: 18px;
     left: 126px;
     top: 222px;
@@ -202,7 +205,7 @@
 }
 
 .info-body {
-    width: 400px;
+    width: auto;
     height: 15px;
     margin-bottom: 0px !important;
     margin-left: 4px;
@@ -222,7 +225,7 @@
 }
 
 .description-body-container {
-    width: 667px;
+    width: 90%;
     height: 241px;
 }
 
