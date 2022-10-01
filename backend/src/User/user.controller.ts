@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 import { Logger } from "tslog";
 import * as sessionManager from "../Common/middleware/sessionManagement";
 import { handleError } from "../utility";
-import { isIBasicUser, IUser, mapUserToUserSummary } from "./user.interface";
+import { isIBasicUser, IUser, IUserVolunteerType, mapUserToUserSummary } from "./user.interface";
+import VolunteerType from "../VolunteerType/volunteerType.model";
 import bcrypt from "bcrypt";
 
 const logger = new Logger({ name: "user.controller" });
@@ -130,22 +131,40 @@ export const setUserPassword = (req: Request, res: Response, _next: NextFunction
  * If a user has an existing account then throw an error to state that
  * Else send a request to the backend to sign them up
  */
-export const createUser = async (req: Request, res: Response): Promise<any> => {
-    const userFields = req.body as IUser;
-    if (!isIBasicUser(userFields)) {
-        return res.status(400).json({ message: "New user request body was not valid", success: false });
-    }
-
+export const createUser = async (req: Request, res: Response): Promise<void> => {
     try {
+        const userFields = req.body as IUser;
+        if (!isIBasicUser(userFields)) {
+            res.status(400).json({ message: "New user request body was not valid", success: false });
+            return;
+        }
         const existingUser = await User.findOne({ email: userFields.email });
 
         if (existingUser) {
             logger.warn(existingUser);
-            return res.status(400).json({
+            res.status(400).json({
                 message: "User of that email already exists",
                 success: false,
                 data: null,
             });
+            return;
+        }
+
+        // Set the volunteer types (also set approved status if that type requires admin approval or not)
+        const newVolunteerTypes = [] as Array<IUserVolunteerType>;
+
+        if (userFields?.volunteerTypes && userFields?.volunteerTypes instanceof Array) {
+            for (let index = 0; index < userFields?.volunteerTypes.length; index++) {
+                const vType = userFields?.volunteerTypes[index];
+                if (!vType.type) continue;
+                const targetVolType = await VolunteerType.findById(vType.type);
+                if (targetVolType) {
+                    newVolunteerTypes.push({
+                        type: targetVolType._id as string,
+                        approved: !targetVolType?.requiresApproval,
+                    });
+                }
+            }
         }
 
         const newUser = new User({
@@ -154,20 +173,20 @@ export const createUser = async (req: Request, res: Response): Promise<any> => {
             firstName: userFields.firstName,
             lastName: userFields.lastName,
             lastLogin: 0,
-            volunteerType: userFields.volunteerType,
+            volunteerTypes: newVolunteerTypes,
         });
 
         newUser.id = new mongoose.Types.ObjectId();
-        logger.info(newUser);
-
         const createdUser = await newUser.save();
-        return res.status(200).json({
+        res.status(200).json({
             message: "User register success",
             data: mapUserToUserSummary(createdUser),
             success: true,
         });
+        return;
     } catch (err) {
-        return handleError(logger, res, err, "User registration failed");
+        handleError(logger, res, err, "User registration failed");
+        return;
     }
 };
 
@@ -414,5 +433,52 @@ export const getOwnUser = async (req: Request, res: Response): Promise<void> => 
         res.status(200).json({ message: "Got own user", data: mapUserToUserSummary(user), success: true });
     } catch (err) {
         handleError(logger, res, err, "Get own user failed");
+    }
+};
+
+// Sets the approval status of a particular volunteer type inside the user obj. Checks to make sure that type exists and that user has that vol type.
+export const setApprovalVolunteerTypeForUser = async (req: Request, res: Response) => {
+    try {
+        // Get user obj to check if admin
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+
+        if (!userObj || !userObj?.isAdmin) {
+            handleError(logger, res, null, "Unauthorized", 401);
+            return;
+        }
+
+        // Ensure this user has this qualification in the first place (redundant check but ensures that consumers of API provide a corresponding qualID and userID)
+        const volunteerType = await VolunteerType.findById(req.params.volunteerTypeID);
+        if (!req.params.volunteerTypeID || !volunteerType) {
+            handleError(logger, res, null, "Volunteer Type not found.", 404);
+            return;
+        }
+
+        const targetUser = await User.findOne({ _id: req.params.userID });
+        if (!req.params.userID || !targetUser) {
+            handleError(logger, res, null, "User not found.", 404);
+            return;
+        }
+
+        const userHasVolType = targetUser.volunteerTypes.some((vType) => vType.type === volunteerType._id);
+        if (!userHasVolType) {
+            handleError(logger, res, null, "User does not have this volunteer type.", 404);
+            return;
+        }
+
+        const targetVolTypeInUserIdx = targetUser.volunteerTypes.findIndex(
+            (volType) => volType.type === volunteerType._id
+        );
+        targetUser.volunteerTypes[targetVolTypeInUserIdx].approved = req.params.status === "approve";
+
+        const saveResult = await targetUser.save();
+
+        res.status(200).json({
+            message: "Successfully approved volunteer type for user",
+            data: saveResult,
+            success: true,
+        });
+    } catch (err) {
+        handleError(logger, res, err, "Update qualification failed");
     }
 };

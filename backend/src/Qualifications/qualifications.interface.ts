@@ -21,7 +21,7 @@ export interface IBasicQualification {
     fileId: string;
     user: IUser["_id"];
     qualificationType: IQualificationType["_id"];
-    approvalStatus: boolean;
+    approved: boolean;
 }
 
 export interface IQualification extends Document, IBasicQualification {}
@@ -32,7 +32,7 @@ export interface QualificationSummary {
     description: string;
     filePath: string;
     qualificationType: IQualificationType["_id"];
-    approvalStatus: boolean;
+    approved: boolean;
 }
 
 export function mapQualificationToQualificationSummary({
@@ -41,7 +41,7 @@ export function mapQualificationToQualificationSummary({
     description,
     filePath,
     qualificationType,
-    approvalStatus,
+    approved,
 }: IQualification): QualificationSummary {
     return {
         title,
@@ -49,6 +49,6 @@ export function mapQualificationToQualificationSummary({
         filePath,
         _id: (_id as string) || "",
         qualificationType: qualificationType as string,
-        approvalStatus,
+        approved,
     };
 }

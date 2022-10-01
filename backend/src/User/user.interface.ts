@@ -1,8 +1,8 @@
 import { Document } from "mongoose";
 import {
     IQualification,
-    mapQualificationToQualificationSummary,
-    QualificationSummary,
+    // mapQualificationToQualificationSummary,
+    // QualificationSummary,
 } from "../Qualifications/qualifications.interface";
 import { IShift } from "../Shift/shift.interface";
 import { convertTagToTagSummary, IBasicTag, ITag } from "../Tag/tag.interface";
@@ -20,7 +20,7 @@ export interface IUser extends Document, IBasicUser {
     verified: boolean;
     isAdmin: boolean;
     lastLogin: number;
-    qualifications: IQualification[];
+    qualifications: Array<IQualification["_id"]>;
     tags: ITag[];
     createdAt: Date;
     volunteerType: string;
@@ -29,7 +29,7 @@ export interface IUser extends Document, IBasicUser {
 }
 
 export interface IUserVolunteerType {
-    type: IVolunteerType;
+    type: IVolunteerType["_id"];
     approved: boolean;
 }
 
@@ -51,11 +51,11 @@ export interface UserSummary {
     email: string;
     lastLogin: number;
     registeredAt: number;
-    qualifications: QualificationSummary[];
+    qualifications: Array<IQualification["_id"]>;
     verified: boolean;
     isAdmin: boolean;
     tags: IBasicTag[];
-    volunteerTypes: IUserVolunteerType[];
+    volunteerTypes: Array<IUserVolunteerType>;
     shifts: Array<IShift["_id"]>;
 }
 
@@ -80,7 +80,7 @@ export function mapUserToUserSummary({
         _id: _id || "",
         email,
         verified,
-        qualifications: qualifications.map(mapQualificationToQualificationSummary),
+        qualifications,
         registeredAt: createdAt.getTime(),
         isAdmin,
         tags: tags ? tags.map(convertTagToTagSummary) : [],
@@ -93,7 +93,7 @@ export interface AttendaceSummary {
     firstName: string;
     lastName: string;
     email: string;
-    volunteerType: string;
+    volunteerTypes: Array<IUserVolunteerType>;
 }
 
 export function mapUserToAttendanceSummary(userData: IUser): AttendaceSummary {
@@ -102,6 +102,6 @@ export function mapUserToAttendanceSummary(userData: IUser): AttendaceSummary {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
-        volunteerType: userData.volunteerType,
+        volunteerTypes: userData.volunteerTypes,
     };
 }
