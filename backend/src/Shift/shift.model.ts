@@ -23,12 +23,14 @@ const ShiftSchema: Schema = new Schema(
             {
                 qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType", required: true },
                 numRequired: { type: Number, default: 0 },
+                currentNum: { type: Number, default: 0 }, // represents how many people in the shift have this qualification
             },
         ],
         volunteerTypeAllocations: [
             {
                 type: { type: mongoose.Types.ObjectId, ref: "VolunteerType", required: true },
                 numMembers: { type: Number, default: 0 },
+                currentNum: { type: Number, default: 0 }, // represents how many people in the shift have this volunteer type
             },
         ],
     },

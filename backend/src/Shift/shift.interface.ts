@@ -21,11 +21,13 @@ export interface IShift extends Document {
 export interface IShiftRequiredQualification {
     qualificationType: IQualification["_id"];
     numRequired: number;
+    currentNum: number;
 }
 
 export interface IShiftQualificationAllocations {
     type: IVolunteerType["_id"];
     numMembers: number;
+    currentNum: number;
 }
 
 export interface IShiftUser {

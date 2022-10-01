@@ -152,7 +152,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
         // Set the volunteer types (also set approved status if that type requires admin approval or not)
         const newVolunteerTypes = [] as Array<IUserVolunteerType>;
-
         if (userFields?.volunteerTypes && userFields?.volunteerTypes instanceof Array) {
             for (let index = 0; index < userFields?.volunteerTypes.length; index++) {
                 const vType = userFields?.volunteerTypes[index];
@@ -161,7 +160,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
                 if (targetVolType) {
                     newVolunteerTypes.push({
                         type: targetVolType._id as string,
-                        approved: !targetVolType?.requiresApproval,
+                        approved: !targetVolType?.requiresApproval, // if no appoval required, set approved to true
                     });
                 }
             }

@@ -16,6 +16,6 @@ router.post("/:id/update", wrapAsync(updateQualificationById));
 router.post("/create", wrapAsync(createQualification));
 router.get("/self", wrapAsync(getOwnQualifications));
 router.get("/user/:id", wrapAsync(getQualificationsForUserId));
-router.post("/approve/:qualificationID/:userID/:status", wrapAsync(setApprovalQualificationForUser));
+router.post("/set-approval/:qualificationID/:userID/:status", wrapAsync(setApprovalQualificationForUser));
 
 export = router;

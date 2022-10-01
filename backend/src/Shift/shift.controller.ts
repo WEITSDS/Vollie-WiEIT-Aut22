@@ -5,33 +5,36 @@ import Shift from "./Shift.model";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
 import { IShift } from "./shift.interface";
-import { mapUserToAttendanceSummary } from "../User/user.interface";
+import { IUser, mapUserToAttendanceSummary } from "../User/user.interface";
+import QualificationType from "../QualificationType/qualificationType.model";
+import Qualifications from "../Qualifications/qualification.model";
+import { IQualificationType } from "../QualificationType/qualificationType.interface";
 
 const logger = new Logger({ name: "shift.controller" });
 
-const getAttributeFromVolunteerType = (userRole: string | undefined): keyof IShift => {
-    let targetShiftAttribute: keyof IShift = "numGeneralVolunteers";
-    switch (userRole) {
-        case "generalVolunteer":
-            targetShiftAttribute = "numGeneralVolunteers";
-            break;
-        case "undergradAmbassador":
-            targetShiftAttribute = "numUndergradAmbassadors";
-            break;
-        case "postgradAmbassador":
-            targetShiftAttribute = "numPostgradAmbassadors";
-            break;
-        case "staffAmbassador":
-            targetShiftAttribute = "numStaffAmbassadors";
-            break;
-        case "sprout":
-            targetShiftAttribute = "numSprouts";
-            break;
-        default:
-            break;
-    }
-    return targetShiftAttribute;
-};
+// const getAttributeFromVolunteerType = (userRole: string | undefined): keyof IShift => {
+//     let targetShiftAttribute: keyof IShift = "numGeneralVolunteers";
+//     switch (userRole) {
+//         case "generalVolunteer":
+//             targetShiftAttribute = "numGeneralVolunteers";
+//             break;
+//         case "undergradAmbassador":
+//             targetShiftAttribute = "numUndergradAmbassadors";
+//             break;
+//         case "postgradAmbassador":
+//             targetShiftAttribute = "numPostgradAmbassadors";
+//             break;
+//         case "staffAmbassador":
+//             targetShiftAttribute = "numStaffAmbassadors";
+//             break;
+//         case "sprout":
+//             targetShiftAttribute = "numSprouts";
+//             break;
+//         default:
+//             break;
+//     }
+//     return targetShiftAttribute;
+// };
 
 /**
  * Create shift request
@@ -135,11 +138,22 @@ export const deleteShift = async (req: Request, res: Response) => {
     }
 };
 
+// Get an array of approved qualification types for a specific user
+const getUserApprovedQualificationTypes = async (user: IUser): Promise<Array<string>> => {
+    const approvedQualIDs = [] as Array<string>;
+    for (const userQual of user.qualifications) {
+        const qualObj = await Qualifications.findById(userQual);
+        const qualType = await QualificationType.findById(qualObj?.qualificationType);
+        if (qualObj?.approved && qualType) approvedQualIDs.push(qualType._id as string);
+    }
+    return approvedQualIDs;
+};
+
 export const assignUser = async (req: Request, res: Response) => {
     try {
         const userObj = await User.findOne({ _id: req.session.user?._id });
         if (!userObj) {
-            res.status(404).json({ message: "User not found", success: false });
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
             return;
         }
 
@@ -152,17 +166,67 @@ export const assignUser = async (req: Request, res: Response) => {
         }
 
         const targetShift = await Shift.findOne({ _id: req.params.shiftid });
-        if (targetShift?.users?.includes(req.params.userid)) {
+        if (!targetShift) {
+            res.status(404).json({ message: "Shift not found", success: false });
+            return;
+        }
+
+        if (targetShift?.users?.some((userShift) => userShift.user === req.params.userid)) {
             res.status(401).json({ message: "Cannot double assign shift", success: false });
             return;
         }
 
-        const targetShiftAttribute = getAttributeFromVolunteerType(userObj?.volunteerType);
-
-        if (targetShift && targetShift[`${targetShiftAttribute}`] <= 0) {
-            res.status(401).json({ message: "No volunteer type slots available", success: false });
+        const targetUser = await User.findById(req.params.userid);
+        if (!targetUser) {
+            res.status(404).json({ message: "Target user not found", success: false });
             return;
         }
+
+        // const targetShiftAttribute = getAttributeFromVolunteerType(userObj?.volunteerType);
+
+        // if (targetShift && targetShift[`${targetShiftAttribute}`] <= 0) {
+        //     res.status(401).json({ message: "No volunteer type slots available", success: false });
+        //     return;
+        // }
+
+        // Check if user has the required qualifications for the shift
+        // Loop through the qualifications required by the shift, if any are not approved on the user, set to false and return
+        const userApprovedQualificationType = await getUserApprovedQualificationTypes(targetUser);
+        let userHasAllQualifications = true;
+        // Checks if this particular qualification type has enough people in the shift (if enough ppl meet the qualification num required, then this particular user doesn't need to have it)
+        // As an example, if a shift requires a minimum of 2 people with first aid training, then people without first aid training can take this shift only after the requirement has been filled
+        for (const shiftQual of targetShift.requiredQualifications) {
+            if (
+                shiftQual.currentNum < shiftQual.numRequired &&
+                !userApprovedQualificationType.includes(shiftQual.qualificationType as string) // Checks if the target use has this particular qualification type in an approved status
+            ) {
+                userHasAllQualifications = false;
+            }
+        }
+        if (!userHasAllQualifications) {
+            res.status(401).json({
+                message: "Target user does not meet the required qualifications for this shift.",
+                success: false,
+            });
+            return;
+        }
+
+        // Check if user's selected volunteer type is approved
+        const selectedVolunteerTypeID = req.params.selectedVolunteerTypeID;
+        // -1 if either voltype doesnt exist for the user OR the type is not approved yet
+        const userVolTypeIndex = targetUser.volunteerTypes.findIndex(
+            (volType) => volType.type === selectedVolunteerTypeID && volType.approved === true
+        );
+        if (userVolTypeIndex === -1) {
+            res.status(401).json({
+                message:
+                    "Target user's selected volunteer type is either not approved or does not exist for this user.",
+                success: false,
+            });
+            return;
+        }
+
+        // still more to do, check if voltype slot available then finally do incrementing/decrementing necessary
 
         // for decrementing the relevant volunteer type of the shift
         const decAction = {
