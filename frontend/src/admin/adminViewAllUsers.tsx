@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { NavigationBar } from "../components/navbar";
 import "./adminViewAllUsers.css";
 import peopleIcon from "../assets/people.svg";
@@ -7,6 +7,7 @@ import { getAllUsers, User } from "../api/userApi";
 
 const AdminViewAllUsers = () => {
     const [users, setUsers] = useState<User[]>([]);
+    const [search, setSearch] = useState<string>("");
 
     useEffect(() => {
         const getData = async () => {
@@ -16,18 +17,27 @@ const AdminViewAllUsers = () => {
         getData().catch(console.error);
     }, []);
 
+    const handleChange = (event: { target: { value: SetStateAction<string> } }) => {
+        setSearch(event.target.value);
+    };
+
+    const handleOpenUser = () => {
+        // go to user profile
+    };
+
     return (
         <div>
             <NavigationBar />
             <div className="search-page-container">
-                <div className="search-page-header">Users</div>
-                <input type="text" className="search-bar"></input>
-                <div className="all-users">
-                    <img src={peopleIcon} alt="participants icon" />
-                    <div className="all-users-text"> 1/82</div>
+                <h1>Search Users</h1>
+                <input type="text" className="search-bar" onChange={handleChange}></input>
+                <div className="all-users-container">
+                    <img className="allUsersIcon" src={peopleIcon} alt="participants icon" />
+                    <div className="all-users-text">
+                        {users.filter((user) => user.email.includes(search)).length}/{users.length}
+                    </div>
                 </div>
-
-                <table className="table table-bordered table-hover">
+                <table id="userEmailTable" className="table table-bordered table-hover">
                     <thead className="table-dark">
                         <tr>
                             <th>Name</th>
@@ -35,18 +45,15 @@ const AdminViewAllUsers = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Ron</td>
-                            <td>ron.sidons@student.uts.edu.au</td>
-                        </tr>
-                        <tr>
-                            <td>Jake</td>
-                            <td>jake.sidons@student.uts.edu.au</td>
-                        </tr>
-                        <tr>
-                            <td>Ben</td>
-                            <td>ben.sidons@student.uts.edu.au</td>
-                        </tr>
+                        {users
+                            .filter((user) => user.email.includes(search))
+                            .sort((a, b) => a.email.localeCompare(b.email))
+                            .map((user) => (
+                                <tr key={user._id} onClick={handleOpenUser}>
+                                    <td>{user.firstName + " " + user.lastName}</td>
+                                    <td>{user.email}</td>
+                                </tr>
+                            ))}
                     </tbody>
                 </table>
             </div>
