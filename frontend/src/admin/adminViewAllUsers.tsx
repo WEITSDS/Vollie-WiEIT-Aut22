@@ -1,12 +1,25 @@
+import { useEffect, useState } from "react";
 import { NavigationBar } from "../components/navbar";
 import "./adminViewAllUsers.css";
 import peopleIcon from "../assets/people.svg";
+// import axios from "axios";
+import { getAllUsers, User } from "../api/userApi";
 
 const AdminViewAllUsers = () => {
+    const [users, setUsers] = useState<User[]>([]);
+
+    useEffect(() => {
+        const getData = async () => {
+            const users = await getAllUsers();
+            setUsers(users.data ?? []);
+        };
+        getData().catch(console.error);
+    }, []);
+
     return (
         <div>
             <NavigationBar />
-            <div className="search-page-container" style={{ margin: "0 0 0 75px" }}>
+            <div className="search-page-container">
                 <div className="search-page-header">Users</div>
                 <input type="text" className="search-bar"></input>
                 <div className="all-users">

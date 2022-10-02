@@ -18,9 +18,13 @@ import { AdminDashboard } from "./admin/adminDashboard";
 // import { AdminViewAvailbleShifts } from "./admin/adminViewAvailbleShifts";
 // import { MyShift } from "./profile/myShift";
 
+//  import { AdminViewAllShifts } from "./admin/adminViewAllShifts";
+
 import { Modal } from "./profile/modal";
 import ShiftInformation from "./shiftInformation/shiftInformation";
 // import { VolunteerDetails } from "./admin/tags/volunteerDetails";
+
+import AdminViewAllUsers from "./admin/adminViewAllUsers";
 
 import "./profile/data.json";
 import { HomePage } from "./homepage/homepage";
@@ -33,6 +37,7 @@ function App(): JSX.Element {
             <BrowserRouter>
                 <Routes>
                     <Route path="/login" element={<LoginPage />}></Route>
+                    <Route path="/search" element={<AdminViewAllUsers />}></Route>
                     <Route path="/forgotpassword" element={<ResetPaswordForm redirectTo="/home" />}></Route>
                     <Route path="/register" element={<RegisterPage />}></Route>
                     <Route

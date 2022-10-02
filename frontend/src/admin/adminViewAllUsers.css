@@ -1,9 +1,12 @@
-
+.search-page-container {
+    margin-left: 75px;
+    margin-top: 75px;
+}
 
 .search-page-header {
     font-size: 35px;
     font-weight: bold;
-    margin-top: 75px;
+ 
 }
 
 .search-bar {
@@ -29,7 +32,7 @@ img{
 
 .table{
     margin-left: -1px;
-    width:55%;
+    width:75%;
 }
 
 
