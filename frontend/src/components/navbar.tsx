@@ -4,7 +4,6 @@ import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 
 import HelpModal from "./helpModal";
 import { logoutUser, User } from "../api/userApi";
-
 import { getLoggedInUser } from "../protectedRoute";
 
 interface NavBarState {
@@ -55,7 +54,6 @@ export class NavigationBar extends React.Component<Record<string, never>, NavBar
                             </Nav.Link>
                         </Nav>
                         <Nav>
-                            {/* Replace with HelpModal */}
                             <HelpModal />
 
                             <NavDropdown

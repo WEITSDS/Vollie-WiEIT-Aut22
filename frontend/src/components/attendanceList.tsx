@@ -4,7 +4,7 @@ import { AttendaceSummary } from "../api/shiftApi";
 import participantsIcon from "../assets/participants.svg";
 //import AttendanceList from "./attendanceList.json";
 import { useAttendanceList } from "../hooks/useAttendanceList";
-import removeIcon from "../assets/removeIcon.svg";
+import RemoveUserFromShiftModal from "./removeUserFromShiftModal";
 // import axios from "axios";
 import "./attendanceList.css";
 
@@ -73,9 +73,7 @@ export default function AttendanceListModal({ shiftId, showModal, setShowModal, 
                 </td>
                 <td>{user.volunteerType}</td>
                 <td>
-                    <button className="remove-btn">
-                        <img className="remove-icon" src={removeIcon}></img>
-                    </button>
+                    <RemoveUserFromShiftModal shiftId={shiftId || ""} userId={user._id || ""} />
                 </td>
             </tr>
         ));
