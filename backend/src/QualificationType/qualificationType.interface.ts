@@ -1,6 +1,7 @@
-import { Document } from "mongoose";
+import { Types } from "mongoose";
 
-export interface IQualificationType extends Document {
+export interface IQualificationType {
+    _id: Types.ObjectId;
     name: string;
     description: string;
     requiresApproval: boolean;

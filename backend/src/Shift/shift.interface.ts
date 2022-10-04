@@ -1,7 +1,4 @@
-import { Document } from "mongoose";
-import { IQualification } from "../Qualifications/qualifications.interface";
-import { IUser } from "../User/user.interface";
-import { IVolunteerType } from "../VolunteerType/volunteerType.interface";
+import { Document, Types } from "mongoose";
 
 export interface IShift extends Document {
     name: string;
@@ -19,18 +16,18 @@ export interface IShift extends Document {
 }
 
 export interface IShiftRequiredQualification {
-    qualificationType: IQualification["_id"];
+    qualificationType: Types.ObjectId; // Qualification type ID
     numRequired: number;
     currentNum: number;
 }
 
 export interface IShiftVolunteerAllocations {
-    type: IVolunteerType["_id"];
+    type: Types.ObjectId; // Volunteer type ID
     numMembers: number;
     currentNum: number;
 }
 
 export interface IShiftUser {
-    user: IUser["_id"];
-    chosenVolunteerType: IVolunteerType["_id"];
+    user: Types.ObjectId; // userID
+    chosenVolunteerType: Types.ObjectId; // volunteerTypeID
 }

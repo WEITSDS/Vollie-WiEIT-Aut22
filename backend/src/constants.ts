@@ -46,7 +46,7 @@ const MONGO = {
     username: MONGO_USERNAME,
     password: MONGO_PASSWORD,
     options: MONGO_OPTIONS,
-    url: `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}`,
+    url: `mongodb://localhost/vollie-test`,
 };
 
 export const config = {

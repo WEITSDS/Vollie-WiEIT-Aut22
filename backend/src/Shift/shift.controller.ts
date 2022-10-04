@@ -9,6 +9,7 @@ import { IUser, mapUserToAttendanceSummary } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
 import Qualifications from "../Qualifications/qualification.model";
 // import { IQualificationType } from "../QualificationType/qualificationType.interface";
+// import { ObjectId } from "mongodb";
 
 const logger = new Logger({ name: "shift.controller" });
 
@@ -144,13 +145,13 @@ const getUserApprovedQualificationTypes = async (user: IUser): Promise<Array<str
     for (const userQual of user.qualifications) {
         const qualObj = await Qualifications.findById(userQual);
         const qualType = await QualificationType.findById(qualObj?.qualificationType);
-        if (qualObj?.approved && qualType) approvedQualIDs.push(qualType._id as string);
+        if (qualObj?.approved && qualType && qualType._id) approvedQualIDs.push(qualType._id.toString());
     }
     return approvedQualIDs;
 };
 
 const getUserApprovedVolunteerTypes = (user: IUser): Array<string> => {
-    return user.volunteerTypes.filter((volType) => !!volType.approved).map((volType) => volType.type as string);
+    return user.volunteerTypes.filter((volType) => !!volType.approved).map((volType) => volType.type.toString());
 };
 
 export const assignUser = async (req: Request, res: Response) => {
@@ -175,7 +176,7 @@ export const assignUser = async (req: Request, res: Response) => {
             return;
         }
 
-        if (targetShift?.users?.some((userShift) => userShift.user === req.params.userid)) {
+        if (targetShift?.users?.some((userShift) => userShift.user.toString() === req.params.userid)) {
             res.status(401).json({ message: "Cannot double assign shift", success: false });
             return;
         }
@@ -195,7 +196,7 @@ export const assignUser = async (req: Request, res: Response) => {
         for (const shiftQual of targetShift.requiredQualifications) {
             if (
                 shiftQual.currentNum < shiftQual.numRequired &&
-                !userApprovedQualificationType.includes(shiftQual.qualificationType as string) // Checks if the target use has this particular qualification type in an approved status
+                !userApprovedQualificationType.includes(shiftQual.qualificationType.toString()) // Checks if the target use has this particular qualification type in an approved status
             ) {
                 userHasAllQualifications = false;
             }
@@ -212,7 +213,7 @@ export const assignUser = async (req: Request, res: Response) => {
         const selectedVolunteerTypeID = req.params.selectedVolunteerTypeID;
         // -1 if either voltype doesnt exist for the user OR the type is not approved yet
         const userVolTypeIndex = targetUser.volunteerTypes.findIndex(
-            (volType) => volType.type === selectedVolunteerTypeID && volType.approved === true
+            (volType) => volType.type.toString() === selectedVolunteerTypeID && volType.approved === true
         );
         if (userVolTypeIndex === -1) {
             res.status(401).json({
@@ -225,7 +226,7 @@ export const assignUser = async (req: Request, res: Response) => {
 
         // check if slots are available for this vol type
         const volTypeShiftObj = targetShift.volunteerTypeAllocations.find(
-            (volType) => volType.type === selectedVolunteerTypeID
+            (volType) => volType.type.toString() === selectedVolunteerTypeID
         );
         if (volTypeShiftObj === undefined || volTypeShiftObj.currentNum >= volTypeShiftObj.numMembers) {
             // in this condition, there are no slots available for this volunteer type in this shift
@@ -287,13 +288,15 @@ export const removeUser = async (req: Request, res: Response) => {
             return;
         }
         const userObj = await User.findOne({ _id: req.params.userid });
-        const userShiftAllocationIdx = targetShift?.users.findIndex((shiftUser) => shiftUser.user === userObj?._id);
+        const userShiftAllocationIdx = targetShift?.users.findIndex(
+            (shiftUser) => shiftUser.user.toString() === userObj?._id.toString()
+        );
         if (userShiftAllocationIdx === -1) {
             res.status(401).json({ message: "User doesn't exist in this shift", success: false });
             return;
         }
 
-        const selectedVolunteerTypeID = targetShift?.users[userShiftAllocationIdx].chosenVolunteerType as string;
+        const selectedVolunteerTypeID = targetShift?.users[userShiftAllocationIdx].chosenVolunteerType.toString();
 
         if (!selectedVolunteerTypeID || selectedVolunteerTypeID == "") {
             res.status(401).json({ message: "Error getting chosen volunteer type for user in shift.", success: false });
@@ -302,7 +305,7 @@ export const removeUser = async (req: Request, res: Response) => {
 
         await Shift.findOneAndUpdate(
             { _id: req.params.shiftid, "volunteerTypeAllocations.type": selectedVolunteerTypeID },
-            { $pull: { users: req.params.userid }, $inc: { "volunteerTypeAllocations.$.currentNum": -1 } }
+            { $pull: { users: { user: req.params.userid } }, $inc: { "volunteerTypeAllocations.$.currentNum": -1 } }
         );
 
         const assignShiftResponse = await User.findOneAndUpdate(
@@ -407,17 +410,40 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
         // const userRole = userObj?.volunteerType;
 
         const approvedUserVolTypes = getUserApprovedVolunteerTypes(userObj);
+
+        console.log(approvedUserVolTypes);
         // const targetShiftAttribute = getAttributeFromVolunteerType(userRole);
         // const numVolunteerQuery = { [targetShiftAttribute]: { $gt: 0 } };
 
         // Only show events that are UPCOMING and sort by upcoming start at dates
-        const availableShifts = await Shift.find({
-            startAt: { $gte: Date.now() },
-            "volunteerTypeAllocations.type": { $in: approvedUserVolTypes },
-            $where: "this.volunteerTypeAllocations.$.currentNum <= this.volunteerTypeAllocations.$.numMembers",
-        }).sort({
-            startAt: 1,
-        });
+        // const availableShifts = await Shift.find({
+        //     // startAt: { $gte: Date.now() },
+        //     "volunteerTypeAllocations.type": { $in: approvedUserVolTypes },
+        //     $expr: { $lt: ["$volunteerTypeAllocations.currentNum", "$volunteerTypeAllocations.numMembers"] }, // doesn't actually combine less than check with the above check
+        // }).sort({
+        //     startAt: 1,
+        // });
+
+        const availableShifts = await Shift.aggregate([
+            {
+                $addFields: {
+                    volunteerTypeAllocations: {
+                        $filter: {
+                            input: "$volunteerTypeAllocations",
+                            cond: {
+                                $and: [
+                                    // { $in: ["$type", approvedUserVolTypes] },
+                                    { $lt: ["$$this.currentNum", "$$this.numMembers"] },
+                                ],
+                            },
+                        },
+                    },
+                },
+            },
+            { $match: { volunteerTypeAllocations: { $ne: [] } } },
+        ]);
+
+        console.log(availableShifts);
 
         res.status(200).json({
             message: "success",

@@ -1,12 +1,6 @@
-import { Document } from "mongoose";
-import {
-    IQualification,
-    // mapQualificationToQualificationSummary,
-    // QualificationSummary,
-} from "../Qualifications/qualifications.interface";
-import { IShift } from "../Shift/shift.interface";
+import { Document, Types } from "mongoose";
 import { convertTagToTagSummary, IBasicTag, ITag } from "../Tag/tag.interface";
-import { IVolunteerType } from "../VolunteerType/volunteerType.interface";
+// import { IVolunteerType } from "../VolunteerType/volunteerType.interface";
 
 export interface IBasicUser {
     email: string;
@@ -20,16 +14,16 @@ export interface IUser extends Document, IBasicUser {
     verified: boolean;
     isAdmin: boolean;
     lastLogin: number;
-    qualifications: Array<IQualification["_id"]>;
+    qualifications: Array<Types.ObjectId>; // qualification IDs
     tags: ITag[];
     createdAt: Date;
     volunteerType: string;
-    shifts: Array<IShift["_id"]>;
+    shifts: Array<Types.ObjectId>; // shift IDs
     volunteerTypes: IUserVolunteerType[];
 }
 
 export interface IUserVolunteerType {
-    type: IVolunteerType["_id"];
+    type: Types.ObjectId; // volunteer type ID
     approved: boolean;
 }
 
@@ -51,12 +45,12 @@ export interface UserSummary {
     email: string;
     lastLogin: number;
     registeredAt: number;
-    qualifications: Array<IQualification["_id"]>;
+    qualifications: Array<string>;
     verified: boolean;
     isAdmin: boolean;
     tags: IBasicTag[];
     volunteerTypes: Array<IUserVolunteerType>;
-    shifts: Array<IShift["_id"]>;
+    shifts: Array<string>;
 }
 
 export function mapUserToUserSummary({
@@ -80,12 +74,12 @@ export function mapUserToUserSummary({
         _id: _id || "",
         email,
         verified,
-        qualifications,
+        qualifications: qualifications.map((qual) => qual.toString()),
         registeredAt: createdAt.getTime(),
         isAdmin,
         tags: tags ? tags.map(convertTagToTagSummary) : [],
         volunteerTypes,
-        shifts,
+        shifts: shifts.map((shift) => shift.toString()),
     };
 }
 export interface AttendaceSummary {
