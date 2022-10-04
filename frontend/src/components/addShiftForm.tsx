@@ -18,6 +18,7 @@ const shiftFormFields = {
     venue: "",
     address: "",
     description: "",
+    hours: 0,
     notes: "",
     category: "Other",
     requiresWWCC: false,
@@ -118,6 +119,9 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
 
                 <label>Description</label>
                 <textarea name="description" defaultValue={formFields.description} onChange={handleChange} />
+
+                <label>Work Hours</label>
+                <input type="number" min={0} defaultValue={formFields.hours} name="hours" onChange={handleChange} />
 
                 <label>Notes</label>
                 <input type="text" defaultValue={formFields.notes} name="notes" onChange={handleChange} />

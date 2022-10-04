@@ -149,8 +149,6 @@
     display: flex;
     justify-content: center;
     margin-bottom: 13px;
-
-    width: 664px;
     height: 25px;
     left: 88px;
     top: 218px;
@@ -190,6 +188,7 @@
 
 .info-title {
     width: auto;
+
     height: 18px;
     left: 126px;
     top: 222px;

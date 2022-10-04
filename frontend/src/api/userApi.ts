@@ -85,6 +85,7 @@ export interface User {
     registeredAt: number;
     isAdmin: boolean;
     tags: Tag[];
+    shifts: string[];
 }
 
 const PATH = `${ROOT_URL}/api/users`;

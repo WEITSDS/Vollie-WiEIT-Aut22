@@ -145,7 +145,8 @@ export const assignUser = async (req: Request, res: Response) => {
 
         const isAdmin = userObj?.isAdmin || false;
         const sessionUserId = userObj._id;
-        if (!isAdmin && sessionUserId !== req.params.userid) {
+        console.log("is assigning self?", sessionUserId.toString(), req.params.userid);
+        if (!isAdmin && sessionUserId.toString() !== req.params.userid) {
             res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
             return;
         }
@@ -339,11 +340,11 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
         const userRole = userObj?.volunteerType;
         const targetShiftAttribute = getAttributeFromVolunteerType(userRole);
         const numVolunteerQuery = { [targetShiftAttribute]: { $gt: 0 } };
-        // numVolunteerQuery[`${targetShiftAttribute}`] = { $gt: 0 };
 
-        // console.log(numVolunteerQuery);
-
-        const availableShifts = await Shift.find({ ...numVolunteerQuery }).sort({ createdAt: -1 });
+        // Only show events that are UPCOMING and sort by upcoming start at dates
+        const availableShifts = await Shift.find({ ...numVolunteerQuery, startAt: { $gte: Date.now() } }).sort({
+            startAt: 1,
+        });
 
         res.status(200).json({
             message: "success",
@@ -373,7 +374,7 @@ export const getUserShifts = async (req: Request, res: Response) => {
         }
 
         // users can get their own shifts, if request is looking for user other than themselve, they must be admin
-        if (targetUserID !== userObj._id && !userObj.isAdmin) {
+        if (targetUserID !== userObj._id.toString() && !userObj.isAdmin) {
             res.status(403).json({ message: "Authorization error", success: false });
             return;
         }

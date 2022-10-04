@@ -67,6 +67,7 @@ export interface IShift extends Document {
     venue: string;
     address: string;
     description: string;
+    hours: number;
     notes: string;
     users: Array<string>;
     category: "School Outreach" | "Event" | "Committee" | "Other";
