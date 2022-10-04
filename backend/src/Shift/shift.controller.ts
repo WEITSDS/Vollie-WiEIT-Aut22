@@ -8,7 +8,7 @@ import { IShift } from "./shift.interface";
 import { IUser, mapUserToAttendanceSummary } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
 import Qualifications from "../Qualifications/qualification.model";
-import { IQualificationType } from "../QualificationType/qualificationType.interface";
+// import { IQualificationType } from "../QualificationType/qualificationType.interface";
 
 const logger = new Logger({ name: "shift.controller" });
 
@@ -149,6 +149,10 @@ const getUserApprovedQualificationTypes = async (user: IUser): Promise<Array<str
     return approvedQualIDs;
 };
 
+const getUserApprovedVolunteerTypes = (user: IUser): Array<string> => {
+    return user.volunteerTypes.filter((volType) => !!volType.approved).map((volType) => volType.type as string);
+};
+
 export const assignUser = async (req: Request, res: Response) => {
     try {
         const userObj = await User.findOne({ _id: req.session.user?._id });
@@ -181,13 +185,6 @@ export const assignUser = async (req: Request, res: Response) => {
             res.status(404).json({ message: "Target user not found", success: false });
             return;
         }
-
-        // const targetShiftAttribute = getAttributeFromVolunteerType(userObj?.volunteerType);
-
-        // if (targetShift && targetShift[`${targetShiftAttribute}`] <= 0) {
-        //     res.status(401).json({ message: "No volunteer type slots available", success: false });
-        //     return;
-        // }
 
         // Check if user has the required qualifications for the shift
         // Loop through the qualifications required by the shift, if any are not approved on the user, set to false and return
@@ -226,21 +223,30 @@ export const assignUser = async (req: Request, res: Response) => {
             return;
         }
 
-        // still more to do, check if voltype slot available then finally do incrementing/decrementing necessary
+        // check if slots are available for this vol type
+        const volTypeShiftObj = targetShift.volunteerTypeAllocations.find(
+            (volType) => volType.type === selectedVolunteerTypeID
+        );
+        if (volTypeShiftObj === undefined || volTypeShiftObj.currentNum >= volTypeShiftObj.numMembers) {
+            // in this condition, there are no slots available for this volunteer type in this shift
+            res.status(401).json({
+                message: "Target volunteer type has no available slots for this user.",
+                success: false,
+            });
+            return;
+        }
 
-        // for decrementing the relevant volunteer type of the shift
-        const decAction = {
-            $inc: {
-                [targetShiftAttribute]: -1,
-            },
-        };
-
+        // At this point, we can finally assign the user and update the shift info
+        // This will also increment the currentNum for that vol type
         const assignUserResponse = await Shift.findOneAndUpdate(
-            { _id: req.params.shiftid },
-            { $addToSet: { users: req.params.userid }, ...decAction }
+            { _id: req.params.shiftid, "volunteerTypeAllocations.type": selectedVolunteerTypeID },
+            {
+                $addToSet: { users: { user: req.params.userid, chosenVolunteerType: selectedVolunteerTypeID } },
+                $inc: { "volunteerTypeAllocations.$.currentNum": 1 },
+            }
         );
         if (!assignUserResponse) {
-            res.status(404).json({ message: "Shift not found", success: false });
+            res.status(404).json({ message: "Error updating shift", success: false });
             return;
         }
 
@@ -248,6 +254,7 @@ export const assignUser = async (req: Request, res: Response) => {
             { _id: req.params.userid },
             { $addToSet: { shifts: req.params.shiftid } }
         );
+
         if (assignShiftResponse) {
             res.status(200).json({ message: "User assigned to shift", success: true });
             return;
@@ -279,25 +286,23 @@ export const removeUser = async (req: Request, res: Response) => {
             });
             return;
         }
-
-        if (!targetShift?.users.includes(req.params.userid)) {
+        const userObj = await User.findOne({ _id: req.params.userid });
+        const userShiftAllocationIdx = targetShift?.users.findIndex((shiftUser) => shiftUser.user === userObj?._id);
+        if (userShiftAllocationIdx === -1) {
             res.status(401).json({ message: "User doesn't exist in this shift", success: false });
             return;
         }
 
-        const userObj = await User.findOne({ _id: req.params.userid });
-        const targetShiftAttribute = getAttributeFromVolunteerType(userObj?.volunteerType);
+        const selectedVolunteerTypeID = targetShift?.users[userShiftAllocationIdx].chosenVolunteerType as string;
 
-        // for incrementing the relevant volunteer type of the shift as user is not taking up that spot
-        const incAction = {
-            $inc: {
-                [targetShiftAttribute]: 1,
-            },
-        };
+        if (!selectedVolunteerTypeID || selectedVolunteerTypeID == "") {
+            res.status(401).json({ message: "Error getting chosen volunteer type for user in shift.", success: false });
+            return;
+        }
 
         await Shift.findOneAndUpdate(
-            { _id: req.params.shiftid },
-            { $pull: { users: req.params.userid }, ...incAction }
+            { _id: req.params.shiftid, "volunteerTypeAllocations.type": selectedVolunteerTypeID },
+            { $pull: { users: req.params.userid }, $inc: { "volunteerTypeAllocations.$.currentNum": -1 } }
         );
 
         const assignShiftResponse = await User.findOneAndUpdate(
@@ -389,8 +394,6 @@ export const getShiftById = async (req: Request, res: Response) => {
 export const getAvailableShifts = async (req: Request, res: Response) => {
     try {
         const { _id: userID } = req.session.user || {};
-
-        // users can get their own shifts, if request is looking for user other than themselve, they must be admin
         if (!userID) {
             res.status(403).json({ message: "Authorization error", success: false });
             return;
@@ -401,12 +404,18 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
             res.status(403).json({ message: "Could not find user object", success: false });
             return;
         }
-        const userRole = userObj?.volunteerType;
-        const targetShiftAttribute = getAttributeFromVolunteerType(userRole);
-        const numVolunteerQuery = { [targetShiftAttribute]: { $gt: 0 } };
+        // const userRole = userObj?.volunteerType;
+
+        const approvedUserVolTypes = getUserApprovedVolunteerTypes(userObj);
+        // const targetShiftAttribute = getAttributeFromVolunteerType(userRole);
+        // const numVolunteerQuery = { [targetShiftAttribute]: { $gt: 0 } };
 
         // Only show events that are UPCOMING and sort by upcoming start at dates
-        const availableShifts = await Shift.find({ ...numVolunteerQuery, startAt: { $gte: Date.now() } }).sort({
+        const availableShifts = await Shift.find({
+            startAt: { $gte: Date.now() },
+            "volunteerTypeAllocations.type": { $in: approvedUserVolTypes },
+            $where: "this.volunteerTypeAllocations.$.currentNum <= this.volunteerTypeAllocations.$.numMembers",
+        }).sort({
             startAt: 1,
         });
 

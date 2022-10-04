@@ -8,4 +8,4 @@ const VolunteerTypeSchema: Schema = new Schema({
     requiresApproval: { type: Boolean, default: false },
 });
 
-export default mongoose.model<IVolunteerType>("QualificationType", VolunteerTypeSchema);
+export default mongoose.model<IVolunteerType>("VolunteerType", VolunteerTypeSchema);
