@@ -15,7 +15,7 @@ export interface IShift extends Document {
     users: Array<IShiftUser>;
     category: "School Outreach" | "Event" | "Committee" | "Other";
     requiredQualifications: Array<IShiftRequiredQualification>;
-    qualificationTypeAllocations: Array<IShiftQualificationAllocations>;
+    volunteerTypeAllocations: Array<IShiftVolunteerAllocations>;
 }
 
 export interface IShiftRequiredQualification {
@@ -24,7 +24,7 @@ export interface IShiftRequiredQualification {
     currentNum: number;
 }
 
-export interface IShiftQualificationAllocations {
+export interface IShiftVolunteerAllocations {
     type: IVolunteerType["_id"];
     numMembers: number;
     currentNum: number;
@@ -33,9 +33,4 @@ export interface IShiftQualificationAllocations {
 export interface IShiftUser {
     user: IUser["_id"];
     chosenVolunteerType: IVolunteerType["_id"];
-}
-
-export interface IShiftUserVolunteerType {
-    volunteerType: IVolunteerType;
-    approved: boolean;
 }
