@@ -416,34 +416,13 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
         // const numVolunteerQuery = { [targetShiftAttribute]: { $gt: 0 } };
 
         // Only show events that are UPCOMING and sort by upcoming start at dates
-        // const availableShifts = await Shift.find({
-        //     // startAt: { $gte: Date.now() },
-        //     "volunteerTypeAllocations.type": { $in: approvedUserVolTypes },
-        //     $expr: { $lt: ["$volunteerTypeAllocations.currentNum", "$volunteerTypeAllocations.numMembers"] }, // doesn't actually combine less than check with the above check
-        // }).sort({
-        //     startAt: 1,
-        // });
-
-        const availableShifts = await Shift.aggregate([
-            {
-                $addFields: {
-                    volunteerTypeAllocations: {
-                        $filter: {
-                            input: "$volunteerTypeAllocations",
-                            cond: {
-                                $and: [
-                                    // { $in: ["$type", approvedUserVolTypes] },
-                                    { $lt: ["$$this.currentNum", "$$this.numMembers"] },
-                                ],
-                            },
-                        },
-                    },
-                },
-            },
-            { $match: { volunteerTypeAllocations: { $ne: [] } } },
-        ]);
-
-        console.log(availableShifts);
+        const availableShifts = await Shift.find({
+            // startAt: { $gte: Date.now() },
+            "volunteerTypeAllocations.type": { $in: approvedUserVolTypes },
+            $expr: { $lt: ["$volunteerTypeAllocations.currentNum", "$volunteerTypeAllocations.numMembers"] }, // doesn't actually combine less than check with the above check
+        }).sort({
+            startAt: 1,
+        });
 
         res.status(200).json({
             message: "success",
