@@ -253,7 +253,8 @@ export const assignUser = async (req: Request, res: Response) => {
 
         const assignShiftResponse = await User.findOneAndUpdate(
             { _id: req.params.userid },
-            { $addToSet: { shifts: req.params.shiftid } }
+            { $addToSet: { shifts: { shift: req.params.shiftid, approved: true } } 
+        }
         );
 
         if (assignShiftResponse) {
@@ -296,7 +297,7 @@ export const approveUser = async (req: Request, res: Response) => {
             return;
         }
 
-        await Shift.findOneAndUpdate(
+        const approveUserInShift = await Shift.findOneAndUpdate(
             { _id: req.params.shiftid, "users.user": req.params.userid },
             { approved: true }
         );
@@ -305,7 +306,7 @@ export const approveUser = async (req: Request, res: Response) => {
             { _id: req.params.userid, "shifts.shift": req.params.shiftid },
             { approved: true }
         );
-        if (approveUserResponse) {
+        if (approveUserResponse && approveUserInShift) {
             res.status(200).json({
                 message: "User approved on the shift",
                 success: true,

@@ -11,6 +11,7 @@ import {
     getShiftById,
     getShiftAttendanceList,
     updateShift,
+    approveUser,
 } from "./shift.controller";
 
 const router = express.Router();
@@ -19,7 +20,7 @@ router.post("/create", wrapAsync(createShift));
 router.post("/update/:shiftId", wrapAsync(updateShift));
 router.patch("/:shiftid/assign-user/:userid/:selectedVolunteerTypeID", wrapAsync(assignUser));
 router.patch("/:shiftid/unassign-user/:userid", wrapAsync(removeUser));
-router.patch("/:shiftid/approve-user/:userid", wrapAsync(assignUser));
+router.patch("/:shiftid/approve-user/:userid", wrapAsync(approveUser));
 router.delete("/:shiftid", wrapAsync(deleteShift));
 router.get("/get-all-shifts", wrapAsync(getAllShifts));
 router.get("/get-user-shifts/:targetUserID", wrapAsync(getUserShifts));
