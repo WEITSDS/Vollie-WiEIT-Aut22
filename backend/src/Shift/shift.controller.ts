@@ -37,7 +37,6 @@ const logger = new Logger({ name: "shift.controller" });
 //     return targetShiftAttribute;
 // };
 
-
 /**
  * Create shift request
  * If a shift is created, return data object of details and response of 200
@@ -146,7 +145,7 @@ const getUserApprovedQualificationTypes = async (user: IUser): Promise<Array<str
     for (const userQual of user.qualifications) {
         const qualObj = await Qualifications.findById(userQual);
         const qualType = await QualificationType.findById(qualObj?.qualificationType);
-        if (qualObj?.approved && qualType && qualType._id) approvedQualIDs.push(qualType._id.toString());
+        if (qualObj?.approved && qualType && qualType._id) approvedQualIDs.push(qualType?._id.toString());
     }
     return approvedQualIDs;
 };
@@ -226,7 +225,7 @@ export const assignUser = async (req: Request, res: Response) => {
 
         // check if slots are available for this vol type
         const volTypeShiftObj = targetShift.volunteerTypeAllocations.find(
-            (volType) => volType.type.toString() === selectedVolunteerTypeID
+            (volType) => volType?.type.toString() === selectedVolunteerTypeID
         );
         if (volTypeShiftObj === undefined || volTypeShiftObj.currentNum >= volTypeShiftObj.numMembers) {
             // in this condition, there are no slots available for this volunteer type in this shift
@@ -242,7 +241,9 @@ export const assignUser = async (req: Request, res: Response) => {
         const assignUserResponse = await Shift.findOneAndUpdate(
             { _id: req.params.shiftid, "volunteerTypeAllocations.type": selectedVolunteerTypeID },
             {
-                $addToSet: { users: { user: req.params.userid, chosenVolunteerType: selectedVolunteerTypeID } },
+                $addToSet: {
+                    users: { user: req.params.userid, chosenVolunteerType: selectedVolunteerTypeID, approved: false },
+                },
                 $inc: { "volunteerTypeAllocations.$.currentNum": 1 },
             }
         );
@@ -253,8 +254,7 @@ export const assignUser = async (req: Request, res: Response) => {
 
         const assignShiftResponse = await User.findOneAndUpdate(
             { _id: req.params.userid },
-            { $addToSet: { shifts: { shift: req.params.shiftid, approved: true } } 
-        }
+            { $addToSet: { shifts: { shift: req.params.shiftid, approved: false } } }
         );
 
         if (assignShiftResponse) {
@@ -297,16 +297,16 @@ export const approveUser = async (req: Request, res: Response) => {
             return;
         }
 
-        const approveUserInShift = await Shift.findOneAndUpdate(
+        await Shift.findOneAndUpdate(
             { _id: req.params.shiftid, "users.user": req.params.userid },
-            { approved: true }
+            { $set: { "users.$.approved": true } }
         );
 
         const approveUserResponse = await User.findOneAndUpdate(
             { _id: req.params.userid, "shifts.shift": req.params.shiftid },
-            { approved: true }
+            { $set: { "shifts.$.approved": true } }
         );
-        if (approveUserResponse && approveUserInShift) {
+        if (approveUserResponse) {
             res.status(200).json({
                 message: "User approved on the shift",
                 success: true,
@@ -327,7 +327,7 @@ export const approveUser = async (req: Request, res: Response) => {
         });
         return;
     }
-}
+};
 
 export const removeUser = async (req: Request, res: Response) => {
     try {

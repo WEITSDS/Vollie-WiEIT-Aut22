@@ -15,10 +15,11 @@ const UserSchema: Schema = new Schema(
         isAdmin: { type: Boolean, default: false, required: true },
         qualifications: [{ type: mongoose.Types.ObjectId, ref: "Qualification" }],
         tags: [{ type: mongoose.Types.ObjectId, ref: "Tag" }],
-        shifts: [ {
-            shift: { type: mongoose.Types.ObjectId, ref: "Shift" },
-            approved: { type: Boolean, default: false }
-            }
+        shifts: [
+            {
+                shift: { type: mongoose.Types.ObjectId, ref: "Shift" },
+                approved: { type: Boolean, default: false },
+            },
         ],
         volunteerTypes: [
             {

@@ -28,9 +28,9 @@ logger.info(`Server started at ${PROTOCOL}://${HOST}:${PORT}`);
 
 /** Connect to Mongo -> mongodb+srv://weit_user:IdCRhTHXp3sUBu8M@cluster0.cfutj.mongodb.net/WEIT */
 mongoose
-    .connect('mongodb+srv://vollie-wieit:RRTJa3wml^SbN1G1o;3S@wieit.gtchrvd.mongodb.net/test', config.mongo.options)
+    .connect("mongodb+srv://vollie-wieit:RRTJa3wml^SbN1G1o;3S@wieit.gtchrvd.mongodb.net/test", config.mongo.options)
     .then((_result) => {
-        logger.info(`Connected to MongoDB at ${config.mongo}`);
+        logger.info(`Connected to MongoDB`);
     })
     .catch((err: unknown) => {
         logger.error("An error occurred trying to connect to MongoDB", err);
