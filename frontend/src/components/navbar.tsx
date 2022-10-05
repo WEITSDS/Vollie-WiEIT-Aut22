@@ -53,9 +53,6 @@ export class NavigationBar extends React.Component<Record<string, never>, NavBar
                             <Nav.Link href="/myshifts" className="text-body">
                                 <i className="bi bi-alarm" /> My Shifts
                             </Nav.Link>
-                            <Nav.Link href="/search" className="text-body">
-                                <i className="bi bi-search" /> Search Users
-                            </Nav.Link>
                         </Nav>
                         <Nav>
                             {/* Replace with HelpModal */}
