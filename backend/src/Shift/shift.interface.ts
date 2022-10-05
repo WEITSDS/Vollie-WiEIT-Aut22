@@ -30,4 +30,5 @@ export interface IShiftVolunteerAllocations {
 export interface IShiftUser {
     user: Types.ObjectId; // userID
     chosenVolunteerType: Types.ObjectId; // volunteerTypeID
+    approved: Boolean;
 }

@@ -39,14 +39,14 @@ const MONGO_OPTIONS = {
 
 const MONGO_USERNAME = process.env.MONGO_USERNAME || "vollie-wieit";
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD || "RRTJa3wml^SbN1G1o;3S";
-const MONGO_HOST = process.env.MONGO_HOST || "wieit.gtchrvd.mongodb.net/test";
+const MONGO_HOST = "wieit.gtchrvd.mongodb.net/test";
 
 const MONGO = {
     host: MONGO_HOST,
     username: MONGO_USERNAME,
     password: MONGO_PASSWORD,
     options: MONGO_OPTIONS,
-    url: `mongodb://localhost/vollie-test`,
+    url: `mongodb://localhost:4000/vollie-test`,
 };
 
 export const config = {

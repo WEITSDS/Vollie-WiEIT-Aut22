@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import User from "./user.model";
 import Tag from "../Tag/tag.model";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { Logger } from "tslog";
 import * as sessionManager from "../Common/middleware/sessionManagement";
 import { handleError } from "../utility";
@@ -159,7 +159,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
                 const targetVolType = await VolunteerType.findById(vType.type);
                 if (targetVolType) {
                     newVolunteerTypes.push({
-                        type: targetVolType._id as string,
+                        type: targetVolType._id as Types.ObjectId,
                         approved: !targetVolType?.requiresApproval, // if no appoval required, set approved to true
                     });
                 }

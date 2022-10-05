@@ -37,6 +37,7 @@ const logger = new Logger({ name: "shift.controller" });
 //     return targetShiftAttribute;
 // };
 
+
 /**
  * Create shift request
  * If a shift is created, return data object of details and response of 200
@@ -267,6 +268,65 @@ export const assignUser = async (req: Request, res: Response) => {
         return;
     }
 };
+
+export const approveUser = async (req: Request, res: Response) => {
+    try {
+        const isAdmin = req.session.user?.isAdmin || false;
+        const sessionUserId = req.session.user?._id;
+        if (!isAdmin && sessionUserId !== req.params.userid) {
+            res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+            return;
+        }
+
+        const targetShift = await Shift.findOne({ _id: req.params.shiftid });
+
+        if (!targetShift) {
+            res.status(404).json({
+                message: "Shift not found",
+                success: true,
+            });
+            return;
+        }
+        const userObj = await User.findOne({ _id: req.params.userid });
+        const userShiftAllocationIdx = targetShift?.users.findIndex(
+            (shiftUser) => shiftUser.user.toString() === userObj?._id.toString()
+        );
+        if (userShiftAllocationIdx === -1) {
+            res.status(401).json({ message: "User doesn't exist in this shift", success: false });
+            return;
+        }
+
+        await Shift.findOneAndUpdate(
+            { _id: req.params.shiftid, "users.user": req.params.userid },
+            { approved: true }
+        );
+
+        const approveUserResponse = await User.findOneAndUpdate(
+            { _id: req.params.userid, "shifts.shift": req.params.shiftid },
+            { approved: true }
+        );
+        if (approveUserResponse) {
+            res.status(200).json({
+                message: "User approved on the shift",
+                success: true,
+            });
+            return;
+        } else {
+            res.status(404).json({
+                message: "User not found",
+                success: true,
+            });
+            return;
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "error approving user",
+            error,
+            success: false,
+        });
+        return;
+    }
+}
 
 export const removeUser = async (req: Request, res: Response) => {
     try {

@@ -27,6 +27,8 @@ app.listen(PORT);
 logger.info(`Server started at ${PROTOCOL}://${HOST}:${PORT}`);
 
 /** Connect to Mongo -> mongodb+srv://weit_user:IdCRhTHXp3sUBu8M@cluster0.cfutj.mongodb.net/WEIT */
+
+console.log(config.mongo);
 mongoose
     .connect(config.mongo.url, config.mongo.options)
     .then((_result) => {

@@ -10,7 +10,7 @@ import {
 } from "./qualifications.interface";
 import Qualification from "./qualification.model";
 import User from "../User/user.model";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { getUserByEmail } from "../User/user.controller";
 import { IUser } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
@@ -27,7 +27,7 @@ export const createQualification = async (req: Request, res: Response) => {
 
     try {
         const qualificationtype = await QualificationType.findOne({
-            _id: (newQualification?.qualificationType as string) || "",
+            _id: (newQualification?.qualificationType as Types.ObjectId) || "",
         });
         if (!newQualification?.qualificationType || !qualificationtype) {
             handleError(logger, res, null, "Qualification type not found.", 404);
@@ -50,7 +50,7 @@ export const createQualification = async (req: Request, res: Response) => {
             description: newQualification.description,
             filePath: uploadResponse.secure_url,
             fileId: uploadResponse.public_id,
-            qualificationType: newQualification?.qualificationType as string,
+            qualificationType: newQualification?.qualificationType as Types.ObjectId,
             approved: !qualificationtype.requiresApproval, // assume that the qualification is approved if it required no admin approval
         });
 
@@ -176,7 +176,7 @@ export const setApprovalQualificationForUser = async (req: Request, res: Respons
             return;
         }
 
-        const userHasQual = targetUser.qualifications.includes(qualification._id as string);
+        const userHasQual = targetUser.qualifications.includes(qualification._id as Types.ObjectId);
         if (!userHasQual) {
             handleError(logger, res, null, "User does not have this qualification.", 404);
             return;
