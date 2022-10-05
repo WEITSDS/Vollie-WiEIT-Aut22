@@ -164,7 +164,6 @@ export const assignUser = async (req: Request, res: Response) => {
 
         const isAdmin = userObj?.isAdmin || false;
         const sessionUserId = userObj._id;
-        console.log("is assigning self?", sessionUserId.toString(), req.params.userid);
         if (!isAdmin && sessionUserId.toString() !== req.params.userid) {
             res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
             return;
@@ -407,21 +406,30 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
             res.status(403).json({ message: "Could not find user object", success: false });
             return;
         }
-        // const userRole = userObj?.volunteerType;
 
         const approvedUserVolTypes = getUserApprovedVolunteerTypes(userObj);
 
-        console.log(approvedUserVolTypes);
-        // const targetShiftAttribute = getAttributeFromVolunteerType(userRole);
-        // const numVolunteerQuery = { [targetShiftAttribute]: { $gt: 0 } };
-
         // Only show events that are UPCOMING and sort by upcoming start at dates
-        const availableShifts = await Shift.find({
-            // startAt: { $gte: Date.now() },
+        let availableShifts = await Shift.find({
+            startAt: { $gte: Date.now() },
             "volunteerTypeAllocations.type": { $in: approvedUserVolTypes },
-            $expr: { $lt: ["$volunteerTypeAllocations.currentNum", "$volunteerTypeAllocations.numMembers"] }, // doesn't actually combine less than check with the above check
         }).sort({
             startAt: 1,
+        });
+
+        // filter to ensure that only return shifts where approved user vol types have available slots
+        availableShifts = availableShifts.filter((shift) => {
+            let hasSlotsAvailable = false;
+            for (const volAllocation of shift.volunteerTypeAllocations) {
+                if (
+                    approvedUserVolTypes.includes(volAllocation.type.toString()) &&
+                    volAllocation.currentNum < volAllocation.numMembers
+                ) {
+                    hasSlotsAvailable = true;
+                    break;
+                }
+            }
+            return hasSlotsAvailable;
         });
 
         res.status(200).json({
