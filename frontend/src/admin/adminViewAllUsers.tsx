@@ -44,10 +44,10 @@ const AdminViewAllUsers = () => {
                             <th>Email</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="email-search-table-body">
                         {users
                             .filter((user) => user.email.includes(search))
-                            .sort((a, b) => a.email.localeCompare(b.email))
+                            .sort((a, b) => b.registeredAt - a.registeredAt)
                             .map((user) => (
                                 <tr key={user._id} onClick={handleOpenUser}>
                                     <td>{user.firstName + " " + user.lastName}</td>

@@ -23,6 +23,10 @@
     font-weight: 600;
 }
 
+.email-search-table-body {
+    cursor: pointer;
+}
+
 #userEmailTable {
     margin-left: -1px;
     width: 75%;
