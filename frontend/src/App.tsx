@@ -18,9 +18,13 @@ import { AdminDashboard } from "./admin/adminDashboard";
 // import { AdminViewAvailbleShifts } from "./admin/adminViewAvailbleShifts";
 // import { MyShift } from "./profile/myShift";
 
+//  import { AdminViewAllShifts } from "./admin/adminViewAllShifts";
+
 import { Modal } from "./profile/modal";
 import ShiftInformation from "./shiftInformation/shiftInformation";
 // import { VolunteerDetails } from "./admin/tags/volunteerDetails";
+
+import AdminViewAllUsers from "./admin/adminViewAllUsers";
 
 import "./profile/data.json";
 import { HomePage } from "./homepage/homepage";
@@ -35,6 +39,10 @@ function App(): JSX.Element {
                     <Route path="/login" element={<LoginPage />}></Route>
                     <Route path="/forgotpassword" element={<ResetPaswordForm redirectTo="/home" />}></Route>
                     <Route path="/register" element={<RegisterPage />}></Route>
+                    <Route
+                        path="/search"
+                        element={<ProtectedRoute needsAdmin={true} outlet={<AdminViewAllUsers />} />}
+                    ></Route>
                     <Route
                         path="/volunteers"
                         element={<ProtectedRoute needsAdmin={true} outlet={<VolunteersList />} />}

@@ -116,6 +116,11 @@ export class AdminDashboard extends React.Component<Record<string, never>, Admin
                                         <i className="bi bi-clipboard-data"></i> Reports
                                     </button>
                                 </Link>
+                                <Link to="/search">
+                                    <button>
+                                        <i className="bi bi-search" /> Search Users
+                                    </button>
+                                </Link>
                             </div>
                         </>
                     </ModalBody>
