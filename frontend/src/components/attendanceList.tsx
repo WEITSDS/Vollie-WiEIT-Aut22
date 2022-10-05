@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Modal, Button, Nav } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import { AttendaceSummary } from "../api/shiftApi";
 import participantsIcon from "../assets/participants.svg";
 //import AttendanceList from "./attendanceList.json";
@@ -7,6 +7,7 @@ import { useAttendanceList } from "../hooks/useAttendanceList";
 import RemoveUserFromShiftModal from "./removeUserFromShiftModal";
 // import axios from "axios";
 import "./attendanceList.css";
+import { Link } from "react-router-dom";
 
 type AttendanceListProps = {
     shiftId: string;
@@ -67,9 +68,9 @@ export default function AttendanceListModal({ shiftId, showModal, setShowModal, 
             <tr key={user._id}>
                 <th scope="row">{index + 1}</th>
                 <td>
-                    <Nav.Link href="/profile">
+                    <Link to={`/profile/${user._id}`}>
                         {user.firstName}&nbsp;{user.lastName}
-                    </Nav.Link>
+                    </Link>
                 </td>
                 <td>{user.volunteerType}</td>
                 <td>
