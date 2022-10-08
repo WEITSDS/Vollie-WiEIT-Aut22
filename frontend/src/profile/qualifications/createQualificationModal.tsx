@@ -123,6 +123,19 @@ export class CreateOrEditQualificationModal extends React.Component<CreateOrEdit
                                 onChange={this.onChangeDescription}
                             />
                         </Form.Group>
+                        <Form.Group controlId="qType" className="mb-3">
+                            <Form.Label>Qualification Type</Form.Label>
+                            <Form.Select
+                                //onChange={handleChange}
+                                aria-label="Shift category"
+                                defaultValue="Select Qualification Type"
+                            >
+                                <option value="Other">Other</option>
+                                <option value="WWC">Working With Children</option>
+                                <option value="First Aid">First Aid</option>
+                                <option value="Committee">Committee</option>
+                            </Form.Select>
+                        </Form.Group>
                         {isNew && (
                             <Form.Group controlId="qFile" className="mb-3">
                                 <Form.Label>Qualification Image</Form.Label>
