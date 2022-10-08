@@ -5,9 +5,17 @@ import ModalBody from "react-bootstrap/ModalBody";
 import ModalTitle from "react-bootstrap/ModalTitle";
 import { NewUserBody, registerUser } from "../api/userApi";
 import { SITE_NAME } from "../constants";
-import { emailIsValid, passwordIsValid, setPageTitle, stringValueIsValid, volunteerTypeIsValid } from "../utility";
+import { emailIsValid, passwordIsValid, setPageTitle, stringValueIsValid } from "../utility";
 import { WEITBackground } from "../components/background";
+import Select from "react-select";
 
+const volunteerTypes = [
+    { value: "generalvolunteer", label: "General Volunteer" },
+    { value: "sprouts", label: "Sprout" },
+    { value: "undergradambassador", label: "Undergrad Ambassador" },
+    { value: "postgradambassador", label: "Postgrad Ambassador" },
+    { value: "staffambassador", label: "Staff Ambassador" },
+];
 interface RegisterState extends NewUserBody {
     confirmPassword: string;
     errorMessages?: string[];
@@ -98,14 +106,14 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
             errorMessages,
             externalError,
             repeatAttempt,
-            volunteerType,
+            //volunteerType,
         } = this.state;
         const firstNameInvalid = repeatAttempt && !stringValueIsValid(firstName);
         const lastNameInvalid = repeatAttempt && !stringValueIsValid(lastName);
         const emailInvalid = repeatAttempt && !emailIsValid(email);
         const passwordInvalid = repeatAttempt && !passwordIsValid(password);
         const confirmPasswordInvalid = repeatAttempt && password !== confirmPassword;
-        const volunteerTypeInvalid = !volunteerTypeIsValid(volunteerType);
+        //const volunteerTypeInvalid = !volunteerTypeIsValid(volunteerType);
         return (
             <WEITBackground>
                 <ModalBody className="form-body">
@@ -170,7 +178,7 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
                                 />
                             </Form.Group>
                             <Form.Group controlId="formVolunteerType" className="mb-3">
-                                <Form.Select
+                                {/* <Form.Select
                                     onChange={this.onChangeVolunteerType}
                                     aria-label="Volunteer type selection"
                                     value={volunteerType}
@@ -181,7 +189,13 @@ export class RegisterPage extends React.Component<Record<string, never>, Registe
                                     <option value="postgradAmbassador">Postgrad Ambassador</option>
                                     <option value="staffAmbassador">Staff Ambassador</option>
                                     <option value="sprout">SPROUT</option>
-                                </Form.Select>
+                                </Form.Select> */}
+                                <Select
+                                    options={volunteerTypes}
+                                    placeholder="Select volunteer type"
+                                    isSearchable={true}
+                                    isMulti
+                                />
                             </Form.Group>
                             <Button variant="primary" type="submit" className="w-100">
                                 Register
