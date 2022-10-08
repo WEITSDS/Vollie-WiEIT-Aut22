@@ -113,7 +113,7 @@ div.form-body {
     border-radius: 5px;
     border-top-color: rgb(0, 128, 255);
     border-top-style: solid;
-    min-width: 15vw;
+    min-width: 50%;
 }
 
 .uts-logo {
