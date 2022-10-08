@@ -14,7 +14,6 @@ const UserSchema: Schema = new Schema(
         verified: { type: Boolean, default: false, required: true },
         isAdmin: { type: Boolean, default: false, required: true },
         qualifications: [{ type: mongoose.Types.ObjectId, ref: "Qualification" }],
-        tags: [{ type: mongoose.Types.ObjectId, ref: "Tag" }],
         shifts: [
             {
                 shift: { type: mongoose.Types.ObjectId, ref: "Shift" },

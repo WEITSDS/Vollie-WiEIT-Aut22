@@ -5,7 +5,6 @@ import {
     getUserById,
     createUser,
     setUserPassword,
-    getOwnTags,
     getOwnUser,
     setApprovalVolunteerTypeForUser,
 } from "./user.controller";
@@ -17,7 +16,6 @@ router.get("/self", wrapAsync(getOwnUser));
 router.get("/:id", getUserById);
 router.post("/create", wrapAsync(createUser));
 router.post("/resetpassword", setUserPassword);
-router.get("/owntags", wrapAsync(getOwnTags));
 router.post("/set-volunteerType-approval/:volunteerTypeID/:userID/:status", wrapAsync(setApprovalVolunteerTypeForUser));
 
 export = router;

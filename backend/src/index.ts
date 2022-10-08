@@ -7,7 +7,6 @@ import shiftRoutes from "./Shift/shift.route";
 import qualificationRoutes from "./Qualifications/qualifications.route";
 import qualificationTypeRoutes from "./QualificationType/qualificationType.route";
 import volunteerTypeRoutes from "./VolunteerType/volunteerType.route";
-import tagRoutes from "./Tag/tag.route";
 // import https = require("https");
 
 // Middleware
@@ -15,6 +14,7 @@ import cors from "cors";
 import otpRouter from "./otps/otp.route";
 import * as sessionManager from "./Common/middleware/sessionManagement";
 import { config } from "./constants";
+
 import { Logger } from "tslog";
 import { handleLogin, isSignedIn } from "./User/user.controller";
 import { wrapAsync } from "./utility";
@@ -27,6 +27,8 @@ app.listen(PORT);
 logger.info(`Server started at ${PROTOCOL}://${HOST}:${PORT}`);
 
 /** Connect to Mongo -> mongodb+srv://weit_user:IdCRhTHXp3sUBu8M@cluster0.cfutj.mongodb.net/WEIT */
+
+// mongodb+srv://vollie-wieit:RRTJa3wml^SbN1G1o;3S@wieit.gtchrvd.mongodb.net/test
 mongoose
     .connect("mongodb+srv://vollie-wieit:RRTJa3wml^SbN1G1o;3S@wieit.gtchrvd.mongodb.net/test", config.mongo.options)
     .then((_result) => {
@@ -56,8 +58,6 @@ app.get("/api/issignedin", wrapAsync(isSignedIn));
 app.post("/api/logout", (req, res) => {
     sessionManager.endSession(req, res);
 });
-
-app.use("/api/tags", tagRoutes);
 
 //**Use Routes */
 app.use("/api/users", userRoutes);

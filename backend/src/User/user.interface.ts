@@ -1,5 +1,4 @@
 import { Document, Types } from "mongoose";
-import { convertTagToTagSummary, IBasicTag, ITag } from "../Tag/tag.interface";
 // import { IVolunteerType } from "../VolunteerType/volunteerType.interface";
 
 export interface IBasicUser {
@@ -15,7 +14,6 @@ export interface IUser extends Document, IBasicUser {
     isAdmin: boolean;
     lastLogin: number;
     qualifications: Array<Types.ObjectId>; // qualification IDs
-    tags: ITag[];
     createdAt: Date;
     volunteerType: string;
     shifts: Array<Types.ObjectId>; // shift IDs
@@ -48,7 +46,6 @@ export interface UserSummary {
     qualifications: Array<string>;
     verified: boolean;
     isAdmin: boolean;
-    tags: IBasicTag[];
     volunteerTypes: Array<IUserVolunteerType>;
     shifts: Array<string>;
 }
@@ -63,7 +60,6 @@ export function mapUserToUserSummary({
     verified,
     createdAt,
     isAdmin,
-    tags,
     volunteerTypes,
     shifts,
 }: IUser): UserSummary {
@@ -77,7 +73,6 @@ export function mapUserToUserSummary({
         qualifications: qualifications.map((qual) => qual.toString()),
         registeredAt: createdAt.getTime(),
         isAdmin,
-        tags: tags ? tags.map(convertTagToTagSummary) : [],
         volunteerTypes,
         shifts: shifts.map((shift) => shift.toString()),
     };

@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import User from "./user.model";
-import Tag from "../Tag/tag.model";
 import mongoose, { Types } from "mongoose";
 import { Logger } from "tslog";
 import * as sessionManager from "../Common/middleware/sessionManagement";
@@ -18,7 +17,6 @@ const logger = new Logger({ name: "user.controller" });
  */
 export const getAllUsers = (_req: Request, res: Response, _next: NextFunction) => {
     User.find()
-        .populate("tags")
         .exec()
         .then((results) => {
             return res.status(200).json({
@@ -39,7 +37,6 @@ export const getAllUsers = (_req: Request, res: Response, _next: NextFunction) =
  */
 export const getUserById = (req: Request, res: Response, _next: NextFunction) => {
     User.findById(req.params.id)
-        .populate("tags")
         .exec()
         .then((foundUser) => {
             if (!foundUser) {
@@ -63,7 +60,7 @@ export const getUserById = (req: Request, res: Response, _next: NextFunction) =>
 export const getUserByEmail = async (email: string): Promise<IUser | undefined> => {
     try {
         if (!email) return undefined;
-        const results = (await User.findOne({ email }).populate("tags")) || undefined;
+        const results = (await User.findOne({ email })) || undefined;
         return results;
     } catch (err: unknown) {
         logger.error(err);
@@ -242,80 +239,6 @@ export const isSignedIn = async (req: Request, res: Response): Promise<void> => 
         data: { isAdmin: requestingUser.isAdmin },
     });
 };
-
-interface BatchUserTagBody {
-    userId: string;
-    tagIds: string[];
-}
-
-function isBatchUserTagBody(args: unknown): args is BatchUserTagBody {
-    const partial = args as Partial<BatchUserTagBody>;
-    return (
-        typeof args === "object" &&
-        typeof partial.userId === "string" &&
-        partial.tagIds != null &&
-        Array.isArray(partial.tagIds) &&
-        (partial.tagIds.length === 0 || typeof partial.tagIds[0] === "string")
-    );
-}
-
-export const batchChangeUserTag = async (req: Request, res: Response): Promise<void> => {
-    try {
-        if (!req.session.user?.isAdmin) {
-            res.status(404).send();
-            return;
-        }
-        const reqInfo = req.body as unknown;
-        if (!isBatchUserTagBody(reqInfo)) {
-            res.status(400).json({ message: "Batch user tag change request body was not valid", success: false });
-            return;
-        }
-
-        // Would need to get past middleware checks for loggedInUser to be null, but just in case
-        const requestingUser = req.session.user;
-        if (requestingUser == null) {
-            res.status(401).json({ message: "Must be logged in to reset password", success: false });
-            return;
-        }
-
-        const { tagIds, userId } = reqInfo;
-
-        const tagObjIds = tagIds.map((tId) => new mongoose.Types.ObjectId(tId));
-
-        const tags = await Tag.find({ _id: { $in: tagObjIds } });
-        const user = await User.findById(userId).populate("tags");
-
-        if (!(tags && user)) {
-            res.status(404).json({
-                message: `${[
-                    user == null ? "User could not be found." : "",
-                    tags == null ? "Tags could not be found." : "",
-                ].join(" ")}`,
-                success: false,
-            });
-            return;
-        }
-        const ogTags = user.tags.map((t) => t._id as string);
-        const removedTags = ogTags.filter((o) => !tagIds.includes(o)).map((tId) => new mongoose.Types.ObjectId(tId));
-        const addedTags = tagIds.filter((o) => !ogTags.includes(o)).map((tId) => new mongoose.Types.ObjectId(tId));
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        await user.update({ $set: { tags: tags.map((t) => t._id) } });
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        await Tag.updateMany({ _id: { $in: removedTags } }, { $pull: { users: user._id } });
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        await Tag.updateMany({ _id: { $in: addedTags } }, { $push: { users: user._id } });
-
-        res.status(200).json({
-            message: `Successfully updated tags for user`,
-            success: true,
-        });
-    } catch (err) {
-        handleError(logger, res, err, "Batch change user tag failed");
-    }
-};
-
 interface SetAdminBody {
     userId: string;
     makeAdmin: boolean;
@@ -372,26 +295,6 @@ export const setUserIsAdmin = async (req: Request, res: Response): Promise<void>
     }
 };
 
-export const getOwnTags = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const requestingUser = req.session.user;
-        if (requestingUser == null) {
-            res.status(401).json({ message: "Must be logged in", success: false });
-            return;
-        }
-
-        const user = await User.findOne({ email: requestingUser.email });
-        if (!user) {
-            res.status(404).json({ message: "Could not find user", success: false });
-            return;
-        }
-
-        res.status(200).json({ message: "Got own tags", data: user.tags, success: true });
-    } catch (err) {
-        handleError(logger, res, err, "Get own tags failed");
-    }
-};
-
 // User.find({ email: req.body.email }).exec(function (err, users) {
 //         if (!users.length) {
 //             return res.status(400).json({
@@ -424,7 +327,7 @@ export const getOwnUser = async (req: Request, res: Response): Promise<void> => 
             return;
         }
 
-        const user = await User.findOne({ email: requestingUser.email }).populate("tags").populate("qualifications");
+        const user = await User.findOne({ email: requestingUser.email }).populate("qualifications");
         if (!user) {
             res.status(404).json({ message: "Could not find user", success: false });
             return;
