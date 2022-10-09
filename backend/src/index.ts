@@ -14,7 +14,6 @@ import cors from "cors";
 import otpRouter from "./otps/otp.route";
 import * as sessionManager from "./Common/middleware/sessionManagement";
 import { config } from "./constants";
-
 import { Logger } from "tslog";
 import { handleLogin, isSignedIn } from "./User/user.controller";
 import { wrapAsync } from "./utility";
@@ -30,7 +29,7 @@ logger.info(`Server started at ${PROTOCOL}://${HOST}:${PORT}`);
 
 // mongodb+srv://vollie-wieit:RRTJa3wml^SbN1G1o;3S@wieit.gtchrvd.mongodb.net/test
 mongoose
-    .connect("mongodb+srv://vollie-wieit:RRTJa3wml^SbN1G1o;3S@wieit.gtchrvd.mongodb.net/test", config.mongo.options)
+    .connect('mongodb://127.0.0.1:27017/vollie', config.mongo.options)
     .then((_result) => {
         logger.info(`Connected to MongoDB`);
     })

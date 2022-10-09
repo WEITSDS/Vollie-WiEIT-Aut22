@@ -16,8 +16,14 @@ export interface IUser extends Document, IBasicUser {
     qualifications: Array<Types.ObjectId>; // qualification IDs
     createdAt: Date;
     volunteerType: string;
-    shifts: Array<Types.ObjectId>; // shift IDs
+    shifts: Array<IUserShiftType>; // shift IDs
     volunteerTypes: IUserVolunteerType[];
+}
+
+export interface IUserShiftType {
+    shift: Types.ObjectId,
+    approved: boolean,
+    completed: boolean
 }
 
 export interface IUserVolunteerType {

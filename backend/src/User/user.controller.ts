@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import User from "./user.model";
+
 import mongoose, { Types } from "mongoose";
 import { Logger } from "tslog";
 import * as sessionManager from "../Common/middleware/sessionManagement";
@@ -338,6 +339,48 @@ export const getOwnUser = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
+export const completeShift = async (req: Request, res: Response) => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) {
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
+            return;
+        }
+
+        //Cbeck to see if user is admin so they can mark other users as complete\
+        // This should be adjusted to check if the user is a supervising volunteer not admin
+        // Will likely have to make DB adjustments for this to identify if user is supervisor
+        const isAdmin = userObj?.isAdmin || false;
+        const sessionUserId = userObj._id;
+        if (!isAdmin && sessionUserId.toString() !== req.params.userid) {
+            res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+            return;
+        }
+
+        const completeShiftResult = await User.findOneAndUpdate(
+            {_id: sessionUserId, "shifts.shift": req.params.shiftid }, 
+            { $set: { "shifts.$.completed": true } },
+        )
+
+        if (completeShiftResult) {
+            res.status(200).json({
+                message: "User completed shift",
+                success: true,
+            });
+            return;
+        } else {
+            res.status(404).json({
+                message: "User not found",
+                success: true,
+            });
+            return;
+        }
+
+    } catch (err) {
+        handleError(logger, res, err, "Get complete user shift failed");
+    }
+};
+
 // Sets the approval status of a particular volunteer type inside the user obj. Checks to make sure that type exists and that user has that vol type.
 export const setApprovalVolunteerTypeForUser = async (req: Request, res: Response) => {
     try {
@@ -356,8 +399,8 @@ export const setApprovalVolunteerTypeForUser = async (req: Request, res: Respons
             return;
         }
 
-        const targetUser = await User.findOne({ _id: req.params.userID });
-        if (!req.params.userID || !targetUser) {
+        const targetUser = await User.findOne({ _id: req.params.userid });
+        if (!req.params.userid || !targetUser) {
             handleError(logger, res, null, "User not found.", 404);
             return;
         }

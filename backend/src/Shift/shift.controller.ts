@@ -84,7 +84,7 @@ export const updateShift = async (req: Request, res: Response) => {
         return;
     }
 
-    const shiftId: string = req.params.shiftId;
+    const shiftId: string = req.params.shiftid;
 
     if (!shiftId) {
         handleError(logger, res, null, "No shift ID provided for update", 401);
@@ -431,7 +431,7 @@ export const getShiftById = async (req: Request, res: Response) => {
             return;
         }
 
-        const shift = await Shift.findOne({ _id: req.params.shiftId });
+        const shift = await Shift.findOne({ _id: req.params.shiftid });
         if (!shift) {
             res.status(404).json({ message: "Shift not found", success: false });
             return;
@@ -512,7 +512,7 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
 
 export const getUserShifts = async (req: Request, res: Response) => {
     try {
-        const { targetUserID } = req.params;
+        const targetUserID  = req.params.userid;
 
         const userObj = await User.findOne({ _id: req.session.user?._id });
         if (!userObj) {
