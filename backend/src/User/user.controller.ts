@@ -347,7 +347,7 @@ export const completeShift = async (req: Request, res: Response) => {
             return;
         }
 
-        //Cbeck to see if user is admin so they can mark other users as complete\
+        //Cbeck to see if user is admin so they can mark other users as complete
         // This should be adjusted to check if the user is a supervising volunteer not admin
         // Will likely have to make DB adjustments for this to identify if user is supervisor
         const isAdmin = userObj?.isAdmin || false;
@@ -357,6 +357,7 @@ export const completeShift = async (req: Request, res: Response) => {
             return;
         }
 
+        //Add some checking to ensure the time is past that of the shift so it cant be completed before?
         const completeShiftResult = await User.findOneAndUpdate(
             {_id: sessionUserId, "shifts.shift": req.params.shiftid }, 
             { $set: { "shifts.$.completed": true } },
@@ -370,14 +371,14 @@ export const completeShift = async (req: Request, res: Response) => {
             return;
         } else {
             res.status(404).json({
-                message: "User not found",
+                message: "User or user shift not found",
                 success: true,
             });
             return;
         }
 
     } catch (err) {
-        handleError(logger, res, err, "Get complete user shift failed");
+        handleError(logger, res, err, "Complete user shift failed");
     }
 };
 
@@ -427,3 +428,41 @@ export const setApprovalVolunteerTypeForUser = async (req: Request, res: Respons
         handleError(logger, res, err, "Update qualification failed");
     }
 };
+
+export const assignVolunteerType = async ( req: Request, res: Response ) => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) {
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
+            return;
+        }
+
+        const sessionUserId = userObj._id;
+        if (sessionUserId.toString() !== req.params.userid) {
+            res.status(401).json({ message: "Unauthorised, you can only assign volunteer types to yourself", success: false });
+            return;
+        }
+
+        const completeShiftResult = await User.findOneAndUpdate(
+            { _id: sessionUserId }, 
+            { $addToSet: { volunteerTypes: { type: req.params.volunteertypeid, approved: false } } },
+        )
+
+        if (completeShiftResult) {
+            res.status(200).json({
+                message: "User assigned to volunteer type",
+                success: true,
+            });
+            return;
+        } else {
+            res.status(404).json({
+                message: "User not found",
+                success: true,
+            });
+            return;
+        }
+
+    } catch (err) {
+        handleError(logger, res, err, "Volunteer type assignment to user failed");
+    }
+}

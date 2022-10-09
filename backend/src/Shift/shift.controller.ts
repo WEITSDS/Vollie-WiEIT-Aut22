@@ -308,7 +308,7 @@ export const approveUser = async (req: Request, res: Response) => {
         );
         if (approveUserResponse) {
             res.status(200).json({
-                message: "User approved on the shift",
+                message: "Users shift approved",
                 success: true,
             });
             return;

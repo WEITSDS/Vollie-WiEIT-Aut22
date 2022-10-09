@@ -66,10 +66,10 @@ app.use("/api/users/admin", userAdminRoutes);
 app.use("/api/shifts", shiftRoutes);
 
 // Qualification Type Routes
-app.use("/api/qualificationTypes", qualificationTypeRoutes);
+app.use("/api/qualification-types", qualificationTypeRoutes);
 
 // Volunteer Type Routes
-app.use("/api/volunteerType", volunteerTypeRoutes);
+app.use("/api/volunteer-types", volunteerTypeRoutes);
 
 //Sling API Call to retrieve Auth Token
 // app.get("/api/credentials/:email/:password", (request, response) => {
