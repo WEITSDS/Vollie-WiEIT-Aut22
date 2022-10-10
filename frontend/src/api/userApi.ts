@@ -1,5 +1,6 @@
 import { Tag } from "./tagApi";
 import { getDataResponse, isBasicResponse, post, ResponseWithData, ResponseWithStatus } from "./utility";
+import { IVolunteerTypeUser } from "./volTypeAPI";
 
 const ROOT_URL = window.location.origin;
 
@@ -55,7 +56,7 @@ export interface NewUserBody {
     lastName: string;
     email: string;
     password: string;
-    volunteerType: string;
+    volunteerTypes: IVolunteerTypeUser[];
 }
 
 export async function registerUser(newUser: NewUserBody): Promise<ResponseWithStatus> {

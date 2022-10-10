@@ -26,7 +26,13 @@ export function useSessionManagement(application: core.Express): void {
 }
 
 // Being extra explicit by adding the "/api" bit to the start just in case :)
-const routesThatDontNeedAuth = ["/api/login", "api/users/create", "api/otp/verify", "api/otp/send"];
+const routesThatDontNeedAuth = [
+    "/api/login",
+    "api/users/create",
+    "api/otp/verify",
+    "api/otp/send",
+    "api/volunteer-types/volunteer-type-all",
+];
 
 function routeNeedsAuth(url: string): boolean {
     // If any of the route components that don't need auth form part of the url, the route does
