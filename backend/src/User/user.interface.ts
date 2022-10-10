@@ -21,9 +21,9 @@ export interface IUser extends Document, IBasicUser {
 }
 
 export interface IUserShiftType {
-    shift: Types.ObjectId,
-    approved: boolean,
-    completed: boolean
+    shift: Types.ObjectId;
+    approved: boolean;
+    completed: boolean;
 }
 
 export interface IUserVolunteerType {

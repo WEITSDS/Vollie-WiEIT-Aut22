@@ -8,7 +8,7 @@ import {
     getOwnUser,
     completeShift,
     setApprovalVolunteerTypeForUser,
-    assignVolunteerType
+    assignVolunteerType,
 } from "./user.controller";
 
 const router = express.Router();
@@ -23,6 +23,5 @@ router.post("/set-volunteerType-approval/:volunteerTypeID/:userid/:status", wrap
 
 router.patch("/:userid/assign-volunteer-type/:volunteertypeid", wrapAsync(assignVolunteerType));
 router.patch("/:userid/complete-shift/:shiftid", wrapAsync(completeShift));
-
 
 export = router;

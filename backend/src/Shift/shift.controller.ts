@@ -512,7 +512,7 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
 
 export const getUserShifts = async (req: Request, res: Response) => {
     try {
-        const targetUserID  = req.params.userid;
+        const targetUserID = req.params.userid;
 
         const userObj = await User.findOne({ _id: req.session.user?._id });
         if (!userObj) {

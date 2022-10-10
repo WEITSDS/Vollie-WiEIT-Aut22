@@ -359,9 +359,9 @@ export const completeShift = async (req: Request, res: Response) => {
 
         //Add some checking to ensure the time is past that of the shift so it cant be completed before?
         const completeShiftResult = await User.findOneAndUpdate(
-            {_id: sessionUserId, "shifts.shift": req.params.shiftid }, 
-            { $set: { "shifts.$.completed": true } },
-        )
+            { _id: sessionUserId, "shifts.shift": req.params.shiftid },
+            { $set: { "shifts.$.completed": true } }
+        );
 
         if (completeShiftResult) {
             res.status(200).json({
@@ -376,7 +376,6 @@ export const completeShift = async (req: Request, res: Response) => {
             });
             return;
         }
-
     } catch (err) {
         handleError(logger, res, err, "Complete user shift failed");
     }
@@ -429,7 +428,7 @@ export const setApprovalVolunteerTypeForUser = async (req: Request, res: Respons
     }
 };
 
-export const assignVolunteerType = async ( req: Request, res: Response ) => {
+export const assignVolunteerType = async (req: Request, res: Response) => {
     try {
         const userObj = await User.findOne({ _id: req.session.user?._id });
         if (!userObj) {
@@ -439,14 +438,22 @@ export const assignVolunteerType = async ( req: Request, res: Response ) => {
 
         const sessionUserId = userObj._id;
         if (sessionUserId.toString() !== req.params.userid) {
-            res.status(401).json({ message: "Unauthorised, you can only assign volunteer types to yourself", success: false });
+            res.status(401).json({
+                message: "Unauthorised, you can only assign volunteer types to yourself",
+                success: false,
+            });
             return;
         }
 
+        const targetVolType = await VolunteerType.findById(req.params.volunteertypeid);
         const completeShiftResult = await User.findOneAndUpdate(
-            { _id: sessionUserId }, 
-            { $addToSet: { volunteerTypes: { type: req.params.volunteertypeid, approved: false } } },
-        )
+            { _id: sessionUserId },
+            {
+                $addToSet: {
+                    volunteerTypes: { type: req.params.volunteertypeid, approved: !targetVolType?.requiresApproval },
+                },
+            }
+        );
 
         if (completeShiftResult) {
             res.status(200).json({
@@ -461,8 +468,7 @@ export const assignVolunteerType = async ( req: Request, res: Response ) => {
             });
             return;
         }
-
     } catch (err) {
         handleError(logger, res, err, "Volunteer type assignment to user failed");
     }
-}
+};

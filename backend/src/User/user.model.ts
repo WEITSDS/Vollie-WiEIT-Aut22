@@ -18,7 +18,7 @@ const UserSchema: Schema = new Schema(
             {
                 shift: { type: mongoose.Types.ObjectId, ref: "Shift" },
                 approved: { type: Boolean, default: false },
-                completed: { type: Boolean, default: false }
+                completed: { type: Boolean, default: false },
             },
         ],
         volunteerTypes: [
