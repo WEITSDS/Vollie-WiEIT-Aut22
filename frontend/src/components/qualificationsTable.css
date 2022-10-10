@@ -1,0 +1,96 @@
+#volunteer-table {
+    width: 100%;
+    border-color: black;
+}
+
+.dashboard-table-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.dashboard-tablebutton-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.action-button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.edit-action-btn {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+    width: 60px;
+    height: 39px;
+    left: 468px;
+    top: 108px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #bab7b7;
+    border-radius: 5px;
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 17px;
+    color: #000000;
+}
+.delete-action-btn {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+    width: 60px;
+    height: 39px;
+    left: 468px;
+    top: 108px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #bab7b7;
+    border-radius: 5px;
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 17px;
+    color: #000000;
+}
+
+.add-action-button {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    width: 90%;
+    height: 39px;
+    left: 468px;
+    top: 108px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #bab7b7;
+    border-radius: 5px;
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 1rem;
+    color: #000000;
+    gap: 10px;
+    justify-self: center;
+}
+
+.table-danger {
+    --bs-table-bg: #f5ac9f;
+    --bs-table-striped-bg: #f5ac9f;
+    --bs-table-striped-color: #000;
+    --bs-table-active-bg: #f5ac9f;
+    --bs-table-active-color: #000;
+    --bs-table-hover-bg: #f5ac9f;
+    --bs-table-hover-color: #000;
+    color: #000;
+    border-color: #f5ac9f;
+}

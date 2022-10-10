@@ -7,11 +7,15 @@ import { getAllUsers, User } from "../api/userApi";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { setPageTitle } from "../utility";
+import QualificationsTable from "../components/qualificationsTable";
 // import "./adminLandingPage.css";
 
 interface DashboardProps {
     tag: Tag;
 }
+
+// Dummy data for qualifications tables
+const dummyData = ["Working with Children", "First-Aid", "Some other name", "A Qualification name"];
 
 const Dashboard = ({ tag }: DashboardProps) => {
     return (
@@ -123,6 +127,10 @@ export class AdminDashboard extends React.Component<Record<string, never>, Admin
                                 </Link>
                             </div>
                         </>
+                        <div className="dashboard-table-container">
+                            <QualificationsTable tableName="Qualification Types" tableData={dummyData} />
+                            <QualificationsTable tableName="Volunteer Types" tableData={dummyData} />
+                        </div>
                     </ModalBody>
                 </WEITBackground>
             </>
