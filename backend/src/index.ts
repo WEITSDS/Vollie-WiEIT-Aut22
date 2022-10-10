@@ -5,7 +5,8 @@ import userRoutes from "./User/user.route";
 import userAdminRoutes from "./User/user.admin.route";
 import shiftRoutes from "./Shift/shift.route";
 import qualificationRoutes from "./Qualifications/qualifications.route";
-import tagRoutes from "./Tag/tag.route";
+import qualificationTypeRoutes from "./QualificationType/qualificationType.route";
+import volunteerTypeRoutes from "./VolunteerType/volunteerType.route";
 // import https = require("https");
 
 // Middleware
@@ -25,10 +26,12 @@ app.listen(PORT);
 logger.info(`Server started at ${PROTOCOL}://${HOST}:${PORT}`);
 
 /** Connect to Mongo -> mongodb+srv://weit_user:IdCRhTHXp3sUBu8M@cluster0.cfutj.mongodb.net/WEIT */
+
+// mongodb+srv://vollie-wieit:RRTJa3wml^SbN1G1o;3S@wieit.gtchrvd.mongodb.net/test
 mongoose
-    .connect(config.mongo.url, config.mongo.options)
+    .connect("mongodb://127.0.0.1:27017/vollie", config.mongo.options)
     .then((_result) => {
-        logger.info(`Connected to MongoDB at ${config.mongo.url}`);
+        logger.info(`Connected to MongoDB`);
     })
     .catch((err: unknown) => {
         logger.error("An error occurred trying to connect to MongoDB", err);
@@ -55,14 +58,18 @@ app.post("/api/logout", (req, res) => {
     sessionManager.endSession(req, res);
 });
 
-app.use("/api/tags", tagRoutes);
-
 //**Use Routes */
 app.use("/api/users", userRoutes);
 app.use("/api/users/admin", userAdminRoutes);
 
 //**Shift Routes */
 app.use("/api/shifts", shiftRoutes);
+
+// Qualification Type Routes
+app.use("/api/qualification-types", qualificationTypeRoutes);
+
+// Volunteer Type Routes
+app.use("/api/volunteer-types", volunteerTypeRoutes);
 
 //Sling API Call to retrieve Auth Token
 // app.get("/api/credentials/:email/:password", (request, response) => {

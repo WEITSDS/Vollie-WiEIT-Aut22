@@ -12,14 +12,28 @@ const ShiftSchema: Schema = new Schema(
         description: { type: String, default: "" },
         hours: { type: Number, default: 0 },
         notes: { type: String, default: "" },
-        users: [{ type: mongoose.Types.ObjectId, ref: "User", default: [] }],
-        category: { type: String, default: "Other" },
-        requiresWWCC: { type: Boolean, default: false },
-        numGeneralVolunteers: { type: Number, default: 0 },
-        numUndergradAmbassadors: { type: Number, default: 0 },
-        numPostgradAmbassadors: { type: Number, default: 0 },
-        numStaffAmbassadors: { type: Number, default: 0 },
-        numSprouts: { type: Number, default: 0 },
+        users: [
+            {
+                user: { type: mongoose.Types.ObjectId, ref: "User", required: true },
+                chosenVolunteerType: { type: mongoose.Types.ObjectId, ref: "VolunteerType", required: true },
+                approved: { type: Boolean, default: false },
+            },
+        ],
+        category: { type: String, enum: ["School Outreach", "Event", "Committee", "Other"], default: "Other" },
+        requiredQualifications: [
+            {
+                qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType", required: true },
+                numRequired: { type: Number, default: 0 },
+                currentNum: { type: Number, default: 0 }, // represents how many people in the shift have this qualification
+            },
+        ],
+        volunteerTypeAllocations: [
+            {
+                type: { type: mongoose.Types.ObjectId, ref: "VolunteerType", required: true },
+                numMembers: { type: Number, default: 0 },
+                currentNum: { type: Number, default: 0 }, // represents how many people in the shift have this volunteer type
+            },
+        ],
     },
     {
         timestamps: true,

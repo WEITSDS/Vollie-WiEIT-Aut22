@@ -3,24 +3,36 @@ import { Logger } from "tslog";
 import { handleError } from "../utility";
 import { v2 as cloudinary } from "cloudinary";
 import { CLOUDINARY_CONFIG } from "../constants";
-import { isIBasicQualification, mapQualificationToQualificationSummary } from "./qualifications.interface";
+import {
+    IBasicQualification,
+    isIBasicQualification,
+    mapQualificationToQualificationSummary,
+} from "./qualifications.interface";
 import Qualification from "./qualification.model";
 import User from "../User/user.model";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { getUserByEmail } from "../User/user.controller";
 import { IUser } from "../User/user.interface";
+import QualificationType from "../QualificationType/qualificationType.model";
 
 cloudinary.config(CLOUDINARY_CONFIG);
 const logger = new Logger({ name: "qualifications.controller" });
 
 export const createQualification = async (req: Request, res: Response) => {
-    const newQualification = req.body as unknown;
+    const newQualification = req.body as IBasicQualification;
     if (!isIBasicQualification(newQualification)) {
         res.status(400).json({ message: "New qualification request body not in expected format", success: false });
         return;
     }
 
     try {
+        const qualificationtype = await QualificationType.findOne({
+            _id: (newQualification?.qualificationType as Types.ObjectId) || "",
+        });
+        if (!newQualification?.qualificationType || !qualificationtype) {
+            handleError(logger, res, null, "Qualification type not found.", 404);
+            return;
+        }
         const user = await (newQualification.user && req.session.user?.isAdmin
             ? User.findById(newQualification.user)
             : getUserByEmail(req.session.user?.email || ""));
@@ -38,16 +50,19 @@ export const createQualification = async (req: Request, res: Response) => {
             description: newQualification.description,
             filePath: uploadResponse.secure_url,
             fileId: uploadResponse.public_id,
+            qualificationType: newQualification?.qualificationType as Types.ObjectId,
+            approved: !qualificationtype.requiresApproval, // assume that the qualification is approved if it required no admin approval
         });
 
         qual.id = new mongoose.Types.ObjectId();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        await user.update({ $push: { qualifications: qual._id } });
+
+        await user.update({ $push: { qualifications: qual._id as string } });
         await Promise.all([qual.save(), user.save()]);
 
         res.status(200).json({ message: "Created qualification successfully", success: true });
     } catch (err) {
-        handleError(logger, res, err, "An unexpected error occured");
+        handleError(logger, res, err, "An unexpected error occured while creating qualification.");
+        return;
     }
 };
 
@@ -135,5 +150,49 @@ export const deleteQualificationById = async (req: Request, res: Response) => {
         });
     } catch (err) {
         handleError(logger, res, err, "Delete qualification failed");
+    }
+};
+
+export const setApprovalQualificationForUser = async (req: Request, res: Response) => {
+    try {
+        // Get user obj to check if admin
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+
+        if (!userObj || !userObj?.isAdmin) {
+            handleError(logger, res, null, "Unauthorized", 401);
+            return;
+        }
+
+        // Ensure this user has this qualification in the first place (redundant check but ensures that consumers of API provide a corresponding qualID and userID)
+        const qualification = await Qualification.findById(req.params.qualificationID);
+        if (!req.params.qualificationID || !qualification) {
+            handleError(logger, res, null, "Qualification not found.", 404);
+            return;
+        }
+
+        const targetUser = await User.findOne({ _id: req.params.userID });
+        if (!req.params.userID || !targetUser) {
+            handleError(logger, res, null, "User not found.", 404);
+            return;
+        }
+
+        const userHasQual = targetUser.qualifications.includes(qualification._id as Types.ObjectId);
+        if (!userHasQual) {
+            handleError(logger, res, null, "User does not have this qualification.", 404);
+            return;
+        }
+
+        const updateResult = await Qualification.updateOne(
+            { _id: qualification._id as string },
+            { approved: req.params.status === "approve" }
+        );
+
+        res.status(200).json({
+            message: "Successfully approved qualification",
+            data: updateResult,
+            success: true,
+        });
+    } catch (err) {
+        handleError(logger, res, err, "Update qualification failed");
     }
 };

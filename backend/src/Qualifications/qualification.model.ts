@@ -9,6 +9,8 @@ const QualificationSchema: Schema = new Schema(
         filePath: { type: String, required: true },
         fileId: { type: String, required: true },
         user: { type: mongoose.Types.ObjectId, ref: "User" },
+        qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType" },
+        approved: { type: Boolean, default: false },
     },
     {
         timestamps: true,

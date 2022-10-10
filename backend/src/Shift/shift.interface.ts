@@ -1,5 +1,4 @@
-import { Document } from "mongoose";
-import { IUser } from "../User/user.interface";
+import { Document, Types } from "mongoose";
 
 export interface IShift extends Document {
     name: string;
@@ -10,12 +9,26 @@ export interface IShift extends Document {
     description: string;
     hours: number;
     notes: string;
-    users: Array<IUser["_id"]>;
+    users: Array<IShiftUser>;
     category: "School Outreach" | "Event" | "Committee" | "Other";
-    requiresWWCC: boolean;
-    numGeneralVolunteers: number;
-    numUndergradAmbassadors: number;
-    numPostgradAmbassadors: number;
-    numStaffAmbassadors: number;
-    numSprouts: number;
+    requiredQualifications: Array<IShiftRequiredQualification>;
+    volunteerTypeAllocations: Array<IShiftVolunteerAllocations>;
+}
+
+export interface IShiftRequiredQualification {
+    qualificationType: Types.ObjectId; // Qualification type ID
+    numRequired: number;
+    currentNum: number;
+}
+
+export interface IShiftVolunteerAllocations {
+    type: Types.ObjectId; // Volunteer type ID
+    numMembers: number;
+    currentNum: number;
+}
+
+export interface IShiftUser {
+    user: Types.ObjectId; // userID
+    chosenVolunteerType: Types.ObjectId; // volunteerTypeID
+    approved: boolean;
 }

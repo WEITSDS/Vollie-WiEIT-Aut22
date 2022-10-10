@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import User from "./user.model";
-import Tag from "../Tag/tag.model";
-import mongoose from "mongoose";
+
+import mongoose, { Types } from "mongoose";
 import { Logger } from "tslog";
 import * as sessionManager from "../Common/middleware/sessionManagement";
 import { handleError } from "../utility";
-import { isIBasicUser, IUser, mapUserToUserSummary } from "./user.interface";
+import { isIBasicUser, IUser, IUserVolunteerType, mapUserToUserSummary } from "./user.interface";
+import VolunteerType from "../VolunteerType/volunteerType.model";
 import bcrypt from "bcrypt";
 
 const logger = new Logger({ name: "user.controller" });
@@ -17,7 +18,6 @@ const logger = new Logger({ name: "user.controller" });
  */
 export const getAllUsers = (_req: Request, res: Response, _next: NextFunction) => {
     User.find()
-        .populate("tags")
         .exec()
         .then((results) => {
             return res.status(200).json({
@@ -38,7 +38,6 @@ export const getAllUsers = (_req: Request, res: Response, _next: NextFunction) =
  */
 export const getUserById = (req: Request, res: Response, _next: NextFunction) => {
     User.findById(req.params.id)
-        .populate("tags")
         .exec()
         .then((foundUser) => {
             if (!foundUser) {
@@ -62,7 +61,7 @@ export const getUserById = (req: Request, res: Response, _next: NextFunction) =>
 export const getUserByEmail = async (email: string): Promise<IUser | undefined> => {
     try {
         if (!email) return undefined;
-        const results = (await User.findOne({ email }).populate("tags")) || undefined;
+        const results = (await User.findOne({ email })) || undefined;
         return results;
     } catch (err: unknown) {
         logger.error(err);
@@ -130,22 +129,39 @@ export const setUserPassword = (req: Request, res: Response, _next: NextFunction
  * If a user has an existing account then throw an error to state that
  * Else send a request to the backend to sign them up
  */
-export const createUser = async (req: Request, res: Response): Promise<any> => {
-    const userFields = req.body as IUser;
-    if (!isIBasicUser(userFields)) {
-        return res.status(400).json({ message: "New user request body was not valid", success: false });
-    }
-
+export const createUser = async (req: Request, res: Response): Promise<void> => {
     try {
+        const userFields = req.body as IUser;
+        if (!isIBasicUser(userFields)) {
+            res.status(400).json({ message: "New user request body was not valid", success: false });
+            return;
+        }
         const existingUser = await User.findOne({ email: userFields.email });
 
         if (existingUser) {
             logger.warn(existingUser);
-            return res.status(400).json({
+            res.status(400).json({
                 message: "User of that email already exists",
                 success: false,
                 data: null,
             });
+            return;
+        }
+
+        // Set the volunteer types (also set approved status if that type requires admin approval or not)
+        const newVolunteerTypes = [] as Array<IUserVolunteerType>;
+        if (userFields?.volunteerTypes && userFields?.volunteerTypes instanceof Array) {
+            for (let index = 0; index < userFields?.volunteerTypes.length; index++) {
+                const vType = userFields?.volunteerTypes[index];
+                if (!vType.type) continue;
+                const targetVolType = await VolunteerType.findById(vType.type);
+                if (targetVolType) {
+                    newVolunteerTypes.push({
+                        type: targetVolType._id as Types.ObjectId,
+                        approved: !targetVolType?.requiresApproval, // if no appoval required, set approved to true
+                    });
+                }
+            }
         }
 
         const newUser = new User({
@@ -154,20 +170,20 @@ export const createUser = async (req: Request, res: Response): Promise<any> => {
             firstName: userFields.firstName,
             lastName: userFields.lastName,
             lastLogin: 0,
-            volunteerType: userFields.volunteerType,
+            volunteerTypes: newVolunteerTypes,
         });
 
         newUser.id = new mongoose.Types.ObjectId();
-        logger.info(newUser);
-
         const createdUser = await newUser.save();
-        return res.status(200).json({
+        res.status(200).json({
             message: "User register success",
             data: mapUserToUserSummary(createdUser),
             success: true,
         });
+        return;
     } catch (err) {
-        return handleError(logger, res, err, "User registration failed");
+        handleError(logger, res, err, "User registration failed");
+        return;
     }
 };
 
@@ -224,80 +240,6 @@ export const isSignedIn = async (req: Request, res: Response): Promise<void> => 
         data: { isAdmin: requestingUser.isAdmin },
     });
 };
-
-interface BatchUserTagBody {
-    userId: string;
-    tagIds: string[];
-}
-
-function isBatchUserTagBody(args: unknown): args is BatchUserTagBody {
-    const partial = args as Partial<BatchUserTagBody>;
-    return (
-        typeof args === "object" &&
-        typeof partial.userId === "string" &&
-        partial.tagIds != null &&
-        Array.isArray(partial.tagIds) &&
-        (partial.tagIds.length === 0 || typeof partial.tagIds[0] === "string")
-    );
-}
-
-export const batchChangeUserTag = async (req: Request, res: Response): Promise<void> => {
-    try {
-        if (!req.session.user?.isAdmin) {
-            res.status(404).send();
-            return;
-        }
-        const reqInfo = req.body as unknown;
-        if (!isBatchUserTagBody(reqInfo)) {
-            res.status(400).json({ message: "Batch user tag change request body was not valid", success: false });
-            return;
-        }
-
-        // Would need to get past middleware checks for loggedInUser to be null, but just in case
-        const requestingUser = req.session.user;
-        if (requestingUser == null) {
-            res.status(401).json({ message: "Must be logged in to reset password", success: false });
-            return;
-        }
-
-        const { tagIds, userId } = reqInfo;
-
-        const tagObjIds = tagIds.map((tId) => new mongoose.Types.ObjectId(tId));
-
-        const tags = await Tag.find({ _id: { $in: tagObjIds } });
-        const user = await User.findById(userId).populate("tags");
-
-        if (!(tags && user)) {
-            res.status(404).json({
-                message: `${[
-                    user == null ? "User could not be found." : "",
-                    tags == null ? "Tags could not be found." : "",
-                ].join(" ")}`,
-                success: false,
-            });
-            return;
-        }
-        const ogTags = user.tags.map((t) => t._id as string);
-        const removedTags = ogTags.filter((o) => !tagIds.includes(o)).map((tId) => new mongoose.Types.ObjectId(tId));
-        const addedTags = tagIds.filter((o) => !ogTags.includes(o)).map((tId) => new mongoose.Types.ObjectId(tId));
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        await user.update({ $set: { tags: tags.map((t) => t._id) } });
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        await Tag.updateMany({ _id: { $in: removedTags } }, { $pull: { users: user._id } });
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        await Tag.updateMany({ _id: { $in: addedTags } }, { $push: { users: user._id } });
-
-        res.status(200).json({
-            message: `Successfully updated tags for user`,
-            success: true,
-        });
-    } catch (err) {
-        handleError(logger, res, err, "Batch change user tag failed");
-    }
-};
-
 interface SetAdminBody {
     userId: string;
     makeAdmin: boolean;
@@ -354,26 +296,6 @@ export const setUserIsAdmin = async (req: Request, res: Response): Promise<void>
     }
 };
 
-export const getOwnTags = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const requestingUser = req.session.user;
-        if (requestingUser == null) {
-            res.status(401).json({ message: "Must be logged in", success: false });
-            return;
-        }
-
-        const user = await User.findOne({ email: requestingUser.email });
-        if (!user) {
-            res.status(404).json({ message: "Could not find user", success: false });
-            return;
-        }
-
-        res.status(200).json({ message: "Got own tags", data: user.tags, success: true });
-    } catch (err) {
-        handleError(logger, res, err, "Get own tags failed");
-    }
-};
-
 // User.find({ email: req.body.email }).exec(function (err, users) {
 //         if (!users.length) {
 //             return res.status(400).json({
@@ -406,7 +328,7 @@ export const getOwnUser = async (req: Request, res: Response): Promise<void> => 
             return;
         }
 
-        const user = await User.findOne({ email: requestingUser.email }).populate("tags").populate("qualifications");
+        const user = await User.findOne({ email: requestingUser.email }).populate("qualifications");
         if (!user) {
             res.status(404).json({ message: "Could not find user", success: false });
             return;
@@ -414,5 +336,139 @@ export const getOwnUser = async (req: Request, res: Response): Promise<void> => 
         res.status(200).json({ message: "Got own user", data: mapUserToUserSummary(user), success: true });
     } catch (err) {
         handleError(logger, res, err, "Get own user failed");
+    }
+};
+
+export const completeShift = async (req: Request, res: Response) => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) {
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
+            return;
+        }
+
+        //Cbeck to see if user is admin so they can mark other users as complete
+        // This should be adjusted to check if the user is a supervising volunteer not admin
+        // Will likely have to make DB adjustments for this to identify if user is supervisor
+        const isAdmin = userObj?.isAdmin || false;
+        const sessionUserId = userObj._id;
+        if (!isAdmin && sessionUserId.toString() !== req.params.userid) {
+            res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
+            return;
+        }
+
+        //Add some checking to ensure the time is past that of the shift so it cant be completed before?
+        const completeShiftResult = await User.findOneAndUpdate(
+            { _id: sessionUserId, "shifts.shift": req.params.shiftid },
+            { $set: { "shifts.$.completed": true } }
+        );
+
+        if (completeShiftResult) {
+            res.status(200).json({
+                message: "User completed shift",
+                success: true,
+            });
+            return;
+        } else {
+            res.status(404).json({
+                message: "User or user shift not found",
+                success: true,
+            });
+            return;
+        }
+    } catch (err) {
+        handleError(logger, res, err, "Complete user shift failed");
+    }
+};
+
+// Sets the approval status of a particular volunteer type inside the user obj. Checks to make sure that type exists and that user has that vol type.
+export const setApprovalVolunteerTypeForUser = async (req: Request, res: Response) => {
+    try {
+        // Get user obj to check if admin
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+
+        if (!userObj || !userObj?.isAdmin) {
+            handleError(logger, res, null, "Unauthorized", 401);
+            return;
+        }
+
+        // Ensure this user has this qualification in the first place (redundant check but ensures that consumers of API provide a corresponding qualID and userID)
+        const volunteerType = await VolunteerType.findById(req.params.volunteerTypeID);
+        if (!req.params.volunteerTypeID || !volunteerType) {
+            handleError(logger, res, null, "Volunteer Type not found.", 404);
+            return;
+        }
+
+        const targetUser = await User.findOne({ _id: req.params.userid });
+        if (!req.params.userid || !targetUser) {
+            handleError(logger, res, null, "User not found.", 404);
+            return;
+        }
+
+        const userHasVolType = targetUser.volunteerTypes.some((vType) => vType.type === volunteerType._id);
+        if (!userHasVolType) {
+            handleError(logger, res, null, "User does not have this volunteer type.", 404);
+            return;
+        }
+
+        const targetVolTypeInUserIdx = targetUser.volunteerTypes.findIndex(
+            (volType) => volType.type === volunteerType._id
+        );
+        targetUser.volunteerTypes[targetVolTypeInUserIdx].approved = req.params.status === "approve";
+
+        const saveResult = await targetUser.save();
+
+        res.status(200).json({
+            message: "Successfully approved volunteer type for user",
+            data: saveResult,
+            success: true,
+        });
+    } catch (err) {
+        handleError(logger, res, err, "Update qualification failed");
+    }
+};
+
+export const assignVolunteerType = async (req: Request, res: Response) => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) {
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
+            return;
+        }
+
+        const sessionUserId = userObj._id;
+        if (sessionUserId.toString() !== req.params.userid) {
+            res.status(401).json({
+                message: "Unauthorised, you can only assign volunteer types to yourself",
+                success: false,
+            });
+            return;
+        }
+
+        const targetVolType = await VolunteerType.findById(req.params.volunteertypeid);
+        const completeShiftResult = await User.findOneAndUpdate(
+            { _id: sessionUserId },
+            {
+                $addToSet: {
+                    volunteerTypes: { type: req.params.volunteertypeid, approved: !targetVolType?.requiresApproval },
+                },
+            }
+        );
+
+        if (completeShiftResult) {
+            res.status(200).json({
+                message: "User assigned to volunteer type",
+                success: true,
+            });
+            return;
+        } else {
+            res.status(404).json({
+                message: "User not found",
+                success: true,
+            });
+            return;
+        }
+    } catch (err) {
+        handleError(logger, res, err, "Volunteer type assignment to user failed");
     }
 };

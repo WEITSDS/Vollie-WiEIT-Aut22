@@ -27,7 +27,7 @@ export const EMAIL_ACCESS_TOKEN: string = process.env.EMAIL_ACCESS_TOKEN || "";
 // API keys
 // idk we dont have any :(
 
-// Database stuff
+// Database stuff 
 const MONGO_OPTIONS = {
     useUnifiedTopology: true,
     useNewUrlParser: true,
@@ -39,14 +39,13 @@ const MONGO_OPTIONS = {
 
 const MONGO_USERNAME = process.env.MONGO_USERNAME || "vollie-wieit";
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD || "RRTJa3wml^SbN1G1o;3S";
-const MONGO_HOST = process.env.MONGO_HOST || "wieit.gtchrvd.mongodb.net/test";
-
+const MONGO_HOST = "wieit.gtchrvd.mongodb.net/vollie";
 const MONGO = {
     host: MONGO_HOST,
     username: MONGO_USERNAME,
     password: MONGO_PASSWORD,
     options: MONGO_OPTIONS,
-    url: `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}`,
+    url: `mongodb://localhost/vollie`,
 };
 
 export const config = {
@@ -55,7 +54,7 @@ export const config = {
 
 // // Cloudinary stuff
 export const CLOUDINARY_CONFIG = {
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dkrj1dn2a",
+    api_key: process.env.CLOUDINARY_API_KEY || "881199877291791",
+    api_secret: process.env.CLOUDINARY_API_SECRET || "q1SqdYYyXU612DoBUEEESHhggdw",
 };

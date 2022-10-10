@@ -1,10 +1,5 @@
-import { Document } from "mongoose";
-import {
-    IQualification,
-    mapQualificationToQualificationSummary,
-    QualificationSummary,
-} from "../Qualifications/qualifications.interface";
-import { convertTagToTagSummary, IBasicTag, ITag } from "../Tag/tag.interface";
+import { Document, Types } from "mongoose";
+// import { IVolunteerType } from "../VolunteerType/volunteerType.interface";
 
 export interface IBasicUser {
     email: string;
@@ -18,11 +13,22 @@ export interface IUser extends Document, IBasicUser {
     verified: boolean;
     isAdmin: boolean;
     lastLogin: number;
-    qualifications: IQualification[];
-    tags: ITag[];
+    qualifications: Array<Types.ObjectId>; // qualification IDs
     createdAt: Date;
     volunteerType: string;
-    shifts: string[];
+    shifts: Array<IUserShiftType>; // shift IDs
+    volunteerTypes: IUserVolunteerType[];
+}
+
+export interface IUserShiftType {
+    shift: Types.ObjectId;
+    approved: boolean;
+    completed: boolean;
+}
+
+export interface IUserVolunteerType {
+    type: Types.ObjectId; // volunteer type ID
+    approved: boolean;
 }
 
 export function isIBasicUser(args: unknown): args is IBasicUser {
@@ -43,12 +49,11 @@ export interface UserSummary {
     email: string;
     lastLogin: number;
     registeredAt: number;
-    qualifications: QualificationSummary[];
+    qualifications: Array<string>;
     verified: boolean;
     isAdmin: boolean;
-    tags: IBasicTag[];
-    volunteerType: string;
-    shifts: string[];
+    volunteerTypes: Array<IUserVolunteerType>;
+    shifts: Array<string>;
 }
 
 export function mapUserToUserSummary({
@@ -61,8 +66,7 @@ export function mapUserToUserSummary({
     verified,
     createdAt,
     isAdmin,
-    tags,
-    volunteerType,
+    volunteerTypes,
     shifts,
 }: IUser): UserSummary {
     return {
@@ -72,12 +76,11 @@ export function mapUserToUserSummary({
         _id: _id || "",
         email,
         verified,
-        qualifications: qualifications.map(mapQualificationToQualificationSummary),
+        qualifications: qualifications.map((qual) => qual.toString()),
         registeredAt: createdAt.getTime(),
         isAdmin,
-        tags: tags ? tags.map(convertTagToTagSummary) : [],
-        volunteerType,
-        shifts,
+        volunteerTypes,
+        shifts: shifts.map((shift) => shift.toString()),
     };
 }
 export interface AttendaceSummary {
@@ -85,7 +88,7 @@ export interface AttendaceSummary {
     firstName: string;
     lastName: string;
     email: string;
-    volunteerType: string;
+    volunteerTypes: Array<IUserVolunteerType>;
 }
 
 export function mapUserToAttendanceSummary(userData: IUser): AttendaceSummary {
@@ -94,6 +97,6 @@ export function mapUserToAttendanceSummary(userData: IUser): AttendaceSummary {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
-        volunteerType: userData.volunteerType,
+        volunteerTypes: userData.volunteerTypes,
     };
 }
