@@ -13,7 +13,7 @@ import { VerifiedMark } from "./verifiedMark";
 import { TagBadges } from "./tags/tagBadges";
 import { EditUserTagsModal } from "./tags/editUserTagModal";
 import { getAllTags, Tag } from "../api/tagApi";
-import { Button, Table } from "react-bootstrap";
+import { Button, Modal, Table } from "react-bootstrap";
 
 interface ProfilePageProps {
     isAdmin?: boolean;
@@ -27,6 +27,9 @@ interface ProfilePageState {
     showOTPModal?: boolean;
     editingSelf?: boolean;
     showEditUserTagsModal?: boolean;
+    btnText: string;
+    approved: boolean;
+    show: boolean;
     tags: Tag[];
 }
 
@@ -35,6 +38,9 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
         loaded: false,
         user: undefined,
         tags: [],
+        btnText: "Accept",
+        approved: false,
+        show: false,
     };
 
     constructor(props: ProfilePageProps) {
@@ -89,11 +95,24 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
     };
 
     handleAccept = () => {
-        console.log("test");
+        if (this.state.approved == false) {
+            this.setState({ btnText: "Accept" });
+            this.setState({ approved: true });
+        } else {
+            this.setState({ btnText: "Reject" });
+            this.setState({ approved: false });
+        }
     };
 
+    handleShow = () => {
+        this.setState({ show: true });
+    };
+
+    handleClose = () => this.setState({ show: false });
+
     render = () => {
-        const { loaded, user, errorMessage, showOTPModal, editingSelf, showEditUserTagsModal, tags } = this.state;
+        const { loaded, user, errorMessage, showOTPModal, editingSelf, showEditUserTagsModal, tags, btnText, show } =
+            this.state;
         const { isAdmin, userId } = this.props;
         if (!(loaded && user)) {
             return <Spinner animation="border" />;
@@ -144,13 +163,12 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
                                     )}
                                 </div>
                             </div>
-                            <div className="profile-table">
+                            <div className="volunteer-type-table">
                                 <Table striped bordered hover>
                                     <thead>
                                         <tr>
                                             <th>#</th>
                                             <th>Volunteer Type</th>
-                                            <th>Qualification</th>
                                             <th>Approval</th>
                                         </tr>
                                     </thead>
@@ -159,55 +177,62 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
                                             <td>1</td>
                                             <td>General Volunteer</td>
                                             <td>
-                                                <a href="#">Qual</a>
-                                            </td>
-                                            <td>
-                                                <Button onClick={this.handleAccept}>Accept</Button>
+                                                <Button onClick={this.handleAccept}>{btnText}</Button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>2</td>
                                             <td>Undergrad Ambassador</td>
                                             <td>
-                                                {" "}
-                                                <a href="#">Qual</a>
-                                            </td>
-                                            <td>
-                                                <Button onClick={this.handleAccept}>Accept</Button>
+                                                <Button onClick={this.handleAccept}>{btnText}</Button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>3</td>
                                             <td>Postgrad Ambassador</td>
                                             <td>
-                                                {" "}
-                                                <a href="#">Qual</a>
-                                            </td>
-                                            <td>
-                                                <Button onClick={this.handleAccept}>Accept</Button>
+                                                <Button onClick={this.handleAccept}>{btnText}</Button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>4</td>
                                             <td>Staff Ambassadors</td>
                                             <td>
-                                                {" "}
-                                                <a href="#">Qual</a>
-                                            </td>
-                                            <td>
-                                                <Button onClick={this.handleAccept}>Accept</Button>
+                                                <Button onClick={this.handleAccept}>{btnText}</Button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>5</td>
                                             <td>SPROUT</td>
                                             <td>
-                                                {" "}
-                                                <a href="#">Qual</a>
+                                                <Button onClick={this.handleAccept}>{btnText}</Button>
                                             </td>
-                                            <td>
-                                                <Button onClick={this.handleAccept}>Accept</Button>
-                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </div>
+                            <div className="qualification-table">
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr onClick={this.handleShow}>
+                                            <th>Qualification</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr onClick={this.handleShow}>
+                                            <td>Qual</td>
+                                        </tr>
+                                        <tr onClick={this.handleShow}>
+                                            <td>Qual</td>
+                                        </tr>
+                                        <tr onClick={this.handleShow}>
+                                            <td>Qual</td>
+                                        </tr>
+                                        <tr onClick={this.handleShow}>
+                                            <td>Qual</td>
+                                        </tr>
+                                        <tr onClick={this.handleShow}>
+                                            <td>Qual</td>
                                         </tr>
                                     </tbody>
                                 </Table>
@@ -215,6 +240,10 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
                         </div>
                     </div>
                 </div>
+                <Modal show={show} onHide={this.handleClose}>
+                    <Modal.Header closeButton />
+                    test
+                </Modal>
                 {showEditUserTagsModal && (
                     <EditUserTagsModal tags={tags} user={user} onClose={this.onEditUserTagModalClose} />
                 )}
