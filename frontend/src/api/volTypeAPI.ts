@@ -1,10 +1,12 @@
 import {
+    deleteAndGetBasicResponse,
     // deleteAndGetBasicResponse,
     getDataResponse,
     isBasicResponse,
     post,
     // postAndGetBasicResponse,
     ResponseWithData,
+    ResponseWithStatus,
     // ResponseWithStatus,
 } from "./utility";
 
@@ -56,4 +58,8 @@ export async function updateVolunteerType(
         console.error(error);
         return { success: false, message: "Error updating qualification type.", data: null };
     }
+}
+
+export function deleteVolunteerType(volunteerTypeId: string): Promise<ResponseWithStatus> {
+    return deleteAndGetBasicResponse(`${PATH}/volunteer-types/${volunteerTypeId}`);
 }

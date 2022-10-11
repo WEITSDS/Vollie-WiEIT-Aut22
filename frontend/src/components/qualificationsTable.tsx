@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { createQualificationType, IQualificationType, updateQualificationType } from "../api/qualificationTypeAPI";
-import { createVolunteerType, IVolunteerType, updateVolunteerType } from "../api/volTypeAPI";
+import {
+    createQualificationType,
+    deleteQualificationType,
+    IQualificationType,
+    updateQualificationType,
+} from "../api/qualificationTypeAPI";
+import { createVolunteerType, deleteVolunteerType, IVolunteerType, updateVolunteerType } from "../api/volTypeAPI";
 import addShiftIcon from "../assets/addShiftIcon.svg";
 import deleteIcon from "../assets/deleteIcon.svg";
 import editIcon from "../assets/edit.svg";
@@ -30,6 +35,8 @@ const QualificationsTable = ({ tableType }: TableProps) => {
     const { data, isLoading, refetch } = tableType === "Qualification" ? useAllQualTypes() : useAllVolTypes();
 
     const [isProcessing, setisProcessing] = useState(false);
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const handleChange = (event: React.FormEvent<HTMLInputElement | HTMLSelectElement>): void => {
         event.preventDefault();
@@ -90,6 +97,25 @@ const QualificationsTable = ({ tableType }: TableProps) => {
         }
     };
 
+    const handleDeleteModalSubmit = async () => {
+        try {
+            if (!editingID) return;
+
+            if (tableType === "Qualification") {
+                await deleteQualificationType(editingID);
+            } else {
+                await deleteVolunteerType(editingID);
+            }
+            seteditingID(null);
+            setShowDeleteModal(false);
+            await refetch();
+        } catch (error) {
+            console.log("error deleting", error);
+            seteditingID(null);
+            setShowDeleteModal(false);
+        }
+    };
+
     return (
         <>
             <div className="dashboard-tablebutton-container">
@@ -121,7 +147,13 @@ const QualificationsTable = ({ tableType }: TableProps) => {
                                                 >
                                                     <img src={editIcon} alt="edit action icon" />
                                                 </Button>
-                                                <Button className="delete-action-btn">
+                                                <Button
+                                                    className="delete-action-btn"
+                                                    onClick={() => {
+                                                        setShowDeleteModal(true);
+                                                        seteditingID(item._id);
+                                                    }}
+                                                >
                                                     <img src={deleteIcon} alt="delete action icon" />
                                                 </Button>
                                             </div>
@@ -177,6 +209,39 @@ const QualificationsTable = ({ tableType }: TableProps) => {
                         }}
                     >
                         {!isProcessing ? "Submit" : "Submitting..."}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            {/* Delete Confirm Modal */}
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+                <Modal.Header>
+                    <Modal.Title>Are you sure?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="add-shift-form">
+                        <p>
+                            Are you sure you want to delete this entry? It can cause cascading issues if users have used
+                            this Qualification/Volunteer Type.
+                        </p>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        onClick={() => {
+                            setShowDeleteModal(false);
+                            seteditingID(null);
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="danger"
+                        disabled={isProcessing}
+                        onClick={() => {
+                            void handleDeleteModalSubmit();
+                        }}
+                    >
+                        {!isProcessing ? "Delete" : "Deleting..."}
                     </Button>
                 </Modal.Footer>
             </Modal>
