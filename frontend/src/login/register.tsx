@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import ModalBody from "react-bootstrap/ModalBody";
@@ -28,7 +28,7 @@ const RegisterPage = () => {
     const [confirmPassword, setconfirmPassword] = useState<string>("");
     const [volunteerTypes, setvolunteerTypes] = useState<IVolunteerTypeUser[]>([]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         setPageTitle("Register");
     }, []);
 
@@ -66,10 +66,8 @@ const RegisterPage = () => {
 
     const performRegister = async () => {
         // Reset any error states
-        // this.setState({ errorMessages: undefined, externalError: undefined });
         seterrorMessages([]);
         setexternalError("");
-        // const { firstName, lastName, email, password, confirmPassword, volunteerType } = this.state;
         // Some of these checks are redundant as the form checks some of them, but good to have anyway
         const errorMessages: string[] = [];
         if (!firstName || !lastName) {
@@ -85,7 +83,6 @@ const RegisterPage = () => {
         if (volunteerTypes.length < 1) {
             errorMessages.push("You must select at least 1 volunteer type.");
         }
-        // this.setState({ errorMessages, repeatAttempt: true });
         seterrorMessages(errorMessages);
         setrepeatAttempt(true);
         if (errorMessages.length > 0) {

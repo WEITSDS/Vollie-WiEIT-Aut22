@@ -94,3 +94,36 @@
     color: #000;
     border-color: #f5ac9f;
 }
+
+.add-shift-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    background: #ececec;
+
+    border-radius: 20px;
+}
+
+.add-shift-form input[type="text"] {
+    height: 40px;
+    width: 360px;
+    left: 401px;
+    top: 335px;
+    border-radius: 10px;
+
+    margin: 0px 70px 28px 70px;
+
+    background: #f9f9f9;
+    border: 1px solid #f0eaea;
+}
+.add-shift-form label {
+    margin: 0px 70px 5px 70px;
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 30px;
+
+    color: #000000;
+}
