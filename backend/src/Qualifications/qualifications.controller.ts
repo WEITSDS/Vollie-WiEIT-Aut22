@@ -42,7 +42,7 @@ export const createQualification = async (req: Request, res: Response) => {
         }
 
         const uploadResponse = await cloudinary.uploader.upload(newQualification.filePath, {
-            upload_preset: "ml_default",
+            upload_preset: "nzdtliy9",
         });
 
         const qual = new Qualification({

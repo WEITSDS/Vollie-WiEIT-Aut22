@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Qualification, createQualification, updateQualification } from "../../api/qualificationAPI";
+import { useAllQualTypes } from "../../hooks/useAllQualTypes";
 
 const allowedFileTypes = [".jpg", ".jpeg", ".svg", ".png"];
 const acceptParam = allowedFileTypes.join(", ");
@@ -12,159 +13,173 @@ interface CreateOrEditQualificationProps {
     isNew?: boolean;
 }
 
-interface ModalState extends Qualification {
-    file?: File;
-    fileName: string;
-    errorMessage?: string;
-    uploading?: boolean;
-}
-export class CreateOrEditQualificationModal extends React.Component<CreateOrEditQualificationProps, ModalState> {
-    constructor(props: CreateOrEditQualificationProps) {
-        super(props);
-        this.state = { ...props.qualification, fileName: "" };
-    }
+// interface ModalState extends Qualification {
+//     file?: File;
+//     fileName: string;
+//     errorMessage?: string;
+//     uploading?: boolean;
+// }
 
-    onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ title: e.target.value });
+export const CreateOrEditQualificationModal = (props: CreateOrEditQualificationProps) => {
+    const [fileName, setFileName] = useState("");
+
+    const { data: qualTypesData } = useAllQualTypes();
+    const allQualTypes = qualTypesData?.data;
+
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [file, setFile] = useState<File | null>(null);
+    const [selectedQualType, setSelectedQualType] = useState<string>("");
+
+    const [uploading, setUploading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.target.value);
     };
 
-    onChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ description: e.target.value });
+    const onChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDescription(e.target.value);
     };
 
-    onChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleQualTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        console.log(e.target.value);
+        setSelectedQualType(e.target.value);
+    };
+
+    const onChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
         const fileName = e.target.value;
         const fileParts = fileName.split(".");
         const extension = "." + (fileParts[fileParts.length - 1] || "");
         if (allowedFileTypes.includes(extension.toLowerCase())) {
-            this.setState({ file, fileName });
+            setFile(file);
+            setFileName(fileName);
         } else {
-            this.setState({ errorMessage: "Please upload only images" });
+            setErrorMessage("Please upload only images");
         }
     };
 
-    onSubmit = (e: React.FormEvent) => {
+    const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!this.props.isNew) {
-            void this.uploadImage("");
+        if (!props.isNew) {
+            void uploadImage("");
             return;
         }
 
-        const file = this.state.file;
         if (!file) return;
         const reader = new FileReader();
-        this.setState({ uploading: true });
+        setUploading(true);
         reader.readAsDataURL(file);
         reader.onloadend = () => {
             if (typeof reader.result === "string") {
-                void this.uploadImage(reader.result);
+                void uploadImage(reader.result);
             } else {
                 console.error("File input could not be handled!");
-                this.setState({ uploading: false });
+                setUploading(false);
             }
         };
         reader.onerror = () => {
             console.error("An error occurred trying to read the file.");
-            this.setState({ uploading: false });
+            setUploading(false);
         };
     };
 
-    uploadImage = async (base64EncodedImage: string) => {
+    const uploadImage = async (base64EncodedImage: string) => {
         let errorMessage = "";
         try {
-            const { isNew, qualification } = this.props;
-            const { title, description, _id } = this.state;
+            const { isNew, qualification } = props;
             const response = await (isNew
-                ? createQualification(title, description, base64EncodedImage, qualification.user)
-                : updateQualification({ _id, title, description, user: qualification.user }));
+                ? createQualification(title, description, base64EncodedImage, selectedQualType, qualification.user)
+                : updateQualification({
+                      _id: qualification._id,
+                      title,
+                      description,
+                      selectedQualType,
+                      user: qualification.user,
+                  }));
             if (!response.success) {
                 errorMessage = response.message;
                 return;
             }
-            this.props.onClose(true);
+            if (props.onClose) props.onClose(true);
         } catch (err) {
             console.error(err);
             errorMessage = "An unexpected error occurred.";
         } finally {
-            this.setState({ errorMessage, uploading: false });
+            setErrorMessage(errorMessage);
+            setUploading(false);
         }
     };
 
-    render() {
-        const { title, description, fileName, file, errorMessage, uploading } = this.state;
-        const { isNew, onClose } = this.props;
-        const disabled = (isNew && !(title && fileName && file)) || !(title && description) || uploading;
-        return (
-            <Modal show={true} onHide={onClose} backdrop="static">
-                <Modal.Header closeButton={!uploading}>
-                    <Modal.Title>{isNew ? "New" : "Edit"} Qualification</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="qName" className="mb-3">
-                            <Form.Label>Title</Form.Label>
+    // const { title, description, fileName, file, errorMessage, uploading } = this.state;
+    const { isNew, onClose } = props || {};
+    const disabled = (isNew && !(title && fileName && file)) || !(title && description) || uploading;
+    return (
+        <Modal show={true} onHide={onClose} backdrop="static">
+            <Modal.Header closeButton={!uploading}>
+                <Modal.Title>{isNew ? "New" : "Edit"} Qualification</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                    <Form.Group controlId="qName" className="mb-3">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control type="text" name="qName" value={title} onChange={onChangeTitle} required />
+                    </Form.Group>
+                    <Form.Group controlId="qDesc" className="mb-3">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            type="text"
+                            name="qDesc"
+                            value={description}
+                            onChange={onChangeDescription}
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="qType" className="mb-3">
+                        <Form.Label>Qualification Type</Form.Label>
+                        <Form.Select
+                            onChange={handleQualTypeChange}
+                            aria-label="Shift category"
+                            defaultValue="Select Qualification Type"
+                        >
+                            {allQualTypes?.map((qual) => {
+                                return (
+                                    <option key={qual._id} value={qual._id}>
+                                        {qual.name}
+                                    </option>
+                                );
+                            })}
+                        </Form.Select>
+                    </Form.Group>
+                    {isNew && (
+                        <Form.Group controlId="qFile" className="mb-3">
+                            <Form.Label>Qualification Image</Form.Label>
                             <Form.Control
-                                type="text"
-                                name="qName"
-                                value={title}
-                                onChange={this.onChangeTitle}
-                                required
+                                accept={acceptParam}
+                                type="file"
+                                name="qImage"
+                                onChange={onChangeFile}
+                                value={fileName}
                             />
                         </Form.Group>
-                        <Form.Group controlId="qDesc" className="mb-3">
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                type="text"
-                                name="qDesc"
-                                value={description}
-                                onChange={this.onChangeDescription}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="qType" className="mb-3">
-                            <Form.Label>Qualification Type</Form.Label>
-                            <Form.Select
-                                //onChange={handleChange}
-                                aria-label="Shift category"
-                                defaultValue="Select Qualification Type"
-                            >
-                                <option value="Other">Other</option>
-                                <option value="WWC">Working With Children</option>
-                                <option value="First Aid">First Aid</option>
-                                <option value="Committee">Committee</option>
-                            </Form.Select>
-                        </Form.Group>
-                        {isNew && (
-                            <Form.Group controlId="qFile" className="mb-3">
-                                <Form.Label>Qualification Image</Form.Label>
-                                <Form.Control
-                                    accept={acceptParam}
-                                    type="file"
-                                    name="qImage"
-                                    onChange={this.onChangeFile}
-                                    value={fileName}
-                                />
-                            </Form.Group>
-                        )}
-                    </Form>
-                    {errorMessage && <p>{errorMessage}</p>}
-                    {uploading && <p>Saving...</p>}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => onClose()} disabled={uploading}>
-                        Cancel
-                    </Button>
-                    <Button variant={isNew ? "success" : "primary"} onClick={this.onSubmit} disabled={disabled}>
-                        {isNew ? "Upload" : "Save"}
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-}
-
+                    )}
+                </Form>
+                {errorMessage && <p>{errorMessage}</p>}
+                {uploading && <p>Saving...</p>}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => onClose()} disabled={uploading}>
+                    Cancel
+                </Button>
+                <Button variant={isNew ? "success" : "primary"} onClick={(e) => onSubmit(e)} disabled={disabled}>
+                    {isNew ? "Upload" : "Save"}
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+};
 interface ConfirmDeleteModalProps {
     qualification: Qualification;
     onClose: (id?: string) => void;

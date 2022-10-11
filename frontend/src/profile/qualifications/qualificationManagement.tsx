@@ -181,6 +181,7 @@ export class QualificationsSection extends React.Component<QualificationSectionP
                                     filePath: "",
                                     title: "",
                                     user: isAdmin && userId ? userId : "",
+                                    qualificationType: "",
                                     fileId: "",
                                 }}
                                 onClose={this.onClose}
