@@ -1,5 +1,4 @@
 import React from "react";
-import { Tag, getAllTags } from "../api/tagApi";
 import { NavigationBar } from "../components/navbar";
 import { WEITBackground } from "../components/background";
 import { ModalBody, Spinner } from "react-bootstrap";
@@ -9,34 +8,14 @@ import { Link } from "react-router-dom";
 import { setPageTitle } from "../utility";
 import QualificationsTable from "../components/qualificationsTable";
 // import "./adminLandingPage.css";
-
-interface DashboardProps {
-    tag: Tag;
-}
-
-const Dashboard = ({ tag }: DashboardProps) => {
-    return (
-        <div className="dashboard-tiles">
-            <div>
-                <strong>{tag.name}</strong>
-            </div>
-            <div>
-                <span>{tag.userCount}</span>
-            </div>
-        </div>
-    );
-};
-
 interface AdminDashboardState {
     loading: boolean;
-    tags: Tag[];
     errorMessage?: string;
     users: User[];
 }
 
 export class AdminDashboard extends React.Component<Record<string, never>, AdminDashboardState> {
     state: AdminDashboardState = {
-        tags: [],
         loading: true,
         users: [],
     };
@@ -52,15 +31,14 @@ export class AdminDashboard extends React.Component<Record<string, never>, Admin
 
     load = async () => {
         this.setState({ loading: true });
-        const [tagsInfo, usersInfo] = await Promise.all([getAllTags(), getAllUsers()]);
+        const [usersInfo] = await Promise.all([getAllUsers()]);
         this.setState({
             loading: false,
-            tags: tagsInfo.data ?? [],
             users: usersInfo.data ?? [],
         });
     };
     render = () => {
-        const { loading, tags, errorMessage, users } = this.state;
+        const { loading, errorMessage, users } = this.state;
         const today = new Date();
         const startDate = moment().startOf("month");
         return (
@@ -73,14 +51,6 @@ export class AdminDashboard extends React.Component<Record<string, never>, Admin
                         ) : (
                             <div className="fs-4">
                                 {errorMessage && <p>{errorMessage}</p>}
-                                <div>
-                                    {tags.length > 0 ? (
-                                        tags.map((tag, i) => <Dashboard tag={tag} key={`tag-${i}`} />)
-                                    ) : (
-                                        <p>No users to show</p>
-                                    )}
-                                </div>
-
                                 <div className="dashboard-tiles">
                                     <div>
                                         <strong>New Volunteers</strong>
@@ -105,11 +75,6 @@ export class AdminDashboard extends React.Component<Record<string, never>, Admin
                                 <Link to="/volunteers">
                                     <button>
                                         <i className="bi bi-person"></i> Volunteers
-                                    </button>
-                                </Link>
-                                <Link to="/tags">
-                                    <button>
-                                        <i className="bi bi-tags"></i> Tags
                                     </button>
                                 </Link>
                                 <Link to="/">

@@ -1,4 +1,3 @@
-import { Tag } from "./tagApi";
 import { getDataResponse, isBasicResponse, post, ResponseWithData, ResponseWithStatus } from "./utility";
 import { IVolunteerTypeUser } from "./volTypeAPI";
 
@@ -43,7 +42,6 @@ export async function loginUser(loginDetails: LoginBody): Promise<ResponseWithSt
 export async function logoutUser(): Promise<ResponseWithStatus> {
     return postAndGetBasicResponse(`${ROOT_URL}/api/logout`, {});
 }
-
 interface IsSignedInResponse {
     isAdmin: boolean;
 }
@@ -85,7 +83,6 @@ export interface User {
     lastLogin: number;
     registeredAt: number;
     isAdmin: boolean;
-    tags: Tag[];
     shifts: string[];
 }
 
@@ -105,16 +102,6 @@ export async function getOwnUser(): Promise<ResponseWithData<User>> {
 export async function getUserById(id: string): Promise<ResponseWithData<User>> {
     return getDataResponse(`${PATH}/${id}`);
 }
-
-interface BatchChangeTagBody {
-    userId: string;
-    tagIds: string[];
-}
-
-export async function batchChangeUserTag(data: BatchChangeTagBody): Promise<ResponseWithStatus> {
-    return postAndGetBasicResponse(`${PATH}/admin/batchchangetag`, data as unknown as Record<string, unknown>);
-}
-
 interface SetAdminBody {
     userId: string;
     makeAdmin: boolean;

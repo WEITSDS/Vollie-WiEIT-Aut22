@@ -27,7 +27,7 @@ export const createQualification = async (req: Request, res: Response) => {
 
     try {
         const qualificationtype = await QualificationType.findOne({
-            _id: (newQualification?.qualificationType as Types.ObjectId) || "",
+            _id: newQualification?.qualificationType || "",
         });
         if (!newQualification?.qualificationType || !qualificationtype) {
             handleError(logger, res, null, "Qualification type not found.", 404);
@@ -50,7 +50,7 @@ export const createQualification = async (req: Request, res: Response) => {
             description: newQualification.description,
             filePath: uploadResponse.secure_url,
             fileId: uploadResponse.public_id,
-            qualificationType: newQualification?.qualificationType as Types.ObjectId,
+            qualificationType: newQualification?.qualificationType,
             approved: !qualificationtype.requiresApproval, // assume that the qualification is approved if it required no admin approval
         });
 
@@ -104,7 +104,7 @@ export const updateQualificationById = async (req: Request, res: Response) => {
 
         if (!qualification) {
             res.status(404).json({
-                message: "Could not find matching tag",
+                message: "Could not find matching qualification",
                 success: false,
             });
             return;

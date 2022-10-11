@@ -10,10 +10,6 @@ import { loggedInUserIsAdmin } from "../protectedRoute";
 import { setPageTitle } from "../utility";
 import "./profile.css";
 import { VerifiedMark } from "./verifiedMark";
-import { TagBadges } from "./tags/tagBadges";
-import { EditUserTagsModal } from "./tags/editUserTagModal";
-import { getAllTags, Tag } from "../api/tagApi";
-
 interface ProfilePageProps {
     isAdmin?: boolean;
     userId?: string;
@@ -26,14 +22,12 @@ interface ProfilePageState {
     showOTPModal?: boolean;
     editingSelf?: boolean;
     showEditUserTagsModal?: boolean;
-    tags: Tag[];
 }
 
 class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageState> {
     state: ProfilePageState = {
         loaded: false,
         user: undefined,
-        tags: [],
     };
 
     constructor(props: ProfilePageProps) {
@@ -43,7 +37,7 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
 
     componentDidMount = async () => {
         const { isAdmin, userId } = this.props;
-        const [userResp, tagResp] = await Promise.all([getUser(isAdmin ? userId : undefined), getAllTags()]);
+        const [userResp] = await Promise.all([getUser(isAdmin ? userId : undefined)]);
         if (isAdmin && userId && userId === userResp.data?._id) {
             setPageTitle(`${userResp.data.firstName} ${userResp.data.lastName} - Profile`);
         }
@@ -51,31 +45,8 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
             loaded: true,
             editingSelf: this.props.userId == null || userResp.data?._id !== this.props.userId,
             user: userResp.data ?? undefined,
-            tags: tagResp.data ?? [],
             errorMessage: userResp.success ? "" : userResp.message,
         });
-    };
-
-    onEditUserTagModalClose = (save?: boolean) => {
-        this.setState({ showEditUserTagsModal: false });
-        if (save) {
-            const { isAdmin, userId } = this.props;
-            getUser(isAdmin ? userId : undefined)
-                .then((resp) => {
-                    this.setState({
-                        loaded: true,
-                        editingSelf: this.props.userId == null || resp.data?._id !== this.props.userId,
-                        user: resp.data ?? undefined,
-                        errorMessage: resp.success ? "" : resp.message,
-                    });
-                })
-                .catch(console.error);
-        }
-    };
-
-    showEditUserTagModal = (e: React.MouseEvent<HTMLElement>, _user: User) => {
-        e.preventDefault();
-        this.setState({ showEditUserTagsModal: true });
     };
 
     showOTPVerifierModal = () => {
@@ -88,7 +59,7 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
     };
 
     render = () => {
-        const { loaded, user, errorMessage, showOTPModal, editingSelf, showEditUserTagsModal, tags } = this.state;
+        const { loaded, user, errorMessage, showOTPModal, editingSelf } = this.state;
         const { isAdmin, userId } = this.props;
         if (!(loaded && user)) {
             return <Spinner animation="border" />;
@@ -116,12 +87,6 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
                                         />
                                     </h2>
                                     <h4>{user.email}</h4>
-                                    <div>
-                                        <TagBadges
-                                            user={user}
-                                            onEditClick={isAdmin ? this.showEditUserTagModal : undefined}
-                                        />
-                                    </div>
                                 </div>
                                 <div className="col-8">
                                     {errorMessage && <p>{errorMessage}</p>}
@@ -142,9 +107,6 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
                         </div>
                     </div>
                 </div>
-                {showEditUserTagsModal && (
-                    <EditUserTagsModal tags={tags} user={user} onClose={this.onEditUserTagModalClose} />
-                )}
             </>
         );
     };

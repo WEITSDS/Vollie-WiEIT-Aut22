@@ -10,7 +10,6 @@ import { LoginPage } from "./login/login";
 // import { VolunteerLandingPage } from "./profile/volunteer/landingPage";
 import { ResetPaswordForm } from "./forms/resetPassword/resetPasswordForm";
 import { ProfilePage } from "./profile/profile";
-import { TagManagement } from "./admin/tags/tagManagement";
 import { VolunteersList } from "./admin/tags/volunteersList";
 import { AdminDashboard } from "./admin/adminDashboard";
 
@@ -49,10 +48,6 @@ function App(): JSX.Element {
                     ></Route>
                     <Route path="/profile" element={<ProtectedRoute outlet={<ProfilePage />} />}></Route>
                     <Route path="/profile/:id" element={<ProtectedRoute outlet={<ProfilePage />} />}></Route>
-                    <Route
-                        path="/tags"
-                        element={<ProtectedRoute needsAdmin={true} outlet={<TagManagement />} />}
-                    ></Route>
                     <Route
                         path="/home"
                         element={<ProtectedRoute outlet={<HomePage shiftType={"available"} />} />}
