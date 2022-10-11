@@ -10,6 +10,8 @@ import { loggedInUserIsAdmin } from "../protectedRoute";
 import { setPageTitle } from "../utility";
 import "./profile.css";
 import { VerifiedMark } from "./verifiedMark";
+import { Button, Table } from "react-bootstrap";
+
 interface ProfilePageProps {
     isAdmin?: boolean;
     userId?: string;
@@ -58,6 +60,10 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
         this.setState({ showOTPModal: false, user: user ? { ...user, verified: verified || false } : undefined });
     };
 
+    handleAccept = () => {
+        console.log("test");
+    };
+
     render = () => {
         const { loaded, user, errorMessage, showOTPModal, editingSelf } = this.state;
         const { isAdmin, userId } = this.props;
@@ -103,6 +109,74 @@ class ProfilePageClass extends React.Component<ProfilePageProps, ProfilePageStat
                                         />
                                     )}
                                 </div>
+                            </div>
+                            <div className="profile-table">
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Volunteer Type</th>
+                                            <th>Qualification</th>
+                                            <th>Approval</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>General Volunteer</td>
+                                            <td>
+                                                <a href="#">Qual</a>
+                                            </td>
+                                            <td>
+                                                <Button onClick={this.handleAccept}>Accept</Button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>Undergrad Ambassador</td>
+                                            <td>
+                                                {" "}
+                                                <a href="#">Qual</a>
+                                            </td>
+                                            <td>
+                                                <Button onClick={this.handleAccept}>Accept</Button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>Postgrad Ambassador</td>
+                                            <td>
+                                                {" "}
+                                                <a href="#">Qual</a>
+                                            </td>
+                                            <td>
+                                                <Button onClick={this.handleAccept}>Accept</Button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>4</td>
+                                            <td>Staff Ambassadors</td>
+                                            <td>
+                                                {" "}
+                                                <a href="#">Qual</a>
+                                            </td>
+                                            <td>
+                                                <Button onClick={this.handleAccept}>Accept</Button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>5</td>
+                                            <td>SPROUT</td>
+                                            <td>
+                                                {" "}
+                                                <a href="#">Qual</a>
+                                            </td>
+                                            <td>
+                                                <Button onClick={this.handleAccept}>Accept</Button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
                             </div>
                         </div>
                     </div>
