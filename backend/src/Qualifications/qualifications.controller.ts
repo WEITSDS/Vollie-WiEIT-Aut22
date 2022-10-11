@@ -3,11 +3,7 @@ import { Logger } from "tslog";
 import { handleError } from "../utility";
 import { v2 as cloudinary } from "cloudinary";
 import { CLOUDINARY_CONFIG } from "../constants";
-import {
-    IBasicQualification,
-    isIBasicQualification,
-    mapQualificationToQualificationSummary,
-} from "./qualifications.interface";
+import { IBasicQualification, isIBasicQualification } from "./qualifications.interface";
 import Qualification from "./qualification.model";
 import User from "../User/user.model";
 import mongoose, { Types } from "mongoose";
@@ -81,10 +77,15 @@ const getQualificationsForUser = async (userPromise: Promise<IUser | undefined |
             res.status(404).json({ message: "Could not find user", success: false });
             return;
         }
-        const qualifications = await Qualification.find({ _id: { $in: currentUser.qualifications } });
+
+        // find all the qualifications and populate the qualification type nested doc instead of sending back an id
+        const qualifications = await Qualification.find({ _id: { $in: currentUser.qualifications } }).populate(
+            "qualificationType"
+        );
+
         res.status(200).json({
             message: "Got qualifications for current user successfully",
-            data: qualifications.map(mapQualificationToQualificationSummary),
+            data: qualifications,
             success: true,
         });
     } catch (err) {
@@ -117,7 +118,7 @@ export const updateQualificationById = async (req: Request, res: Response) => {
 
         res.status(200).json({
             message: "Updated qualification",
-            data: mapQualificationToQualificationSummary(qualification),
+            data: qualification,
             success: true,
         });
     } catch (err) {
@@ -127,7 +128,7 @@ export const updateQualificationById = async (req: Request, res: Response) => {
 
 export const deleteQualificationById = async (req: Request, res: Response) => {
     try {
-        const qual = await Qualification.findById(req.params.id);
+        const qual = await Qualification.findById(req.params.id).populate("qualificationType");
 
         if (!qual) {
             res.status(404).json({
@@ -145,7 +146,7 @@ export const deleteQualificationById = async (req: Request, res: Response) => {
 
         res.status(200).json({
             message: "Deleted qualification",
-            data: mapQualificationToQualificationSummary(qual),
+            data: qual,
             success: true,
         });
     } catch (err) {

@@ -6,20 +6,25 @@ import { QualificationsSection } from "./qualifications/qualificationManagement"
 import { VerifyAccountModal } from "./verifyAccount";
 import { NavigationBar } from "../components/navbar";
 import { useParams } from "react-router-dom";
-import { loggedInUserIsAdmin } from "../protectedRoute";
 import { setPageTitle } from "../utility";
 import "./profile.css";
 import { VerifiedMark } from "./verifiedMark";
 import { Button, Table } from "react-bootstrap";
 import { useUserById } from "../hooks/useUserById";
 import { useOwnUser } from "../hooks/useOwnUser";
+import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
+import { setApprovalUserVolunteerType } from "../api/userApi";
 
 export const ProfilePage = () => {
     const { id } = useParams();
-    const isAdmin = loggedInUserIsAdmin();
-
     const { isLoading, data: userData, refetch: refetchUser, error } = id ? useUserById(id) : useOwnUser();
     const user = userData?.data;
+
+    const {
+        data: userVolTypesData,
+        isLoading: isLoadingVolTypes,
+        refetch: refetchVolTypeUser,
+    } = useVoltypesForUser(user?._id);
 
     const editingSelf = !id;
 
@@ -33,6 +38,17 @@ export const ProfilePage = () => {
     const closeOTPVerifierModal = async () => {
         setShowOTPModal(false);
         await refetchUser();
+    };
+
+    const handleSetVolunteerTypeApproval = async (qualId: string, status: string) => {
+        try {
+            if (user) {
+                await setApprovalUserVolunteerType(qualId, user?._id, status);
+                await refetchVolTypeUser();
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     if (!(!isLoading && user)) {
@@ -66,17 +82,21 @@ export const ProfilePage = () => {
                             </div>
                             <div className="col-8">
                                 {error && <p>{error}</p>}
-                                <div className="main-content">
+                                {/* <div className="main-content">
                                     <h4>
                                         <strong>Qualifications</strong>
                                     </h4>
-                                    <QualificationsSection isAdmin={isAdmin} userId={user._id} />
-                                </div>
+                                    <QualificationsSection
+                                        isAdmin={isAdmin}
+                                        userId={user._id}
+                                        onFinishAddingQualification={() => void refetchQualifications()}
+                                    />
+                                </div> */}
                                 {showOTPModal && (
                                     <VerifyAccountModal
                                         email={user.email}
                                         closeModal={() => {
-                                            void closeOTPVerifierModal();
+                                            void closeOTPVerifierModal;
                                         }}
                                     />
                                 )}
@@ -88,74 +108,40 @@ export const ProfilePage = () => {
                                     <tr>
                                         <th>#</th>
                                         <th>Volunteer Type</th>
-                                        <th>Approval</th>
+                                        <th>Approval Status</th>
+                                        {user.isAdmin && <th>Set Approval</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>General Volunteer</td>
-                                        <td>
-                                            <Button>Accept</Button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Undergrad Ambassador</td>
-                                        <td>
-                                            <Button>Accept</Button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>Postgrad Ambassador</td>
-                                        <td>
-                                            <Button>Accept</Button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td>Staff Ambassadors</td>
-                                        <td>
-                                            <Button>Accept</Button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>5</td>
-                                        <td>SPROUT</td>
-                                        <td>
-                                            <Button>Accept</Button>
-                                        </td>
-                                    </tr>
+                                    {!isLoadingVolTypes &&
+                                        userVolTypesData?.data &&
+                                        userVolTypesData.data.map((volType, index) => {
+                                            return (
+                                                <tr key={volType._id}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{volType.name}</td>
+                                                    <td>{volType.approved ? "Yes" : "No"}</td>
+                                                    {user.isAdmin && (
+                                                        <td>
+                                                            <Button
+                                                                onClick={() => {
+                                                                    void handleSetVolunteerTypeApproval(
+                                                                        volType._id,
+                                                                        volType.approved ? "revoke" : "approve"
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {volType.approved ? "Revoke" : "Approve"}
+                                                            </Button>
+                                                        </td>
+                                                    )}
+                                                </tr>
+                                            );
+                                        })}
                                 </tbody>
                             </Table>
                         </div>
-                        <div className="qualification-table">
-                            <Table striped bordered hover>
-                                <thead>
-                                    <tr>
-                                        <th>Qualification</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Qual</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Qual</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Qual</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Qual</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Qual</td>
-                                    </tr>
-                                </tbody>
-                            </Table>
-                        </div>
+                        {user?._id && <QualificationsSection userId={user._id} isAdmin={user.isAdmin} />}
                     </div>
                 </div>
             </div>

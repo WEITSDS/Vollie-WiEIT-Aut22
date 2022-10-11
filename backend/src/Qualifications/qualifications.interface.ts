@@ -1,4 +1,5 @@
 import { Document, Types } from "mongoose";
+import { IQualificationType } from "../QualificationType/qualificationType.interface";
 
 export function isIBasicQualification(args: unknown): args is IBasicQualification {
     const p = args as Partial<IBasicQualification>;
@@ -29,24 +30,6 @@ export interface QualificationSummary {
     title: string;
     description: string;
     filePath: string;
-    qualificationType: string;
+    qualificationType: IQualificationType;
     approved: boolean;
-}
-
-export function mapQualificationToQualificationSummary({
-    _id,
-    title,
-    description,
-    filePath,
-    qualificationType,
-    approved,
-}: IQualification): QualificationSummary {
-    return {
-        title,
-        description,
-        filePath,
-        _id: (_id as string) || "",
-        qualificationType: qualificationType.toString(),
-        approved,
-    };
 }

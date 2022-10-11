@@ -6,6 +6,7 @@ import {
     deleteVolunteerType,
     getAllVolunteerTypes,
     getVolunteerTypeById,
+    getVolunteerTypesForUser,
 } from "./volunteerType.controller";
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.delete("/:volunteerTypeId", wrapAsync(deleteVolunteerType));
 
 router.get("/volunteer-type-all", wrapAsync(getAllVolunteerTypes));
 router.get("/volunteerTypeById/:volunteerTypeId", wrapAsync(getVolunteerTypeById));
+router.get("/volunteer-types-user/:userId", wrapAsync(getVolunteerTypesForUser));
 
 export = router;

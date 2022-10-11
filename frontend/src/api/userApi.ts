@@ -1,4 +1,4 @@
-import { getDataResponse, isBasicResponse, post, ResponseWithData, ResponseWithStatus } from "./utility";
+import { getDataResponse, isBasicResponse, patch, post, ResponseWithData, ResponseWithStatus } from "./utility";
 import { IVolunteerTypeUser } from "./volTypeAPI";
 
 const ROOT_URL = window.location.origin;
@@ -84,6 +84,7 @@ export interface User {
     registeredAt: number;
     isAdmin: boolean;
     shifts: string[];
+    volunteerTypes: IVolunteerTypeUser[];
 }
 
 const PATH = `${ROOT_URL}/api/users`;
@@ -109,4 +110,8 @@ interface SetAdminBody {
 
 export async function changeUserIsAdmin(data: SetAdminBody): Promise<ResponseWithStatus> {
     return postAndGetBasicResponse(`${PATH}/setadmin`, data as unknown as Record<string, unknown>);
+}
+
+export async function setApprovalUserVolunteerType(id: string, userId: string, status: string) {
+    return patch(`${PATH}/set-volunteerType-approval/${id}/${userId}/${status}`);
 }

@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
-import { Qualification, createQualification, updateQualification } from "../../api/qualificationAPI";
+import { Qualification, createQualification, updateQualification, NewQualification } from "../../api/qualificationAPI";
 import { useAllQualTypes } from "../../hooks/useAllQualTypes";
 
 const allowedFileTypes = [".jpg", ".jpeg", ".svg", ".png"];
 const acceptParam = allowedFileTypes.join(", ");
 interface CreateOrEditQualificationProps {
-    qualification: Qualification;
+    qualification: NewQualification;
     onClose: (success?: boolean) => void;
     isNew?: boolean;
 }
@@ -63,6 +63,8 @@ export const CreateOrEditQualificationModal = (props: CreateOrEditQualificationP
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!selectedQualType) return setErrorMessage("You must select a qualification type.");
+
         if (!props.isNew) {
             void uploadImage("");
             return;
@@ -139,11 +141,8 @@ export const CreateOrEditQualificationModal = (props: CreateOrEditQualificationP
                     </Form.Group>
                     <Form.Group controlId="qType" className="mb-3">
                         <Form.Label>Qualification Type</Form.Label>
-                        <Form.Select
-                            onChange={handleQualTypeChange}
-                            aria-label="Shift category"
-                            defaultValue="Select Qualification Type"
-                        >
+                        <Form.Select onChange={handleQualTypeChange} aria-label="Shift category">
+                            <option value={undefined}>Select Qualification Type</option>
                             {allQualTypes?.map((qual) => {
                                 return (
                                     <option key={qual._id} value={qual._id}>

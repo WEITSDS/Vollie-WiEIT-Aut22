@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import User from "./user.model";
 
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 import { Logger } from "tslog";
 import * as sessionManager from "../Common/middleware/sessionManagement";
 import { handleError } from "../utility";
@@ -157,7 +157,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
                 const targetVolType = await VolunteerType.findById(vType.type);
                 if (targetVolType) {
                     newVolunteerTypes.push({
-                        type: targetVolType._id as Types.ObjectId,
+                        type: new mongoose.Types.ObjectId(targetVolType._id.toString()),
                         approved: !targetVolType?.requiresApproval, // if no appoval required, set approved to true
                     });
                 }
@@ -405,14 +405,16 @@ export const setApprovalVolunteerTypeForUser = async (req: Request, res: Respons
             return;
         }
 
-        const userHasVolType = targetUser.volunteerTypes.some((vType) => vType.type === volunteerType._id);
+        const userHasVolType = targetUser.volunteerTypes.some(
+            (vType) => vType.type.toString() === volunteerType._id.toString()
+        );
         if (!userHasVolType) {
             handleError(logger, res, null, "User does not have this volunteer type.", 404);
             return;
         }
 
         const targetVolTypeInUserIdx = targetUser.volunteerTypes.findIndex(
-            (volType) => volType.type === volunteerType._id
+            (volType) => volType.type.toString() === volunteerType._id.toString()
         );
         targetUser.volunteerTypes[targetVolTypeInUserIdx].approved = req.params.status === "approve";
 

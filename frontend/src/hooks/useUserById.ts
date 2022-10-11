@@ -3,5 +3,8 @@ import { getUserById, User } from "../api/userApi";
 import { ResponseWithData } from "../api/utility";
 
 export const useUserById = (userId: string): UseQueryResult<ResponseWithData<User>, Error> => {
-    return useQuery([`user-${userId}`, userId], () => getUserById(userId));
+    return useQuery([`user-${userId}`, userId], () => getUserById(userId), {
+        // The query will not execute until the userId exists
+        enabled: !!userId,
+    });
 };

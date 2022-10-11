@@ -22,6 +22,13 @@ export interface IVolunteerTypeUser {
     approved: boolean;
 }
 
+// The volunteer type with the approval status
+export interface IVolunteerTypeUserWithApproved {
+    _id: string; // id of the volunteer type
+    name: string;
+    approved: boolean;
+}
+
 const PATH = `${window.location.origin}/api`;
 export async function getAllVolTypes(): Promise<ResponseWithData<IVolunteerType[]>> {
     return getDataResponse(`${PATH}/volunteer-types/volunteer-type-all`);
@@ -62,4 +69,12 @@ export async function updateVolunteerType(
 
 export function deleteVolunteerType(volunteerTypeId: string): Promise<ResponseWithStatus> {
     return deleteAndGetBasicResponse(`${PATH}/volunteer-types/${volunteerTypeId}`);
+}
+
+export async function getVolTypesForUser(
+    userId: string | undefined
+): Promise<ResponseWithData<IVolunteerTypeUserWithApproved[]>> {
+    return typeof userId === "undefined"
+        ? Promise.reject(new Error("Invalid id"))
+        : getDataResponse(`${PATH}/volunteer-types/volunteer-types-user/${userId}`);
 }

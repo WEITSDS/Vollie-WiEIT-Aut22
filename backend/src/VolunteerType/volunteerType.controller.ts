@@ -140,3 +140,44 @@ export const getVolunteerTypeById = async (req: Request, res: Response) => {
         return;
     }
 };
+
+export const getVolunteerTypesForUser = async (req: Request, res: Response) => {
+    try {
+        const sessionUser = await User.findOne({ _id: req.session.user?._id });
+        const userObj = await User.findOne({ _id: req.params.userId });
+
+        if (!sessionUser || !userObj) {
+            handleError(logger, res, null, "User not found", 404);
+            return;
+        }
+
+        if (sessionUser?._id !== userObj?._id && !sessionUser?.isAdmin) {
+            handleError(logger, res, null, "Unauthorized", 401);
+            return;
+        }
+
+        const volunteerTypes = await VolunteerType.find({
+            _id: { $in: userObj?.volunteerTypes.map((volType) => volType.type) },
+        });
+
+        const volunteerTypesWithApproved = volunteerTypes.map((volType) => {
+            return {
+                _id: volType._id.toString(),
+                name: volType.name,
+                approved:
+                    userObj.volunteerTypes.find((userVol) => userVol.type.toString() === volType._id.toString())
+                        ?.approved || false,
+            };
+        });
+
+        res.status(200).json({
+            message: "Got Volunteer Types for User",
+            success: true,
+            data: volunteerTypesWithApproved,
+        });
+        return;
+    } catch (error) {
+        handleError(logger, res, null, "Get Volunteer Type by ID error.", 500);
+        return;
+    }
+};
