@@ -1,20 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { IQualificationType } from "../api/qualificationTypeAPI";
-import { IVolunteerType } from "../api/volTypeAPI";
+import { createQualificationType, IQualificationType, updateQualificationType } from "../api/qualificationTypeAPI";
+import { createVolunteerType, IVolunteerType, updateVolunteerType } from "../api/volTypeAPI";
 import addShiftIcon from "../assets/addShiftIcon.svg";
 import deleteIcon from "../assets/deleteIcon.svg";
 import editIcon from "../assets/edit.svg";
 import { useAllQualTypes } from "../hooks/useAllQualTypes";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
 import "./qualificationsTable.css";
-// import Form from "react-bootstrap/Form";
 
 type TableProps = {
     tableType: "Qualification" | "Volunteer";
 };
-
-// const dummyData = ["Working with Children", "First-Aid", "Some other name", "A Qualification name"];
 
 const initiFormFields = {
     name: "",
@@ -30,15 +27,9 @@ const QualificationsTable = ({ tableType }: TableProps) => {
 
     const [editingID, seteditingID] = useState<string | null>(null);
 
-    const { data, isLoading } = tableType === "Qualification" ? useAllQualTypes() : useAllVolTypes();
+    const { data, isLoading, refetch } = tableType === "Qualification" ? useAllQualTypes() : useAllVolTypes();
 
-    useEffect(() => {
-        console.log(formFields);
-    }, [formFields]);
-
-    useEffect(() => {
-        console.log(editingID);
-    }, [editingID]);
+    const [isProcessing, setisProcessing] = useState(false);
 
     const handleChange = (event: React.FormEvent<HTMLInputElement | HTMLSelectElement>): void => {
         event.preventDefault();
@@ -48,9 +39,7 @@ const QualificationsTable = ({ tableType }: TableProps) => {
         });
     };
     const handleCheckbox = (event: React.FormEvent<HTMLInputElement>): void => {
-        // event.preventDefault();
         const target = event.target as HTMLInputElement;
-        console.log(target.checked);
         setFormFields((prevFormFields) => {
             return { ...prevFormFields, requiresApproval: target.checked };
         });
@@ -73,50 +62,75 @@ const QualificationsTable = ({ tableType }: TableProps) => {
         setShowModal(!showModal);
     };
 
-    const handleModalSubmit = () => {
-        // Handle creation/edit here
+    const handleModalSubmit = async () => {
+        try {
+            setisProcessing(true);
+            // Handle creation/edit here
+            if (tableType === "Qualification") {
+                // Submission for Qualification Type
+                if (editingID) {
+                    await updateQualificationType(formFields, editingID);
+                } else {
+                    await createQualificationType(formFields);
+                }
+            } else {
+                // Submission for Volunteer Type
+                if (editingID) {
+                    await updateVolunteerType(formFields, editingID);
+                } else {
+                    await createVolunteerType(formFields);
+                }
+            }
+            await refetch();
+            setisProcessing(false);
+            toggleModal();
+        } catch (error) {
+            console.log(error);
+            setisProcessing(false);
+        }
     };
 
     return (
         <>
             <div className="dashboard-tablebutton-container">
-                <table id="volunteer-table" className="table table-bordered table-light">
-                    <thead className="table-danger">
-                        <tr>
-                            <th>{tableType} Type</th>
-                            <th>Requires Approval</th>
-                            <th>Actions </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isLoading ? (
-                            <p>Loading {tableType} Types...</p>
-                        ) : (
-                            data?.data &&
-                            data.data.map((item) => (
-                                <tr key={item._id}>
-                                    <td>{item.name}</td>
-                                    <td>{item.requiresApproval ? "Yes" : "No"}</td>
-                                    <td>
-                                        <div className="action-button-container">
-                                            <Button
-                                                className="edit-action-btn"
-                                                onClick={() => {
-                                                    toggleModal(item);
-                                                }}
-                                            >
-                                                <img src={editIcon} alt="edit action icon" />
-                                            </Button>
-                                            <Button className="delete-action-btn">
-                                                <img src={deleteIcon} alt="delete action icon" />
-                                            </Button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                {isLoading ? (
+                    <p>Loading {tableType} Types...</p>
+                ) : (
+                    <table id="volunteer-table" className="table table-bordered table-light">
+                        <thead className="table-danger">
+                            <tr>
+                                <th>{tableType} Type</th>
+                                <th>Requires Approval</th>
+                                <th>Actions </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {data?.data &&
+                                data.data.map((item) => (
+                                    <tr key={item._id}>
+                                        <td>{item.name}</td>
+                                        <td>{item.requiresApproval ? "Yes" : "No"}</td>
+                                        <td>
+                                            <div className="action-button-container">
+                                                <Button
+                                                    className="edit-action-btn"
+                                                    onClick={() => {
+                                                        toggleModal(item);
+                                                    }}
+                                                >
+                                                    <img src={editIcon} alt="edit action icon" />
+                                                </Button>
+                                                <Button className="delete-action-btn">
+                                                    <img src={deleteIcon} alt="delete action icon" />
+                                                </Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
+                )}
                 <Button
                     className="add-action-button align-items-center"
                     onClick={() => {
@@ -156,7 +170,14 @@ const QualificationsTable = ({ tableType }: TableProps) => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={() => setShowModal(false)}>Cancel</Button>
-                    <Button onClick={handleModalSubmit}>Submit</Button>
+                    <Button
+                        disabled={isProcessing}
+                        onClick={() => {
+                            void handleModalSubmit();
+                        }}
+                    >
+                        {!isProcessing ? "Submit" : "Submitting..."}
+                    </Button>
                 </Modal.Footer>
             </Modal>
         </>

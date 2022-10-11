@@ -1,6 +1,8 @@
 import {
     // deleteAndGetBasicResponse,
     getDataResponse,
+    isBasicResponse,
+    post,
     // postAndGetBasicResponse,
     ResponseWithData,
     // ResponseWithStatus,
@@ -15,5 +17,40 @@ export interface IQualificationType {
 
 const PATH = `${window.location.origin}/api`;
 export async function getAllQualTypes(): Promise<ResponseWithData<IQualificationType[]>> {
-    return getDataResponse(`${PATH}/volunteer-types/qualification-type-all`);
+    return getDataResponse(`${PATH}/qualification-types/qualification-type-all`);
+}
+
+export async function createQualificationType(
+    qualificationTypeBody: object
+): Promise<ResponseWithData<IQualificationType | null>> {
+    try {
+        const response = await post(`${PATH}/qualification-types/create`, { ...qualificationTypeBody });
+        const resp = (await response.json()) as ResponseWithData<IQualificationType>;
+        if (!isBasicResponse(resp)) {
+            throw new Error("Unexpected response format");
+        }
+        return { ...resp };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: "Error creating qualification type.", data: null };
+    }
+}
+
+export async function updateQualificationType(
+    qualificationTypeBody: object,
+    qualificationTypeId: string
+): Promise<ResponseWithData<IQualificationType | null>> {
+    try {
+        const response = await post(`${PATH}/qualification-types/update/${qualificationTypeId}`, {
+            ...qualificationTypeBody,
+        });
+        const resp = (await response.json()) as ResponseWithData<IQualificationType>;
+        if (!isBasicResponse(resp)) {
+            throw new Error("Unexpected response format");
+        }
+        return { ...resp };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: "Error updating qualification type.", data: null };
+    }
 }
