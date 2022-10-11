@@ -84,7 +84,7 @@ export class AdminDashboard extends React.Component<Record<string, never>, Admin
                                 </Link>
                                 <Link to="/search">
                                     <button>
-                                        <i className="bi bi-search" /> Search Users
+                                        <i className="bi bi-search" /> Users
                                     </button>
                                 </Link>
                             </div>
