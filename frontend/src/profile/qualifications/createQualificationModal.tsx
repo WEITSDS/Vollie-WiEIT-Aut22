@@ -160,7 +160,7 @@ export const ConfirmDeleteModal = ({ qualification, onClose }: ConfirmDeleteModa
     return (
         <Modal show={true} onHide={onClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Delete Tag</Modal.Title>
+                <Modal.Title>Delete Qualification</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 Are you sure you want to delete the qualification '{qualification.title}'? This action cannot be undone.

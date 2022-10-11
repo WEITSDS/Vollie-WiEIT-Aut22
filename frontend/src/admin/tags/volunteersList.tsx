@@ -6,20 +6,16 @@ import { Link } from "react-router-dom";
 import { WEITBackground } from "../../components/background";
 import { NavigationBar } from "../../components/navbar";
 import { VerifiedMark } from "../../profile/verifiedMark";
-import { getAllTags, Tag } from "../../api/tagApi";
-import { EditUserTagsModal } from "../../profile/tags/editUserTagModal";
-import { TagBadges } from "../../profile/tags/tagBadges";
 
 interface VolunteerCardProps {
     user: User;
-    handleUserClick: (e: React.MouseEvent<HTMLElement>, u: User) => void;
 }
 
 function formatUserIntoTitle(user: User): string {
     return `${user.firstName} ${user.lastName}${user.isAdmin ? " (Administrator)" : ""}` + `\n${user.email}`;
 }
 
-const VolunteerCard = ({ user, handleUserClick }: VolunteerCardProps) => {
+const VolunteerCard = ({ user }: VolunteerCardProps) => {
     return (
         <div className="volunteer-card text-center" title={formatUserIntoTitle(user)}>
             <span>
@@ -35,9 +31,6 @@ const VolunteerCard = ({ user, handleUserClick }: VolunteerCardProps) => {
                     &nbsp;&nbsp;
                     <VerifiedMark user={user} />
                 </div>
-                <span className="my-1">
-                    <TagBadges user={user} onEditClick={handleUserClick} />
-                </span>
             </div>
         </div>
     );
@@ -46,17 +39,14 @@ const VolunteerCard = ({ user, handleUserClick }: VolunteerCardProps) => {
 interface VolunteerListState {
     loading: boolean;
     users: User[];
-    tags: Tag[];
     errorMessage?: string;
     showAdmins: boolean;
-    showEditUserTagsModal?: boolean;
     selectedUser?: User;
 }
 
 export class VolunteersList extends React.Component<Record<string, never>, VolunteerListState> {
     state: VolunteerListState = {
         users: [],
-        tags: [],
         loading: true,
         showAdmins: false,
     };
@@ -67,11 +57,10 @@ export class VolunteersList extends React.Component<Record<string, never>, Volun
 
     showVolunteers = async () => {
         this.setState({ loading: true });
-        const [users, tags] = await Promise.all([getAllUsers(), getAllTags()]);
+        const [users] = await Promise.all([getAllUsers()]);
         this.setState({
             loading: false,
             users: users.data ?? [],
-            tags: tags.data ?? [],
         });
     };
 
@@ -79,20 +68,8 @@ export class VolunteersList extends React.Component<Record<string, never>, Volun
         this.setState({ showAdmins: !this.state.showAdmins });
     };
 
-    showEditUserTagModal = (e: React.MouseEvent<HTMLElement>, user: User) => {
-        e.preventDefault();
-        this.setState({ showEditUserTagsModal: true, selectedUser: user });
-    };
-
-    onEditUserTagModalClose = (save?: boolean) => {
-        this.setState({ showEditUserTagsModal: false, selectedUser: undefined });
-        if (save) {
-            this.showVolunteers().catch(console.error);
-        }
-    };
-
     render = () => {
-        const { loading, users, errorMessage, showAdmins, showEditUserTagsModal, selectedUser, tags } = this.state;
+        const { loading, users, errorMessage, showAdmins } = this.state;
         return (
             <>
                 <NavigationBar />
@@ -120,10 +97,7 @@ export class VolunteersList extends React.Component<Record<string, never>, Volun
                                                     to={`/profile/${u._id}`}
                                                     key={`user-${i}`}
                                                 >
-                                                    <VolunteerCard
-                                                        handleUserClick={this.showEditUserTagModal}
-                                                        user={u}
-                                                    />
+                                                    <VolunteerCard user={u} />
                                                 </Link>
                                             ))}
                                     </div>
@@ -131,9 +105,6 @@ export class VolunteersList extends React.Component<Record<string, never>, Volun
                                     <p>No users to show</p>
                                 )}
                             </>
-                        )}
-                        {showEditUserTagsModal != null && selectedUser != null && (
-                            <EditUserTagsModal onClose={this.onEditUserTagModalClose} user={selectedUser} tags={tags} />
                         )}
                     </ModalBody>
                 </WEITBackground>
