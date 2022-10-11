@@ -14,11 +14,14 @@ import { useUserById } from "../hooks/useUserById";
 import { useOwnUser } from "../hooks/useOwnUser";
 import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
 import { setApprovalUserVolunteerType } from "../api/userApi";
+import { loggedInUserIsAdmin } from "../protectedRoute";
 
 export const ProfilePage = () => {
     const { id } = useParams();
     const { isLoading, data: userData, refetch: refetchUser, error } = id ? useUserById(id) : useOwnUser();
     const user = userData?.data;
+
+    const isAdmin = loggedInUserIsAdmin();
 
     const {
         data: userVolTypesData,
@@ -109,7 +112,7 @@ export const ProfilePage = () => {
                                         <th>#</th>
                                         <th>Volunteer Type</th>
                                         <th>Approval Status</th>
-                                        {user.isAdmin && <th>Set Approval</th>}
+                                        {isAdmin && <th>Set Approval</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -121,7 +124,7 @@ export const ProfilePage = () => {
                                                     <td>{index + 1}</td>
                                                     <td>{volType.name}</td>
                                                     <td>{volType.approved ? "Yes" : "No"}</td>
-                                                    {user.isAdmin && (
+                                                    {isAdmin && (
                                                         <td>
                                                             <Button
                                                                 onClick={() => {
@@ -141,7 +144,7 @@ export const ProfilePage = () => {
                                 </tbody>
                             </Table>
                         </div>
-                        {user?._id && <QualificationsSection userId={user._id} isAdmin={user.isAdmin} />}
+                        {user?._id && <QualificationsSection userId={user._id} isAdmin={isAdmin} />}
                     </div>
                 </div>
             </div>

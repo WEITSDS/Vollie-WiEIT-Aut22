@@ -2,10 +2,12 @@ import { SetStateAction, useEffect, useState } from "react";
 import { NavigationBar } from "../components/navbar";
 import "./adminViewAllUsers.css";
 import peopleIcon from "../assets/people.svg";
+import { useNavigate } from "react-router-dom";
 // import axios from "axios";
 import { getAllUsers, User } from "../api/userApi";
 
 const AdminViewAllUsers = () => {
+    const navigate = useNavigate();
     const [users, setUsers] = useState<User[]>([]);
     const [search, setSearch] = useState<string>("");
 
@@ -21,8 +23,8 @@ const AdminViewAllUsers = () => {
         setSearch(event.target.value);
     };
 
-    const handleOpenUser = () => {
-        // go to user profile
+    const handleOpenUser = (userId: string) => {
+        navigate(`/profile/${userId}`);
     };
 
     return (
@@ -49,7 +51,7 @@ const AdminViewAllUsers = () => {
                             .filter((user) => user.email.includes(search))
                             .sort((a, b) => b.registeredAt - a.registeredAt)
                             .map((user) => (
-                                <tr key={user._id} onClick={handleOpenUser}>
+                                <tr key={user._id} onClick={() => handleOpenUser(user._id)}>
                                     <td>{user.firstName + " " + user.lastName}</td>
                                     <td>{user.email}</td>
                                 </tr>

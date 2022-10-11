@@ -151,7 +151,7 @@ export const getVolunteerTypesForUser = async (req: Request, res: Response) => {
             return;
         }
 
-        if (sessionUser?._id !== userObj?._id && !sessionUser?.isAdmin) {
+        if (sessionUser?._id.toString() !== userObj?._id.toString() && !sessionUser?.isAdmin) {
             handleError(logger, res, null, "Unauthorized", 401);
             return;
         }

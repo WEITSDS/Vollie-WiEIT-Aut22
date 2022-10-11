@@ -15,7 +15,6 @@ export interface IUser extends Document, IBasicUser {
     lastLogin: number;
     qualifications: Array<Types.ObjectId>; // qualification IDs
     createdAt: Date;
-    volunteerType: string;
     shifts: Array<IUserShiftType>; // shift IDs
     volunteerTypes: IUserVolunteerType[];
 }

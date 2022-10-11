@@ -173,6 +173,8 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
             volunteerTypes: newVolunteerTypes,
         });
 
+        console.log(newUser);
+
         newUser.id = new mongoose.Types.ObjectId();
         const createdUser = await newUser.save();
         res.status(200).json({
