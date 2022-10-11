@@ -86,7 +86,7 @@ const HomePage = ({ shiftType }: HomePageProps) => {
         <>
             <NavigationBar />
             <WEITBackground>
-                <ModalBody className="form-body">
+                <ModalBody>
                     <div className="page-container">
                         <div className="header-container">
                             <h1>
