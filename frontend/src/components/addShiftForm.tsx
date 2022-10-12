@@ -13,11 +13,11 @@ type formProps = {
     previousShiftFields?: IShift | undefined;
 };
 
-// const dateStringToHTML = (date: string) => {
-//     const d = new Date(date);
-//     const dateTimeLocalValue = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, -1);
-//     return dateTimeLocalValue;
-// };
+const dateStringToHTML = (date: string) => {
+    const d = new Date(date);
+    const dateTimeLocalValue = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, -1);
+    return dateTimeLocalValue;
+};
 
 const shiftFormFields: IShift = {
     _id: "",
@@ -164,7 +164,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                 <input
                     className="date"
                     type="datetime-local"
-                    // defaultValue={formFields.startAt ? dateStringToHTML(formFields.startAt) : undefined}
+                    defaultValue={formFields.startAt ? dateStringToHTML(formFields.startAt) : undefined}
                     name="startAt"
                     onChange={handleChange}
                 />
@@ -173,7 +173,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                 <input
                     className="date"
                     type="datetime-local"
-                    // defaultValue={formFields.startAt ? dateStringToHTML(formFields.endAt) : undefined}
+                    defaultValue={formFields.startAt ? dateStringToHTML(formFields.endAt) : undefined}
                     name="endAt"
                     onChange={handleChange}
                 />
@@ -244,7 +244,11 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                                         type="number"
                                         name={`num${vol.name}`}
                                         min={0}
-                                        defaultValue={0}
+                                        defaultValue={
+                                            formFields.volunteerTypeAllocations.find(
+                                                (volAlloc) => volAlloc.type === vol._id
+                                            )?.numMembers || 0
+                                        }
                                         onChange={(e) => handleVolChange(e, vol._id)}
                                     />
                                 </div>
@@ -265,7 +269,11 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                                         type="number"
                                         name={`num${qual.name}`}
                                         min={0}
-                                        defaultValue={0}
+                                        defaultValue={
+                                            formFields.requiredQualifications.find(
+                                                (qualAlloc) => qualAlloc.qualificationType === qual._id
+                                            )?.numRequired || 0
+                                        }
                                         onChange={(e) => handleQualChange(e, qual._id)}
                                     />
                                 </div>

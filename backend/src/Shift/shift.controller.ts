@@ -95,6 +95,8 @@ export const updateShift = async (req: Request, res: Response) => {
 
     const shiftFields = req.body as IShift;
 
+    console.log(shiftFields);
+
     try {
         const updatedShift = await Shift.findOneAndUpdate({ _id: shiftId }, shiftFields);
 
