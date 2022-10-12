@@ -531,8 +531,8 @@ export const getUserShifts = async (req: Request, res: Response) => {
         }
 
         // Default to show all shifts (including finished ones)
-        const availableShifts = await Shift.find({ users: { $all: [targetUserID] } }).sort({
-            createdAt: -1,
+        const availableShifts = await Shift.find({ "users.user": targetUserID }).sort({
+            startAt: 1,
         });
 
         res.status(200).json({
