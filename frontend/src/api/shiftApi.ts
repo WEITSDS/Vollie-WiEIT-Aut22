@@ -49,13 +49,19 @@ async function deleteBasicResponse(url: string): Promise<ResponseWithStatus> {
 interface AssignmentUserDetails {
     shiftid: string;
     userid: string;
+    volunteerTypeId: string;
+}
+
+interface UnAssignmentUserDetails {
+    shiftid: string;
+    userid: string;
 }
 
 export async function assignUserToShift(req: AssignmentUserDetails): Promise<ResponseWithStatus> {
-    return patchBasicResponse(`${ROOT_URL}/api/shifts/${req.shiftid}/assign-user/${req.userid}`);
+    return patchBasicResponse(`${ROOT_URL}/api/shifts/${req.shiftid}/assign-user/${req.userid}/${req.volunteerTypeId}`);
 }
 
-export async function unassignUserFromShift(req: AssignmentUserDetails): Promise<ResponseWithStatus> {
+export async function unassignUserFromShift(req: UnAssignmentUserDetails): Promise<ResponseWithStatus> {
     return patchBasicResponse(`${ROOT_URL}/api/shifts/${req.shiftid}/unassign-user/${req.userid}`);
 }
 

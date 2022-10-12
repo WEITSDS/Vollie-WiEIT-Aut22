@@ -75,7 +75,11 @@ const ShiftInformation = () => {
     const handleApply = async () => {
         try {
             if (typeof shiftId === "string" && userObj?._id) {
-                const assignResponse = await assignUserToShift({ shiftid: shiftId, userid: userObj?._id });
+                const assignResponse = await assignUserToShift({
+                    shiftid: shiftId,
+                    userid: userObj?._id,
+                    volunteerTypeId: "634320042a444bc07bd4cff7",
+                });
                 console.log(assignResponse);
                 await refetch();
                 await userQuery.refetch();

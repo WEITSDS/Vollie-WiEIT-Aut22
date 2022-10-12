@@ -69,6 +69,7 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
         const data = {
             userid: user.data?._id as string,
             shiftid: shift.id,
+            volunteerTypeId: "634320042a444bc07bd4cff7",
         };
         console.log(shift);
         //Request now requires shiftid and userid to be passed as an object.

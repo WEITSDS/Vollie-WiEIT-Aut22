@@ -185,6 +185,7 @@ export const assignUser = async (req: Request, res: Response) => {
             res.status(404).json({ message: "Target user not found", success: false });
             return;
         }
+        console.log(targetUser);
 
         // Check if user has the required qualifications for the shift
         // Loop through the qualifications required by the shift, if any are not approved on the user, set to false and return
@@ -210,10 +211,12 @@ export const assignUser = async (req: Request, res: Response) => {
 
         // Check if user's selected volunteer type is approved
         const selectedVolunteerTypeID = req.params.selectedVolunteerTypeID;
+        console.log(selectedVolunteerTypeID);
         // -1 if either voltype doesnt exist for the user OR the type is not approved yet
         const userVolTypeIndex = targetUser.volunteerTypes.findIndex(
             (volType) => volType.type.toString() === selectedVolunteerTypeID && volType.approved === true
         );
+        console.log(userVolTypeIndex);
         if (userVolTypeIndex === -1) {
             res.status(401).json({
                 message:
@@ -424,13 +427,13 @@ export const getShiftById = async (req: Request, res: Response) => {
             res.status(403).json({ message: "Authorization error", success: false });
             return;
         }
-
+        /*
         const userObj = await User.findOne({ _id: userID });
         if (!userObj) {
             res.status(403).json({ message: "Could not find user object", success: false });
             return;
         }
-
+*/
         const shift = await Shift.findOne({ _id: req.params.shiftid });
         if (!shift) {
             res.status(404).json({ message: "Shift not found", success: false });
@@ -438,15 +441,15 @@ export const getShiftById = async (req: Request, res: Response) => {
         }
 
         res.status(200).json({
-            message: "got shift",
+            message: "Shift found",
             success: true,
             data: shift,
         });
         return;
     } catch (error) {
-        console.log("error getting shfit by id", error);
+        console.log("error getting shift by id", error);
         res.status(500).json({
-            message: "error getting shfit by id",
+            message: "error getting shift by id",
             error,
             success: false,
         });
@@ -458,7 +461,7 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
     try {
         const { _id: userID } = req.session.user || {};
         if (!userID) {
-            res.status(403).json({ message: "Authorization error", success: false });
+            res.status(403).json({ message: "Authorisation error", success: false });
             return;
         }
 
@@ -469,7 +472,6 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
         }
 
         const approvedUserVolTypes = getUserApprovedVolunteerTypes(userObj);
-
         // Only show events that are UPCOMING and sort by upcoming start at dates
         let availableShifts = await Shift.find({
             startAt: { $gte: Date.now() },
@@ -477,7 +479,6 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
         }).sort({
             startAt: 1,
         });
-
         // filter to ensure that only return shifts where approved user vol types have available slots
         availableShifts = availableShifts.filter((shift) => {
             let hasSlotsAvailable = false;
@@ -512,9 +513,10 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
 
 export const getUserShifts = async (req: Request, res: Response) => {
     try {
+        console.log(req.params);
         const targetUserID = req.params.userid;
 
-        const userObj = await User.findOne({ _id: req.session.user?._id });
+        const userObj = await User.findOne({ _id: targetUserID });
         if (!userObj) {
             res.status(403).json({ message: "Could not find user object", success: false });
             return;
@@ -527,7 +529,7 @@ export const getUserShifts = async (req: Request, res: Response) => {
         }
 
         // Default to show all shifts (including finished ones)
-        const availableShifts = await Shift.find({ users: { $all: [targetUserID] } }).sort({
+        const availableShifts = await Shift.find({ "users.user": { $all: [targetUserID] } }).sort({
             createdAt: -1,
         });
 
@@ -538,9 +540,9 @@ export const getUserShifts = async (req: Request, res: Response) => {
         });
         return;
     } catch (error) {
-        console.log("get user shifts error", error);
+        console.log("Get user shifts error", error);
         res.status(500).json({
-            message: "get user shifts error",
+            message: "Get user shifts error",
             error,
             success: false,
         });

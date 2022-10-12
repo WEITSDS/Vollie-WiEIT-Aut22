@@ -26,8 +26,10 @@ app.listen(PORT);
 logger.info(`Server started at ${PROTOCOL}://${HOST}:${PORT}`);
 
 /** Connect to Mongo -> mongodb+srv://weit_user:IdCRhTHXp3sUBu8M@cluster0.cfutj.mongodb.net/WEIT */
+//http://localhost/vollie
+
 mongoose
-    .connect(config.mongo.url, config.mongo.options)
+    .connect("mongodb://127.0.0.1/vollie", config.mongo.options)
     .then((_result) => {
         logger.info(`Connected to MongoDB`);
     })
