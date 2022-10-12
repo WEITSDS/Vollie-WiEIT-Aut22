@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User from "../User/user.model";
 import Shift from "./Shift.model";
-// import mongoose from "mongoose";
+import mongoose from "mongoose";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
 import { IShift } from "./shift.interface";
@@ -51,6 +51,8 @@ export const createShift = async (req: Request, res: Response) => {
         handleError(logger, res, null, "Unauthorized", 401);
         return;
     }
+
+    req.body._id = new mongoose.Types.ObjectId();
 
     const shiftFields = req.body as IShift;
 

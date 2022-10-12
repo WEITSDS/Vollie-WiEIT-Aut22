@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Table } from "react-bootstrap";
+import { Button, Table, Modal } from "react-bootstrap";
 import { deleteQualification, Qualification, setApprovalUserQualification } from "../../api/qualificationAPI";
 // import { Qualification, NewQualification } from "../../api/qualificationAPI";
 import { useQualificationsForUserById } from "../../hooks/useQualificationsForUserById";
@@ -67,6 +67,8 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
 
     const [selectedQualification, setselectedQualification] = useState<Qualification | null>(null);
 
+    const [showQualificationModal, setShowQualificationModal] = useState(false);
+
     const handleDeleteModalClose = async () => {
         try {
             setshowDeleteModal(false);
@@ -96,6 +98,11 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
         await refetchQualifications();
     };
 
+    const handleShowQualification = (qual: Qualification) => {
+        setselectedQualification(qual);
+        setShowQualificationModal(true);
+    };
+
     const handleSetApproval = async (qualId: string, status: string) => {
         try {
             if (userId) {
@@ -116,6 +123,7 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
                         <th>Qualification Type</th>
                         <th>Approval Status</th>
                         <th>Delete</th>
+                        <th>Evidence</th>
                         {isAdmin && <th>Set Approval</th>}
                     </tr>
                 </thead>
@@ -134,6 +142,11 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
                                             variant="danger"
                                         >
                                             <i className="bi bi-trash" />
+                                        </Button>
+                                    </td>
+                                    <td>
+                                        <Button onClick={() => handleShowQualification(qual)} title={`Evidence`}>
+                                            Evidence
                                         </Button>
                                     </td>
                                     {isAdmin && (
@@ -181,6 +194,41 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
                     onClose={() => void handleDeleteModalClose()}
                 />
             )}
+            <Modal
+                show={showQualificationModal}
+                onHide={() => {
+                    setShowQualificationModal(false);
+                    setselectedQualification(null);
+                }}
+            >
+                <Modal.Header>
+                    <Modal.Title>Qualification Evidence</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="add-shift-form">
+                        {selectedQualification ? (
+                            <>
+                                <p>Name: {selectedQualification.title}</p>
+                                <p>Description: {selectedQualification?.description}</p>
+                                <p>Approval Status: {selectedQualification.approved ? "Yes" : "No"}</p>
+                                <img src={selectedQualification.filePath}></img>
+                            </>
+                        ) : (
+                            <p>No Qualification Selected</p>
+                        )}
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        onClick={() => {
+                            setShowQualificationModal(false);
+                            setselectedQualification(null);
+                        }}
+                    >
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
