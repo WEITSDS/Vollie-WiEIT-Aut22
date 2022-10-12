@@ -97,6 +97,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
 
                 <label>Start Date</label>
                 <input
+                    className="date"
                     type="datetime-local"
                     defaultValue={formFields.startAt ? dateStringToHTML(formFields.startAt) : undefined}
                     name="startAt"
@@ -105,11 +106,14 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
 
                 <label>End Date</label>
                 <input
+                    className="date"
                     type="datetime-local"
                     defaultValue={formFields.startAt ? dateStringToHTML(formFields.endAt) : undefined}
                     name="endAt"
                     onChange={handleChange}
                 />
+
+                <hr className="type-line" />
 
                 <label>Venue</label>
                 <input type="text" defaultValue={formFields.venue} name="venue" onChange={handleChange} />
@@ -121,29 +125,49 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                 <textarea name="description" defaultValue={formFields.description} onChange={handleChange} />
 
                 <label>Work Hours</label>
-                <input type="number" min={0} defaultValue={formFields.hours} name="hours" onChange={handleChange} />
+                <input
+                    className="work-hours"
+                    type="number"
+                    min={0}
+                    defaultValue={formFields.hours}
+                    name="hours"
+                    onChange={handleChange}
+                />
+
+                <hr className="type-line" />
 
                 <label>Notes</label>
                 <input type="text" defaultValue={formFields.notes} name="notes" onChange={handleChange} />
 
                 <label>Category</label>
-                <Form.Select onChange={handleChange} aria-label="Shift category" defaultValue={formFields.category}>
+                <Form.Select
+                    className="drop-down"
+                    onChange={handleChange}
+                    aria-label="Shift category"
+                    defaultValue={formFields.category}
+                >
                     <option value="Other">Other</option>
                     <option value="School Outreach">School Outreach</option>
                     <option value="Event">Event</option>
                     <option value="Committee">Committee</option>
                 </Form.Select>
 
-                <label>Requires WWCC?</label>
-                <input
-                    type="checkbox"
-                    checked={formFields.requiresWWCC}
-                    name="requiresWWCC"
-                    onChange={handleCheckbox}
-                />
+                <hr className="type-line" />
+
+                <div>
+                    <label>Requires WWCC?</label>
+                    <input
+                        className="checkbox"
+                        type="checkbox"
+                        checked={formFields.requiresWWCC}
+                        name="requiresWWCC"
+                        onChange={handleCheckbox}
+                    />
+                </div>
+
+                <hr className="type-line" />
 
                 <h1 className="type-header">Volunteer Type Allocations</h1>
-                <hr className="type-line" />
                 <div className="type-container">
                     <div className="type">
                         <label>General volunteer:</label>
@@ -196,6 +220,9 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                         />
                     </div>
                 </div>
+
+                <hr className="type-line" />
+
                 <div className="error-message" hidden={responseMsg === ""}>
                     {responseMsg !== "" && <p>{responseMsg}</p>}
                 </div>
