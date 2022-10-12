@@ -435,7 +435,7 @@ export const getShiftById = async (req: Request, res: Response) => {
             return;
         }
 
-        const shift = await Shift.findOne({ _id: req.params.shiftid });
+        const shift = await Shift.findOne({ _id: req.params.shiftId });
         if (!shift) {
             res.status(404).json({ message: "Shift not found", success: false });
             return;
