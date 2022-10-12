@@ -82,8 +82,8 @@ export async function unassignUserFromShift(req: AssignmentUserDetails): Promise
 export interface IShift {
     _id: string;
     name: string;
-    startAt: string;
-    endAt: string;
+    startAt: Date;
+    endAt: Date;
     venue: string;
     address: string;
     description: string;

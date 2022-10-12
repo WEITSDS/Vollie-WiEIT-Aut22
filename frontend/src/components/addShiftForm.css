@@ -21,16 +21,14 @@
     border: 1px solid #f0eaea;
 }
 
-.add-shift-form input[type="date"] {
-    height: 40px;
-    width: 360px;
+.date-input {
     margin: 0px 70px 28px 70px;
     border-radius: 0px;
     background: #ffffff;
     border: 1px solid #f5f2f2;
 }
 
-.add-shift-form input[type="number"] {
+.add-shift-form-number-input {
     height: 30px;
     width: 115px;
     left: 401px;
@@ -231,4 +229,4 @@
     border: 0px;
     font-size: 20px;
     text-indent: 8px;
-}
+} 

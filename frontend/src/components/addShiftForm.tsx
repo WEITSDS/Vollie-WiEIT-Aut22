@@ -6,6 +6,9 @@ import Form from "react-bootstrap/Form";
 import "./addShiftForm.css";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
 import { useAllQualTypes } from "../hooks/useAllQualTypes";
+import DateTimePicker from "react-datetime-picker";
+
+import cloneDeep from "lodash/cloneDeep";
 
 type HandleClose = () => void;
 type formProps = {
@@ -13,17 +16,17 @@ type formProps = {
     previousShiftFields?: IShift | undefined;
 };
 
-const dateStringToHTML = (date: string) => {
-    const d = new Date(date);
-    const dateTimeLocalValue = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, -1);
-    return dateTimeLocalValue;
-};
+// const dateStringToHTML = (date: string) => {
+//     const d = new Date(date);
+//     const dateTimeLocalValue = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, -1);
+//     return dateTimeLocalValue;
+// };
 
 const shiftFormFields: IShift = {
     _id: "",
     name: "",
-    startAt: "",
-    endAt: "",
+    startAt: new Date(),
+    endAt: new Date(),
     venue: "",
     address: "",
     users: [],
@@ -58,7 +61,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
         // Find this allocation, if none exists, push to array
         setFormFields((prevFormFields) => {
             console.log("oldstate", prevFormFields);
-            const newFormFields = JSON.parse(JSON.stringify(prevFormFields)) as IShift;
+            const newFormFields = cloneDeep(prevFormFields);
             const volIdx = newFormFields.volunteerTypeAllocations.findIndex((vol) => vol.type === volId);
             console.log(volIdx);
             if (volIdx === -1) {
@@ -84,7 +87,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
         const target = event.target as HTMLInputElement;
         setFormFields((prevFormFields) => {
             console.log("oldstate", prevFormFields);
-            const newFormFields = JSON.parse(JSON.stringify(prevFormFields)) as IShift;
+            const newFormFields = cloneDeep(prevFormFields);
             const volIdx = newFormFields.requiredQualifications.findIndex((qual) => qual.qualificationType === qualId);
             console.log(volIdx);
             if (volIdx === -1) {
@@ -113,6 +116,12 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
         console.log(value);
         setFormFields((prevFormFields) => {
             return { ...prevFormFields, [`${target.name}`]: value };
+        });
+    };
+
+    const handleDateChange = (newDate: Date, name: string) => {
+        setFormFields((prevFormFields) => {
+            return { ...prevFormFields, [`${name}`]: newDate };
         });
     };
 
@@ -161,22 +170,40 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                 <input type="text" defaultValue={formFields.name} name="name" onChange={handleChange} />
 
                 <label>Start Date</label>
-                <input
+                <DateTimePicker
+                    format="dd-MM-y h:mm a"
+                    className="date-input"
+                    value={formFields.startAt}
+                    name="startAt"
+                    onChange={(value: Date) => {
+                        handleDateChange(value, "startAt");
+                    }}
+                />
+                {/* <input
                     className="date"
                     type="datetime-local"
                     defaultValue={formFields.startAt ? dateStringToHTML(formFields.startAt) : undefined}
                     name="startAt"
                     onChange={handleChange}
-                />
+                /> */}
 
                 <label>End Date</label>
-                <input
+                <DateTimePicker
+                    format="dd-MM-y h:mm a"
+                    className={"date-input"}
+                    value={formFields.endAt}
+                    name="endAt"
+                    onChange={(value: Date) => {
+                        handleDateChange(value, "endAt");
+                    }}
+                />
+                {/* <input
                     className="date"
                     type="datetime-local"
                     defaultValue={formFields.startAt ? dateStringToHTML(formFields.endAt) : undefined}
                     name="endAt"
                     onChange={handleChange}
-                />
+                /> */}
 
                 <hr className="type-line" />
 
@@ -191,7 +218,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
 
                 <label>Work Hours</label>
                 <input
-                    className="work-hours"
+                    className="work-hours add-shift-form-number-input"
                     type="number"
                     min={0}
                     defaultValue={formFields.hours}
@@ -241,6 +268,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                                 <div key={vol._id} className="type">
                                     <label>{vol.name}</label>
                                     <input
+                                        className="add-shift-form-number-input"
                                         type="number"
                                         name={`num${vol.name}`}
                                         min={0}
@@ -266,6 +294,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                                 <div key={qual._id} className="type">
                                     <label>{qual.name}</label>
                                     <input
+                                        className="add-shift-form-number-input"
                                         type="number"
                                         name={`num${qual.name}`}
                                         min={0}
