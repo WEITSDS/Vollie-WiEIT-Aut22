@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createShift, updateShift, IShift } from "../api/shiftApi";
 import LoadingSpinner from "../components/loadingSpinner";
 import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import "./addShiftForm.css";
+import { useAllVolTypes } from "../hooks/useAllVolTypes";
+import { useAllQualTypes } from "../hooks/useAllQualTypes";
 
 type HandleClose = () => void;
 type formProps = {
@@ -11,35 +13,98 @@ type formProps = {
     previousShiftFields?: IShift | undefined;
 };
 
-const shiftFormFields = {
+// const dateStringToHTML = (date: string) => {
+//     const d = new Date(date);
+//     const dateTimeLocalValue = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, -1);
+//     return dateTimeLocalValue;
+// };
+
+const shiftFormFields: IShift = {
+    _id: "",
     name: "",
     startAt: "",
     endAt: "",
     venue: "",
     address: "",
+    users: [],
     description: "",
     hours: 0,
     notes: "",
     category: "Other",
-    requiresWWCC: false,
-    numGeneralVolunteers: 0,
-    numUndergradAmbassadors: 0,
-    numPostgradAmbassadors: 0,
-    numStaffAmbassadors: 0,
-    numSprouts: 0,
-};
-
-const dateStringToHTML = (date: string) => {
-    const d = new Date(date);
-    const dateTimeLocalValue = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, -1);
-    return dateTimeLocalValue;
+    requiredQualifications: [],
+    volunteerTypeAllocations: [],
 };
 
 const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields }) => {
     const navigate = useNavigate();
-    const [formFields, setFormFields] = useState(previousShiftFields || shiftFormFields);
+
     const [isLoading, setIsLoading] = useState(false);
     const [responseMsg, setresponseMsg] = useState("");
+
+    const { data: allVolTypesData, isLoading: loadingAllVolTypes } = useAllVolTypes();
+    const { data: allQualTypesData, isLoading: loadingAllQualTypes } = useAllQualTypes();
+    const volTypes = allVolTypesData?.data;
+    const qualTypes = allQualTypesData?.data;
+
+    const [formFields, setFormFields] = useState<IShift>(previousShiftFields || shiftFormFields);
+
+    useEffect(() => {
+        console.log("useeffect", formFields);
+    }, [formFields]);
+
+    const handleVolChange = (event: React.FormEvent<HTMLInputElement>, volId: string) => {
+        const target = event.target as HTMLInputElement;
+        // console.log(target.value, volId);
+        // Find this allocation, if none exists, push to array
+        setFormFields((prevFormFields) => {
+            console.log("oldstate", prevFormFields);
+            const newFormFields = JSON.parse(JSON.stringify(prevFormFields)) as IShift;
+            const volIdx = newFormFields.volunteerTypeAllocations.findIndex((vol) => vol.type === volId);
+            console.log(volIdx);
+            if (volIdx === -1) {
+                console.log("pushing vol alloc");
+
+                newFormFields.volunteerTypeAllocations.push({
+                    type: volId,
+                    numMembers: parseInt(target.value),
+                    currentNum: 0,
+                });
+                console.log("newstate", newFormFields);
+                return { ...newFormFields };
+            } else {
+                console.log("upading vol alloc");
+                newFormFields.volunteerTypeAllocations[volIdx].numMembers = parseInt(target.value);
+                console.log("newstate", newFormFields);
+                return { ...newFormFields };
+            }
+        });
+    };
+
+    const handleQualChange = (event: React.FormEvent<HTMLInputElement>, qualId: string) => {
+        const target = event.target as HTMLInputElement;
+        setFormFields((prevFormFields) => {
+            console.log("oldstate", prevFormFields);
+            const newFormFields = JSON.parse(JSON.stringify(prevFormFields)) as IShift;
+            const volIdx = newFormFields.requiredQualifications.findIndex((qual) => qual.qualificationType === qualId);
+            console.log(volIdx);
+            if (volIdx === -1) {
+                console.log("pushing qual alloc");
+
+                newFormFields.requiredQualifications.push({
+                    qualificationType: qualId,
+                    numRequired: parseInt(target.value),
+                    currentNum: 0,
+                });
+                console.log("newstate", newFormFields);
+                return { ...newFormFields };
+            } else {
+                console.log("upading qual alloc");
+                newFormFields.requiredQualifications[volIdx].numRequired = parseInt(target.value);
+                console.log("newstate", newFormFields);
+                return { ...newFormFields };
+            }
+        });
+    };
 
     const handleChange = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
         event.preventDefault();
@@ -51,14 +116,14 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
         });
     };
 
-    const handleCheckbox = (event: React.FormEvent<HTMLInputElement>): void => {
-        // event.preventDefault();
-        const target = event.target as HTMLInputElement;
-        console.log(target.checked);
-        setFormFields((prevFormFields) => {
-            return { ...prevFormFields, requiresWWCC: target.checked };
-        });
-    };
+    // const handleCheckbox = (event: React.FormEvent<HTMLInputElement>): void => {
+    //     // event.preventDefault();
+    //     const target = event.target as HTMLInputElement;
+    //     console.log(target.checked);
+    //     setFormFields((prevFormFields) => {
+    //         return { ...prevFormFields, requiresWWCC: target.checked };
+    //     });
+    // };
 
     const handleSubmit = async (): Promise<void> => {
         try {
@@ -99,7 +164,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                 <input
                     className="date"
                     type="datetime-local"
-                    defaultValue={formFields.startAt ? dateStringToHTML(formFields.startAt) : undefined}
+                    // defaultValue={formFields.startAt ? dateStringToHTML(formFields.startAt) : undefined}
                     name="startAt"
                     onChange={handleChange}
                 />
@@ -108,7 +173,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                 <input
                     className="date"
                     type="datetime-local"
-                    defaultValue={formFields.startAt ? dateStringToHTML(formFields.endAt) : undefined}
+                    // defaultValue={formFields.startAt ? dateStringToHTML(formFields.endAt) : undefined}
                     name="endAt"
                     onChange={handleChange}
                 />
@@ -152,7 +217,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                     <option value="Committee">Committee</option>
                 </Form.Select>
 
-                <hr className="type-line" />
+                {/* <hr className="type-line" />
 
                 <div>
                     <label>Requires WWCC?</label>
@@ -163,62 +228,49 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                         name="requiresWWCC"
                         onChange={handleCheckbox}
                     />
-                </div>
+                </div> */}
 
                 <hr className="type-line" />
 
                 <h1 className="type-header">Volunteer Type Allocations</h1>
                 <div className="type-container">
-                    <div className="type">
-                        <label>General volunteer:</label>
-                        <input
-                            type="number"
-                            name="numGeneralVolunteers"
-                            min={0}
-                            defaultValue={formFields.numGeneralVolunteers}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <div className="type">
-                        <label>Undergraduate ambassadors:</label>
-                        <input
-                            type="number"
-                            name="numUndergradAmbassadors"
-                            min={0}
-                            defaultValue={formFields.numUndergradAmbassadors}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <div className="type">
-                        <label>Postgradute ambassadors:</label>
-                        <input
-                            type="number"
-                            name="numPostgradAmbassadors"
-                            min={0}
-                            defaultValue={formFields.numPostgradAmbassadors}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <div className="type">
-                        <label>Staff ambassadors:</label>
-                        <input
-                            type="number"
-                            name="numSprouts"
-                            min={0}
-                            defaultValue={formFields.numStaffAmbassadors}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <div className="type">
-                        <label>SPROUT:</label>
-                        <input
-                            type="number"
-                            name="numStaffAmbassadors"
-                            min={0}
-                            defaultValue={formFields.numSprouts}
-                            onChange={handleChange}
-                        />
-                    </div>
+                    {!loadingAllVolTypes &&
+                        volTypes &&
+                        volTypes.map((vol) => {
+                            return (
+                                <div key={vol._id} className="type">
+                                    <label>{vol.name}</label>
+                                    <input
+                                        type="number"
+                                        name={`num${vol.name}`}
+                                        min={0}
+                                        defaultValue={0}
+                                        onChange={(e) => handleVolChange(e, vol._id)}
+                                    />
+                                </div>
+                            );
+                        })}
+                </div>
+
+                <h1 className="type-header">Qualification Allocations</h1>
+                <hr className="type-line" />
+                <div className="type-container">
+                    {!loadingAllQualTypes &&
+                        qualTypes &&
+                        qualTypes.map((qual) => {
+                            return (
+                                <div key={qual._id} className="type">
+                                    <label>{qual.name}</label>
+                                    <input
+                                        type="number"
+                                        name={`num${qual.name}`}
+                                        min={0}
+                                        defaultValue={0}
+                                        onChange={(e) => handleQualChange(e, qual._id)}
+                                    />
+                                </div>
+                            );
+                        })}
                 </div>
 
                 <hr className="type-line" />

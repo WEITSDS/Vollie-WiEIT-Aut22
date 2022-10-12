@@ -50,12 +50,12 @@ const ShiftInformation = () => {
         hours,
         notes,
         category,
-        requiresWWCC,
-        numGeneralVolunteers,
-        numUndergradAmbassadors,
-        numPostgradAmbassadors,
-        numStaffAmbassadors,
-        numSprouts,
+        // requiresWWCC,
+        // numGeneralVolunteers,
+        // numUndergradAmbassadors,
+        // numPostgradAmbassadors,
+        // numStaffAmbassadors,
+        // numSprouts,
     } = data?.data || {};
 
     const handleBack = () => {
@@ -219,9 +219,9 @@ const ShiftInformation = () => {
                                             <h2 className="info-title">WWCC?</h2>
                                         </div>
 
-                                        <div className="info-box-right-container">
+                                        {/* <div className="info-box-right-container">
                                             <h3 className="info-body">{requiresWWCC ? "Yes" : "No"}</h3>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </div>
@@ -276,7 +276,7 @@ const ShiftInformation = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr key={0}>
+                                        {/* <tr key={0}>
                                             <td>General Volunteers</td>
                                             <td>{numGeneralVolunteers}</td>
                                         </tr>
@@ -295,7 +295,7 @@ const ShiftInformation = () => {
                                         <tr key={4}>
                                             <td>SPROUT</td>
                                             <td>{numSprouts}</td>
-                                        </tr>
+                                        </tr> */}
                                     </tbody>
                                 </table>
                             </div>
