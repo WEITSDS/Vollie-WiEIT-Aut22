@@ -1,5 +1,5 @@
 // import "react-big-calendar/lib/css/react-big-calendar.css";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { NavigationBar } from "../components/navbar";
@@ -30,6 +30,8 @@ const ShiftInformation = () => {
     const [showEditModal, setshowEditModal] = useState(false);
     const [showParticipantsModal, setshowParticipantsModal] = useState(false);
     const navigate = useNavigate();
+    const [userType, setUserType] = useState("");
+    const [show, setShow] = useState<boolean>(false);
 
     if (isLoading || userQuery.isLoading) return <p>Loading...</p>;
     if (isError || userQuery.isError) return <p>Error loading data...{error || userQuery.error}</p>;
@@ -100,6 +102,19 @@ const ShiftInformation = () => {
         } catch (error) {
             console.log("error assigning user", error);
         }
+    };
+
+    const handleChange = (e: { target: { value: SetStateAction<string> } }) => {
+        setUserType(e.target.value);
+    };
+
+    const handleSubmit = (e: { preventDefault: () => void }) => {
+        e.preventDefault();
+        alert(`Shift apply successful`);
+    };
+
+    const handleShowRoles = () => {
+        setShow(true);
     };
 
     const startDate = new Date(startAt);
@@ -252,6 +267,10 @@ const ShiftInformation = () => {
                                         Cancel shift
                                     </button>
                                 )}
+                                <button id="whiteButton" className={"admin-btn"} onClick={handleShowRoles}>
+                                    <img className="btn-icon" />
+                                    {"Add Shift"}
+                                </button>
                             </div>
                         </div>
                         <div className="right-box-container">
@@ -306,6 +325,75 @@ const ShiftInformation = () => {
                             </div>
                         </div>
                     </div>
+                    <Modal show={show}>
+                        <form onSubmit={handleSubmit}>
+                            <p className="title">Select a pizza size:</p>
+
+                            <ul>
+                                <li>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="   General Volunteer"
+                                            checked={userType === "General Volunteer"}
+                                            onChange={handleChange}
+                                        />
+                                        General Volunteer
+                                    </label>
+                                </li>
+
+                                <li>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value=" Undergraduate Ambassador"
+                                            checked={userType === " Undergraduate Ambassador"}
+                                            onChange={handleChange}
+                                        />
+                                        Undergraduate Ambassador
+                                    </label>
+                                </li>
+
+                                <li>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="Postgraduate Ambassador"
+                                            checked={userType === "Postgraduate Ambassador"}
+                                            onChange={handleChange}
+                                        />
+                                        Postgraduate Ambassador
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="Staff Ambassador"
+                                            checked={userType === "Staff Ambassador"}
+                                            onChange={handleChange}
+                                        />
+                                        Staff Ambassador
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="SPROUT"
+                                            checked={userType === "SPROUT"}
+                                            onChange={handleChange}
+                                        />
+                                        SPROUT
+                                    </label>
+                                </li>
+                            </ul>
+
+                            <button type="submit" className="submit-button">
+                                Apply
+                            </button>
+                        </form>
+                    </Modal>
 
                     {userObj?.isAdmin && (
                         <>
