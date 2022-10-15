@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import User from "../User/user.model";
-import Shift from "./Shift.model";
+import Shift from "./shift.model";
 import mongoose from "mongoose";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
