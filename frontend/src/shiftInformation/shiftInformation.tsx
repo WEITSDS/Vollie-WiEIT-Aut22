@@ -334,7 +334,7 @@ const ShiftInformation = () => {
                                     <label>
                                         <input
                                             type="radio"
-                                            value="   General Volunteer"
+                                            value="General Volunteer"
                                             checked={userType === "General Volunteer"}
                                             onChange={handleChange}
                                         />
