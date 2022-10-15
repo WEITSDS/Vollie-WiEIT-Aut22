@@ -1,7 +1,7 @@
-import { Document, ObjectId } from "mongoose";
+import { Document } from "mongoose";
 
 export interface IVolunteerType extends Document {
-    _id: ObjectId;
+    _id: string;
     name: string;
     description: string;
     requiresApproval: boolean;

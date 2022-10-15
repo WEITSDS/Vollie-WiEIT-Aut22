@@ -157,7 +157,7 @@ export const getVolunteerTypesForUser = async (req: Request, res: Response) => {
         }
 
         const volunteerTypes = await VolunteerType.find({
-            _id: { $in: userObj?.volunteerTypes.map((volType) => volType.type) },
+            _id: { $in: userObj.volunteerTypes.map((volType) => volType.type) },
         });
 
         const volunteerTypesWithApproved = volunteerTypes.map((volType) => {

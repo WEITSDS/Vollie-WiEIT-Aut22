@@ -19,8 +19,8 @@ const router = express.Router();
 router.get("/get-all-shifts", wrapAsync(getAllShifts));
 router.get("/get-user-shifts/:userid", wrapAsync(getUserShifts));
 router.get("/get-available-shifts", wrapAsync(getAvailableShifts));
-router.get("/shift/:shiftId", wrapAsync(getShiftById));
-router.get("/attendance-list/:shiftId", wrapAsync(getShiftAttendanceList));
+router.get("/shift/:shiftid", wrapAsync(getShiftById));
+router.get("/attendance-list/:shiftid", wrapAsync(getShiftAttendanceList));
 
 router.post("/create", wrapAsync(createShift));
 router.post("/update/:shiftid", wrapAsync(updateShift));
