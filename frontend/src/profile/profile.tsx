@@ -31,7 +31,6 @@ export const ProfilePage = () => {
 
     const editingSelf = !id;
 
-    // const [showQualificationModal, setShowQualificationModal] = useState(false);
     const [showOTPModal, setShowOTPModal] = useState(false);
 
     useEffect(() => {

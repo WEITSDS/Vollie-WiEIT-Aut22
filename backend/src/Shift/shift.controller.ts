@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User from "../User/user.model";
 import Shift from "./Shift.model";
-// import mongoose from "mongoose";
+import mongoose from "mongoose";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
 import { IShift } from "./shift.interface";
@@ -52,6 +52,8 @@ export const createShift = async (req: Request, res: Response) => {
         return;
     }
 
+    req.body._id = new mongoose.Types.ObjectId();
+
     const shiftFields = req.body as IShift;
 
     // TODO: Field value validation here!
@@ -92,6 +94,8 @@ export const updateShift = async (req: Request, res: Response) => {
     }
 
     const shiftFields = req.body as IShift;
+
+    console.log(shiftFields);
 
     try {
         const updatedShift = await Shift.findOneAndUpdate({ _id: shiftId }, shiftFields);
@@ -433,8 +437,9 @@ export const getShiftById = async (req: Request, res: Response) => {
             res.status(403).json({ message: "Could not find user object", success: false });
             return;
         }
-*/
+
         const shift = await Shift.findOne({ _id: req.params.shiftid });
+
         if (!shift) {
             res.status(404).json({ message: "Shift not found", success: false });
             return;
@@ -529,8 +534,8 @@ export const getUserShifts = async (req: Request, res: Response) => {
         }
 
         // Default to show all shifts (including finished ones)
-        const availableShifts = await Shift.find({ "users.user": { $all: [targetUserID] } }).sort({
-            createdAt: -1,
+        const availableShifts = await Shift.find({ "users.user": targetUserID }).sort({
+            startAt: 1,
         });
 
         res.status(200).json({

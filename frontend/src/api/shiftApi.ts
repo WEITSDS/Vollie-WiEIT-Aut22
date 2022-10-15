@@ -65,24 +65,58 @@ export async function unassignUserFromShift(req: UnAssignmentUserDetails): Promi
     return patchBasicResponse(`${ROOT_URL}/api/shifts/${req.shiftid}/unassign-user/${req.userid}`);
 }
 
-export interface IShift extends Document {
+// export interface IShift extends Document {
+//     _id: string;
+//     name: string;
+//     startAt: string;
+//     endAt: string;
+//     venue: string;
+//     address: string;
+//     description: string;
+//     hours: number;
+//     notes: string;
+//     users: Array<string>;
+//     category: "School Outreach" | "Event" | "Committee" | "Other";
+//     requiresWWCC: boolean;
+//     numGeneralVolunteers: number;
+//     numUndergradAmbassadors: number;
+//     numPostgradAmbassadors: number;
+//     numStaffAmbassadors: number;
+//     numSprouts: number;
+// }
+
+export interface IShift {
     _id: string;
     name: string;
-    startAt: string;
-    endAt: string;
+    startAt: Date;
+    endAt: Date;
     venue: string;
     address: string;
     description: string;
     hours: number;
     notes: string;
-    users: Array<string>;
+    users: Array<IShiftUser>;
     category: "School Outreach" | "Event" | "Committee" | "Other";
-    requiresWWCC: boolean;
-    numGeneralVolunteers: number;
-    numUndergradAmbassadors: number;
-    numPostgradAmbassadors: number;
-    numStaffAmbassadors: number;
-    numSprouts: number;
+    requiredQualifications: Array<IShiftRequiredQualification>;
+    volunteerTypeAllocations: Array<IShiftVolunteerAllocations>;
+}
+
+export interface IShiftRequiredQualification {
+    qualificationType: string; // Qualification type ID
+    numRequired: number;
+    currentNum: number;
+}
+
+export interface IShiftVolunteerAllocations {
+    type: string; // Volunteer type ID
+    numMembers: number;
+    currentNum: number;
+}
+
+export interface IShiftUser {
+    user: string; // userID
+    chosenVolunteerType: string; // volunteerTypeID
+    approved: boolean;
 }
 
 export async function createShift(shiftBody: object): Promise<ResponseWithData<IShift | null>> {

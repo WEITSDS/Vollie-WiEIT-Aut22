@@ -21,13 +21,23 @@
     border: 1px solid #f0eaea;
 }
 
-.add-shift-form input[type="date"] {
-    height: 40px;
-    width: 360px;
+.date-input {
     margin: 0px 70px 28px 70px;
     border-radius: 0px;
     background: #ffffff;
     border: 1px solid #f5f2f2;
+}
+
+.add-shift-form-number-input {
+    height: 30px;
+    width: 115px;
+    left: 401px;
+    margin-right: 70px;
+    top: 335px;
+    border-radius: 7px;
+    border: 0px;
+    float: right;
+    text-indent: 4px;
 }
 
 .add-shift-form textarea {
@@ -109,10 +119,7 @@
 }
 
 .type {
-    display: flex;
     flex-direction: row;
-    justify-content: flex-end;
-
     white-space: nowrap;
 }
 
@@ -124,7 +131,7 @@
 }
 
 .type label {
-    margin-right: 20px !important;
+    margin-right: 10px !important;
     font-size: 18px;
 }
 
@@ -138,7 +145,7 @@
     top: 1625px;
     border-radius: nullpx;
     margin: auto;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
     margin-top: 20px;
     border: 1px solid #d0d0d0;
 }
@@ -184,3 +191,42 @@
     color: rgb(255, 68, 68);
     text-align: center;
 }
+
+.work-hours {
+    height: 40px !important;
+    width: 360px !important;
+    left: 401px !important;
+    top: 335px !important;
+    margin-right: 0px !important;
+    align-self: center;
+    border-radius: 10px;
+    border: 0px;
+    font-size: 20px;
+    text-indent: 10px;
+}
+
+.drop-down {
+    height: 40px !important;
+    width: 360px !important;
+    left: 401px !important;
+    top: 335px !important;
+    align-self: center;
+    border-radius: 10px;
+    border: 0px;
+    font-size: 20px;
+}
+
+.checkbox {
+    height: 18px;
+    width: 18px;
+}
+
+.date {
+    height: 40px;
+    width: 360px;
+    align-self: center;
+    border-radius: 10px;
+    border: 0px;
+    font-size: 20px;
+    text-indent: 8px;
+} 
