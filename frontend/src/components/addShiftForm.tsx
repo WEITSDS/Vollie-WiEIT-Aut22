@@ -22,20 +22,26 @@ type formProps = {
 //     return dateTimeLocalValue;
 // };
 
-const shiftFormFields: IShift = {
-    _id: "",
-    name: "",
-    startAt: new Date(),
-    endAt: new Date(),
-    venue: "",
-    address: "",
-    users: [],
-    description: "",
-    hours: 0,
-    notes: "",
-    category: "Other",
-    requiredQualifications: [],
-    volunteerTypeAllocations: [],
+const shiftFormFields = (
+    fields?: IShift | undefined,
+    startDate?: Date | undefined,
+    endDate?: Date | undefined
+): IShift => {
+    return {
+        _id: fields?._id || "",
+        name: fields?.name || "",
+        startAt: startDate ? new Date(startDate) : new Date(),
+        endAt: endDate ? new Date(endDate) : new Date(),
+        venue: fields?.venue || "",
+        address: fields?.address || "",
+        users: fields?.users || [],
+        description: fields?.description || "",
+        hours: fields?.hours || 0,
+        notes: fields?.notes || "",
+        category: fields?.category || "Other",
+        requiredQualifications: fields?.requiredQualifications || [],
+        volunteerTypeAllocations: fields?.volunteerTypeAllocations || [],
+    };
 };
 
 const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields }) => {
@@ -49,7 +55,11 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
     const volTypes = allVolTypesData?.data;
     const qualTypes = allQualTypesData?.data;
 
-    const [formFields, setFormFields] = useState<IShift>(previousShiftFields || shiftFormFields);
+    const [formFields, setFormFields] = useState<IShift>(
+        previousShiftFields
+            ? shiftFormFields(previousShiftFields, previousShiftFields.startAt, previousShiftFields.endAt)
+            : shiftFormFields()
+    );
 
     useEffect(() => {
         console.log("useeffect", formFields);
