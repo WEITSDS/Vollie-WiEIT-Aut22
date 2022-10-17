@@ -4,8 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import MockData from "./data.json";
 //import { get } from "../api/utility";
 import { default as dayjs } from "dayjs";
-import { assignUserToShift } from "../api/shiftApi";
-import { getOwnUser } from "../api/userApi";
+// import { assignUserToShift } from "../api/shiftApi";
+// import { getOwnUser } from "../api/userApi";
 import { NavigationBar } from "../components/navbar";
 //import { userInfo } from "os";
 
@@ -64,17 +64,17 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
         });
     };
 
-    handleAccept = async (shift: data) => {
-        const user = await getOwnUser();
-        const data = {
-            userid: user.data?._id as string,
-            shiftid: shift.id,
-        };
-        console.log(shift);
-        //Request now requires shiftid and userid to be passed as an object.
-        const assignShiftResponse = await assignUserToShift(data);
-        console.log(assignShiftResponse);
-    };
+    // handleAccept = async (shift: data) => {
+    //     // const user = await getOwnUser();
+    //     // const data = {
+    //     //     userid: user.data?._id as string,
+    //     //     shiftid: shift.id,
+    //     // };
+    //     // console.log(shift);
+    //     //Request now requires shiftid and userid to be passed as an object.
+    //     // const assignShiftResponse = await assignUserToShift(data);
+    //     // console.log(assignShiftResponse);
+    // };
 
     render = () => {
         const data = MockData;
@@ -140,7 +140,7 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
                                         <div className="center_shift">
                                             <button
                                                 className="btnPink"
-                                                onClick={() => void this.handleAccept(selectedShift)}
+                                                // onClick={() => void this.handleAccept(selectedShift)}
                                             >
                                                 Accept
                                             </button>

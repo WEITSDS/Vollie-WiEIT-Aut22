@@ -73,6 +73,12 @@ interface VerifyOTPBody {
 export async function verifyOTP(data: VerifyOTPBody): Promise<ResponseWithStatus> {
     return postAndGetBasicResponse(`${ROOT_URL}/api/otp/verify`, data as unknown as Record<string, unknown>);
 }
+
+export interface IUserShiftType {
+    shift: string;
+    approved: boolean;
+    completed: boolean;
+}
 export interface User {
     _id: string;
     email: string;
@@ -83,7 +89,7 @@ export interface User {
     lastLogin: number;
     registeredAt: number;
     isAdmin: boolean;
-    shifts: string[];
+    shifts: IUserShiftType[];
     volunteerTypes: IVolunteerTypeUser[];
 }
 

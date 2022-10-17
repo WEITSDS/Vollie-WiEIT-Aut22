@@ -20,13 +20,19 @@ import { assignUserToShift, unassignUserFromShift } from "../api/shiftApi";
 // import AttendanceListModal from "./attendanceList";
 import AddShiftForm from "../components/addShiftForm";
 import AttendanceListModal from "../components/attendanceList";
+import { useVoltypesForUserShift } from "../hooks/useVolTypesForUserShift";
 
 const ShiftInformation = () => {
     const { shiftId } = useParams();
-    console.log("shift id", shiftId);
-    const { isLoading, isError, data, error, refetch } = useShiftById(shiftId || "");
     const userQuery = useOwnUser();
-    console.log("get shift data", data);
+    const { isLoading, isError, data, error, refetch } = useShiftById(shiftId || "");
+    const { isLoading: loadingVolTypesForUser, data: volTypesForUser } = useVoltypesForUserShift(
+        userQuery.data?.data?._id,
+        shiftId
+    );
+
+    console.log(userQuery?.data?.data);
+
     const [showEditModal, setshowEditModal] = useState(false);
     const [showParticipantsModal, setshowParticipantsModal] = useState(false);
     const navigate = useNavigate();
@@ -39,8 +45,6 @@ const ShiftInformation = () => {
     if (!data?.data || !userQuery?.data?.data) return <p>No data</p>;
 
     const { data: userObj } = userQuery?.data || {};
-
-    console.log(userObj);
 
     const {
         name,
@@ -74,17 +78,8 @@ const ShiftInformation = () => {
         setshowEditModal(false);
     };
 
-    const handleApply = async () => {
-        try {
-            if (typeof shiftId === "string" && userObj?._id) {
-                const assignResponse = await assignUserToShift({ shiftid: shiftId, userid: userObj?._id });
-                console.log(assignResponse);
-                await refetch();
-                await userQuery.refetch();
-            }
-        } catch (error) {
-            console.log("error assigning user", error);
-        }
+    const handleApply = () => {
+        handleShowRoles();
     };
 
     const handleParticipants = () => {
@@ -94,7 +89,11 @@ const ShiftInformation = () => {
     const handleCancel = async () => {
         try {
             if (typeof shiftId === "string" && userObj?._id) {
-                const cancelResponse = await unassignUserFromShift({ shiftid: shiftId, userid: userObj?._id });
+                const cancelResponse = await unassignUserFromShift({
+                    shiftid: shiftId,
+                    userid: userObj?._id,
+                    selectedVolType: userType,
+                });
                 console.log(cancelResponse);
                 await refetch();
                 await userQuery.refetch();
@@ -105,12 +104,28 @@ const ShiftInformation = () => {
     };
 
     const handleChange = (e: { target: { value: SetStateAction<string> } }) => {
+        console.log(e.target.value);
         setUserType(e.target.value);
     };
 
-    const handleSubmit = (e: { preventDefault: () => void }) => {
+    const handleApplySubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
-        alert(`Shift apply successful`);
+        // Handle applying to shift
+        try {
+            if (typeof shiftId === "string" && userObj?._id) {
+                const assignResponse = await assignUserToShift({
+                    shiftid: shiftId,
+                    userid: userObj?._id,
+                    selectedVolType: userType,
+                });
+                console.log(assignResponse);
+                await refetch();
+                await userQuery.refetch();
+                setShow(false);
+            }
+        } catch (error) {
+            console.log("error assigning user", error);
+        }
     };
 
     /* Assign this to the apply to shift button  this opens the modal for role selection*/
@@ -147,17 +162,19 @@ const ShiftInformation = () => {
                                                 Edit
                                             </button>
                                         )}
-                                        {!!userObj && shiftId && !userObj?.shifts.includes(shiftId) && (
-                                            <button
-                                                className="apply-btn"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    void handleApply();
-                                                }}
-                                            >
-                                                Apply to Shift
-                                            </button>
-                                        )}
+                                        {!!userObj &&
+                                            shiftId &&
+                                            !userObj?.shifts.find((shift) => shiftId === shift.shift) && (
+                                                <button
+                                                    className="apply-btn"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        void handleApply();
+                                                    }}
+                                                >
+                                                    Apply to Shift
+                                                </button>
+                                            )}
                                     </div>
                                 </div>
                             </div>
@@ -261,7 +278,7 @@ const ShiftInformation = () => {
                             </div>
                             <hr className="notes-divider" />
                             <div className="footer-container">
-                                {!!userObj && shiftId && userObj?.shifts.includes(shiftId) && (
+                                {!!userObj && shiftId && userObj?.shifts.find((shift) => shiftId === shift.shift) && (
                                     <button
                                         className="cancel-shift-btn"
                                         onClick={(e) => {
@@ -328,77 +345,43 @@ const ShiftInformation = () => {
                     </div>
                     <Modal show={show} onHide={handleRoleSelectClose}>
                         <Modal.Header closeButton />
-                        <form className="select-role-form" onSubmit={handleSubmit}>
-                            <div className="select-role-title-div">
-                                <h1 className="select-role-title">Select one role:</h1>
-                            </div>
-                            <div className="select-role-list-div">
-                                <ul className="select-role-list">
-                                    <li>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                value="General Volunteer"
-                                                checked={userType === "General Volunteer"}
-                                                onChange={handleChange}
-                                            />
-                                            General Volunteer
-                                        </label>
-                                    </li>
-
-                                    <li>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                value=" Undergraduate Ambassador"
-                                                checked={userType === " Undergraduate Ambassador"}
-                                                onChange={handleChange}
-                                            />
-                                            Undergraduate Ambassador
-                                        </label>
-                                    </li>
-
-                                    <li>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                value="Postgraduate Ambassador"
-                                                checked={userType === "Postgraduate Ambassador"}
-                                                onChange={handleChange}
-                                            />
-                                            Postgraduate Ambassador
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                value="Staff Ambassador"
-                                                checked={userType === "Staff Ambassador"}
-                                                onChange={handleChange}
-                                            />
-                                            Staff Ambassador
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                value="SPROUT"
-                                                checked={userType === "SPROUT"}
-                                                onChange={handleChange}
-                                            />
-                                            SPROUT
-                                        </label>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div className="select-role-button-div">
-                                <Button type="submit" className="select-role-submit-button">
-                                    Apply
-                                </Button>
-                            </div>
-                        </form>
+                        {loadingVolTypesForUser && <p>Loading volunteer types...</p>}
+                        {!loadingVolTypesForUser && volTypesForUser?.data && (
+                            <form
+                                className="select-role-form"
+                                onSubmit={(e) => {
+                                    void handleApplySubmit(e);
+                                }}
+                            >
+                                <div className="select-role-title-div">
+                                    <h1 className="select-role-title">Please select a role:</h1>
+                                </div>
+                                <div className="select-role-list-div">
+                                    <ul className="select-role-list">
+                                        {volTypesForUser?.data.map((volType) => {
+                                            return (
+                                                <li key={volType._id}>
+                                                    <label>
+                                                        <input
+                                                            type="radio"
+                                                            value={volType._id}
+                                                            checked={userType === volType._id}
+                                                            onChange={handleChange}
+                                                        />
+                                                        {volType.name}
+                                                    </label>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+                                <div className="select-role-button-div">
+                                    <Button type="submit" className="select-role-submit-button">
+                                        Apply
+                                    </Button>
+                                </div>
+                            </form>
+                        )}
                     </Modal>
 
                     {userObj?.isAdmin && (

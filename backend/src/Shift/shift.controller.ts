@@ -10,7 +10,7 @@ import QualificationType from "../QualificationType/qualificationType.model";
 import Qualifications from "../Qualifications/qualification.model";
 // import { IQualificationType } from "../QualificationType/qualificationType.interface";
 // import { ObjectId } from "mongodb";
-
+import VolunteerType from "../VolunteerType/volunteerType.model";
 const logger = new Logger({ name: "shift.controller" });
 
 // const getAttributeFromVolunteerType = (userRole: string | undefined): keyof IShift => {
@@ -372,6 +372,8 @@ export const removeUser = async (req: Request, res: Response) => {
             { $pull: { users: { user: req.params.userid } }, $inc: { "volunteerTypeAllocations.$.currentNum": -1 } }
         );
 
+        await User.findOneAndUpdate({ _id: userObj?._id }, { $pull: { shifts: { shift: req.params.shiftid } } });
+
         const assignShiftResponse = await User.findOneAndUpdate(
             { _id: req.params.userid },
             { $pull: { shifts: req.params.shiftid } }
@@ -579,6 +581,40 @@ export const getShiftAttendanceList = async (req: Request, res: Response) => {
         res.status(200).json({
             message: "success",
             data: participants.map(mapUserToAttendanceSummary),
+            success: true,
+        });
+        return;
+    } catch (error) {
+        console.log("get shift attendance list error", error);
+        res.status(500).json({
+            message: "get shift attendance list error",
+            error,
+            success: false,
+        });
+        return;
+    }
+};
+
+export const getAvailableRolesForShiftUser = async (req: Request, res: Response) => {
+    // Get roles for a user that are approved and that there is available slots for in the target shift
+    try {
+        const userObj = await User.findOne({ _id: req.params.userId });
+        if (!userObj || !req.params.userId) {
+            res.status(403).json({ message: "Could not find user object", success: false });
+            return;
+        }
+
+        const volTypeIDs = getUserApprovedVolunteerTypes(userObj);
+
+        const volTypeObjs = await VolunteerType.find({ _id: { $in: volTypeIDs } });
+
+        // todo: also check the shift to ensure there are slots available, doesn't really matter
+        // since application process is denied if no slots available but serves as better UX for
+        // the user not to have the option to apply as a vol type that there is no space for in the target shfit.
+
+        res.status(200).json({
+            message: "success",
+            data: volTypeObjs,
             success: true,
         });
         return;

@@ -52,7 +52,7 @@ export interface UserSummary {
     verified: boolean;
     isAdmin: boolean;
     volunteerTypes: Array<IUserVolunteerType>;
-    shifts: Array<string>;
+    shifts: Array<IUserShiftType>;
 }
 
 export function mapUserToUserSummary({
@@ -79,7 +79,7 @@ export function mapUserToUserSummary({
         registeredAt: createdAt.getTime(),
         isAdmin,
         volunteerTypes,
-        shifts: shifts.map((shift) => shift.toString()),
+        shifts,
     };
 }
 export interface AttendaceSummary {
