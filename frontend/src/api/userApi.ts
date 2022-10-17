@@ -83,8 +83,13 @@ export interface User {
     lastLogin: number;
     registeredAt: number;
     isAdmin: boolean;
-    shifts: string[];
+    shifts: IUserShift[];
     volunteerTypes: IVolunteerTypeUser[];
+}
+export interface IUserShift {
+    shift: string;
+    approved: boolean;
+    completed: boolean;
 }
 
 const PATH = `${ROOT_URL}/api/users`;
@@ -114,4 +119,8 @@ export async function changeUserIsAdmin(data: SetAdminBody): Promise<ResponseWit
 
 export async function setApprovalUserVolunteerType(id: string, userId: string, status: string) {
     return patch(`${PATH}/set-volunteerType-approval/${id}/${userId}/${status}`);
+}
+
+export async function completeShift(userId: string, shiftid: string) {
+    return patch(`${PATH}/${userId}/complete-shift/${shiftid}`);
 }

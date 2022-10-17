@@ -16,6 +16,7 @@ import editIcon from "../assets/editIcon.svg";
 import categoryIcon from "../assets/categoryIcon.svg";
 import checkIcon from "../assets/checkIcon.svg";
 import { assignUserToShift, unassignUserFromShift } from "../api/shiftApi";
+import { completeShift } from "../api/userApi";
 
 // import AttendanceListModal from "./attendanceList";
 import AddShiftForm from "../components/addShiftForm";
@@ -39,6 +40,23 @@ const ShiftInformation = () => {
     const { data: userObj } = userQuery?.data || {};
 
     console.log(userObj);
+
+    const userShifts = [];
+
+    //console.log(userObj?.shifts[0].approved);
+
+    let shiftCompleted = false;
+    console.log(userObj);
+    if (userObj) {
+        for (let i = 0; i < userObj.shifts.length; i++) {
+            if (shiftId !== undefined && userObj.shifts[i].shift === shiftId) {
+                if (userObj.shifts[i].completed) {
+                    shiftCompleted = true;
+                }
+                userShifts.push(JSON.stringify(userObj.shifts[i]));
+            }
+        }
+    }
 
     const {
         name,
@@ -70,6 +88,18 @@ const ShiftInformation = () => {
     const handleEditClose = async () => {
         await refetch();
         setshowEditModal(false);
+    };
+
+    const handleComplete = async () => {
+        try {
+            if (typeof shiftId === "string" && userObj?._id) {
+                const completeResponse = await completeShift(userObj?._id, shiftId);
+                console.log(completeResponse);
+            }
+        } catch (error) {
+            console.log("Error completing shift");
+            console.error(error);
+        }
     };
 
     const handleApply = async () => {
@@ -131,7 +161,7 @@ const ShiftInformation = () => {
                                                 Edit
                                             </button>
                                         )}
-                                        {!!userObj && shiftId && !userObj?.shifts.includes(shiftId) && (
+                                        {!!userObj && shiftId && !userShifts.includes(shiftId) && (
                                             <button
                                                 className="apply-btn"
                                                 onClick={(e) => {
@@ -140,6 +170,17 @@ const ShiftInformation = () => {
                                                 }}
                                             >
                                                 Apply to Shift
+                                            </button>
+                                        )}
+                                        {!!userObj && shiftId && !userShifts.includes(shiftId) && !shiftCompleted && (
+                                            <button
+                                                className="apply-btn"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    void handleComplete();
+                                                }}
+                                            >
+                                                Complete Shift
                                             </button>
                                         )}
                                     </div>
@@ -245,7 +286,7 @@ const ShiftInformation = () => {
                             </div>
                             <hr className="notes-divider" />
                             <div className="footer-container">
-                                {!!userObj && shiftId && userObj?.shifts.includes(shiftId) && (
+                                {!!userObj && shiftId && userShifts.includes(shiftId) && (
                                     <button
                                         className="cancel-shift-btn"
                                         onClick={(e) => {
