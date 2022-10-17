@@ -371,3 +371,35 @@
 .calender-title-box {
     height: 50px;
 }
+
+.select-role-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-left: 20px;
+}
+
+.select-role-list {
+    list-style: none;
+}
+
+.select-role-list input {
+    margin-right: 10px !important;
+}
+
+.select-role-list input::checked {
+    border-style: none;
+}
+
+.select-role-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.select-role-button-div {
+    display: flex;
+    justify-content: center;
+}
+.select-role-submit-button {
+    width: 30%;
+    margin-bottom: 20px;
+}

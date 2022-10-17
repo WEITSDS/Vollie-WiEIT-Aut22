@@ -1,6 +1,6 @@
 // import "react-big-calendar/lib/css/react-big-calendar.css";
-import { useState } from "react";
-import { Modal } from "react-bootstrap";
+import { SetStateAction, useState } from "react";
+import { Button, Modal } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { NavigationBar } from "../components/navbar";
 import { useOwnUser } from "../hooks/useOwnUser";
@@ -30,6 +30,8 @@ const ShiftInformation = () => {
     const [showEditModal, setshowEditModal] = useState(false);
     const [showParticipantsModal, setshowParticipantsModal] = useState(false);
     const navigate = useNavigate();
+    const [userType, setUserType] = useState("");
+    const [show, setShow] = useState<boolean>(false);
 
     if (isLoading || userQuery.isLoading) return <p>Loading...</p>;
     if (isError || userQuery.isError) return <p>Error loading data...{error || userQuery.error}</p>;
@@ -100,6 +102,24 @@ const ShiftInformation = () => {
         } catch (error) {
             console.log("error assigning user", error);
         }
+    };
+
+    const handleChange = (e: { target: { value: SetStateAction<string> } }) => {
+        setUserType(e.target.value);
+    };
+
+    const handleSubmit = (e: { preventDefault: () => void }) => {
+        e.preventDefault();
+        alert(`Shift apply successful`);
+    };
+
+    /* Assign this to the apply to shift button  this opens the modal for role selection*/
+    const handleShowRoles = () => {
+        setShow(true);
+    };
+
+    const handleRoleSelectClose = () => {
+        setShow(false);
     };
 
     const startDate = new Date(startAt);
@@ -306,6 +326,80 @@ const ShiftInformation = () => {
                             </div>
                         </div>
                     </div>
+                    <Modal show={show} onHide={handleRoleSelectClose}>
+                        <Modal.Header closeButton />
+                        <form className="select-role-form" onSubmit={handleSubmit}>
+                            <div className="select-role-title-div">
+                                <h1 className="select-role-title">Select one role:</h1>
+                            </div>
+                            <div className="select-role-list-div">
+                                <ul className="select-role-list">
+                                    <li>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                value="General Volunteer"
+                                                checked={userType === "General Volunteer"}
+                                                onChange={handleChange}
+                                            />
+                                            General Volunteer
+                                        </label>
+                                    </li>
+
+                                    <li>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                value=" Undergraduate Ambassador"
+                                                checked={userType === " Undergraduate Ambassador"}
+                                                onChange={handleChange}
+                                            />
+                                            Undergraduate Ambassador
+                                        </label>
+                                    </li>
+
+                                    <li>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                value="Postgraduate Ambassador"
+                                                checked={userType === "Postgraduate Ambassador"}
+                                                onChange={handleChange}
+                                            />
+                                            Postgraduate Ambassador
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                value="Staff Ambassador"
+                                                checked={userType === "Staff Ambassador"}
+                                                onChange={handleChange}
+                                            />
+                                            Staff Ambassador
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                value="SPROUT"
+                                                checked={userType === "SPROUT"}
+                                                onChange={handleChange}
+                                            />
+                                            SPROUT
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div className="select-role-button-div">
+                                <Button type="submit" className="select-role-submit-button">
+                                    Apply
+                                </Button>
+                            </div>
+                        </form>
+                    </Modal>
 
                     {userObj?.isAdmin && (
                         <>
