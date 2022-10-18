@@ -433,7 +433,7 @@ export const getShiftById = async (req: Request, res: Response) => {
             res.status(403).json({ message: "Authorization error", success: false });
             return;
         }
-        /*
+
         const userObj = await User.findOne({ _id: userID });
         if (!userObj) {
             res.status(403).json({ message: "Could not find user object", success: false });
@@ -571,13 +571,13 @@ export const getShiftAttendanceList = async (req: Request, res: Response) => {
             return;
         }
 
-        const { shiftId } = req.params;
-        if (!shiftId) {
+        const { shiftid } = req.params;
+        if (!shiftid) {
             res.status(403).json({ message: "No shift ID provided", success: false });
             return;
         }
 
-        const shift = await Shift.findOne({ _id: shiftId });
+        const shift = await Shift.findOne({ _id: shiftid });
 
         const participants = await User.find({ _id: { $in: shift?.users || [] } });
 
@@ -601,8 +601,8 @@ export const getShiftAttendanceList = async (req: Request, res: Response) => {
 export const getAvailableRolesForShiftUser = async (req: Request, res: Response) => {
     // Get roles for a user that are approved and that there is available slots for in the target shift
     try {
-        const userObj = await User.findOne({ _id: req.params.userId });
-        if (!userObj || !req.params.userId) {
+        const userObj = await User.findOne({ _id: req.params.userid });
+        if (!userObj || !req.params.userid) {
             res.status(403).json({ message: "Could not find user object", success: false });
             return;
         }
