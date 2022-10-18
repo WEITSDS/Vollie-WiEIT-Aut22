@@ -16,6 +16,7 @@ import editIcon from "../assets/editIcon.svg";
 import categoryIcon from "../assets/categoryIcon.svg";
 import checkIcon from "../assets/checkIcon.svg";
 import { assignUserToShift, unassignUserFromShift } from "../api/shiftApi";
+import { completeShift } from "../api/userApi";
 
 // import AttendanceListModal from "./attendanceList";
 import AddShiftForm from "../components/addShiftForm";
@@ -81,6 +82,34 @@ const ShiftInformation = () => {
     const handleApply = () => {
         handleShowRoles();
     };
+    const handleComplete = async () => {
+        try {
+            if (typeof shiftId === "string" && userObj?._id) {
+                const completeResponse = await completeShift(userObj?._id, shiftId);
+                console.log(completeResponse);
+            }
+        } catch (error) {
+            console.log("Error completing shift");
+            console.error(error);
+        }
+    };
+
+    // const handleApply = async () => {
+    //     try {
+    //         if (typeof shiftId === "string" && userObj?._id) {
+    //             const assignResponse = await assignUserToShift({
+    //                 shiftid: shiftId,
+    //                 userid: userObj?._id,
+    //                 volunteerTypeId: "634320042a444bc07bd4cff7",
+    //             });
+    //             console.log(assignResponse);
+    //             await refetch();
+    //             await userQuery.refetch();
+    //         }
+    //     } catch (error) {
+    //         console.log("error assigning user", error);
+    //     }
+    // };
 
     const handleParticipants = () => {
         setshowParticipantsModal((prev) => !prev);
@@ -92,7 +121,6 @@ const ShiftInformation = () => {
                 const cancelResponse = await unassignUserFromShift({
                     shiftid: shiftId,
                     userid: userObj?._id,
-                    selectedVolType: userType,
                 });
                 console.log(cancelResponse);
                 await refetch();
@@ -140,6 +168,8 @@ const ShiftInformation = () => {
     const startDate = new Date(startAt);
     const endDate = new Date(endAt);
 
+    const targetShiftInUser = userObj?.shifts.find((shift) => shiftId === shift.shift);
+
     return (
         <div className="page-background">
             <NavigationBar />
@@ -162,19 +192,28 @@ const ShiftInformation = () => {
                                                 Edit
                                             </button>
                                         )}
-                                        {!!userObj &&
-                                            shiftId &&
-                                            !userObj?.shifts.find((shift) => shiftId === shift.shift) && (
-                                                <button
-                                                    className="apply-btn"
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        void handleApply();
-                                                    }}
-                                                >
-                                                    Apply to Shift
-                                                </button>
-                                            )}
+                                        {!!userObj && shiftId && !targetShiftInUser && (
+                                            <button
+                                                className="apply-btn"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    void handleApply();
+                                                }}
+                                            >
+                                                Apply to Shift
+                                            </button>
+                                        )}
+                                        {!!userObj && shiftId && targetShiftInUser && !targetShiftInUser.completed && (
+                                            <button
+                                                className="apply-btn"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    void handleComplete();
+                                                }}
+                                            >
+                                                Complete Shift
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
