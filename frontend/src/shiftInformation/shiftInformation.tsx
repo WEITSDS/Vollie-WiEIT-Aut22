@@ -88,6 +88,7 @@ const ShiftInformation = () => {
                 const completeResponse = await completeShift(userObj?._id, shiftId);
                 console.log(completeResponse);
                 await refetch();
+                await userQuery.refetch();
             }
         } catch (error) {
             console.log("Error completing shift");
