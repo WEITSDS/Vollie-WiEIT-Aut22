@@ -353,7 +353,7 @@ const ShiftInformation = () => {
                                         <tr>
                                             <th scope="col">Type</th>
                                             <th scope="col">Allocated Slots</th>
-                                            <th scope="col">Currently Allocated</th>
+                                            <th scope="col">Currently Assigned</th>
                                             <td scope="col">Slots Available</td>
                                         </tr>
                                     </thead>
@@ -372,7 +372,7 @@ const ShiftInformation = () => {
                                         <tr>
                                             <th scope="col">Type</th>
                                             <th scope="col">Allocated Slots</th>
-                                            <th scope="col">Currently Allocated</th>
+                                            <th scope="col">Currently Assigned</th>
                                             <td scope="col">Slots Remaining</td>
                                         </tr>
                                     </thead>
