@@ -189,7 +189,6 @@ export const assignUser = async (req: Request, res: Response) => {
             res.status(404).json({ message: "Target user not found", success: false });
             return;
         }
-        console.log(targetUser);
 
         // Check if user has the required qualifications for the shift
         // Loop through the qualifications required by the shift, if any are not approved on the user, set to false and return
@@ -215,12 +214,10 @@ export const assignUser = async (req: Request, res: Response) => {
 
         // Check if user's selected volunteer type is approved
         const selectedVolunteerTypeID = req.params.selectedVolunteerTypeID;
-        console.log(selectedVolunteerTypeID);
         // -1 if either voltype doesnt exist for the user OR the type is not approved yet
         const userVolTypeIndex = targetUser.volunteerTypes.findIndex(
             (volType) => volType.type.toString() === selectedVolunteerTypeID && volType.approved === true
         );
-        console.log(userVolTypeIndex);
         if (userVolTypeIndex === -1) {
             res.status(401).json({
                 message:
@@ -245,17 +242,54 @@ export const assignUser = async (req: Request, res: Response) => {
 
         // At this point, we can finally assign the user and update the shift info
         // This will also increment the currentNum for that vol type
+        // also increment the qualification allocations based on user quals
         const assignUserResponse = await Shift.findOneAndUpdate(
-            { _id: req.params.shiftid, "volunteerTypeAllocations.type": selectedVolunteerTypeID },
+            {
+                _id: req.params.shiftid,
+            },
             {
                 $addToSet: {
                     users: { user: req.params.userid, chosenVolunteerType: selectedVolunteerTypeID, approved: false },
                 },
+            }
+        );
+
+        const incrementVolTypeResponse = await Shift.findOneAndUpdate(
+            {
+                _id: req.params.shiftid,
+                "volunteerTypeAllocations.type": selectedVolunteerTypeID,
+            },
+            {
                 $inc: { "volunteerTypeAllocations.$.currentNum": 1 },
             }
         );
-        if (!assignUserResponse) {
-            res.status(404).json({ message: "Error updating shift", success: false });
+
+        if (!incrementVolTypeResponse) {
+            res.status(401).json({ message: "Error updating shift", success: false });
+            return;
+        }
+
+        // Qual type increment needs to be done manually cause $ operator only gives 1st match
+        const newQualAllocs = incrementVolTypeResponse?.requiredQualifications;
+
+        for (let index = 0; index < newQualAllocs.length; index++) {
+            const qualAlloc = newQualAllocs[index];
+            if (userApprovedQualificationType.includes(qualAlloc.qualificationType.toString())) {
+                newQualAllocs[index].currentNum += 1;
+            }
+        }
+
+        const incrementQualTypeResponse = await Shift.updateOne(
+            {
+                _id: req.params.shiftid,
+            },
+            {
+                $set: { requiredQualifications: newQualAllocs },
+            }
+        );
+
+        if (!assignUserResponse || !incrementVolTypeResponse || !incrementQualTypeResponse) {
+            res.status(401).json({ message: "Error updating shift", success: false });
             return;
         }
 
@@ -277,7 +311,7 @@ export const assignUser = async (req: Request, res: Response) => {
     }
 };
 
-export const approveUser = async (req: Request, res: Response) => {
+export const setUserApproval = async (req: Request, res: Response) => {
     try {
         const isAdmin = req.session.user?.isAdmin || false;
         const sessionUserId = req.session.user?._id;
@@ -288,6 +322,8 @@ export const approveUser = async (req: Request, res: Response) => {
 
         const targetShift = await Shift.findOne({ _id: req.params.shiftid });
 
+        const approvalStatus = req.params.approvalstatus === "approve";
+
         if (!targetShift) {
             res.status(404).json({
                 message: "Shift not found",
@@ -296,6 +332,12 @@ export const approveUser = async (req: Request, res: Response) => {
             return;
         }
         const userObj = await User.findOne({ _id: req.params.userid });
+
+        if (!userObj) {
+            res.status(404).json({ message: "User doesn't exist with that ID", success: false });
+            return;
+        }
+
         const userShiftAllocationIdx = targetShift?.users.findIndex(
             (shiftUser) => shiftUser.user.toString() === userObj?._id.toString()
         );
@@ -306,12 +348,12 @@ export const approveUser = async (req: Request, res: Response) => {
 
         await Shift.findOneAndUpdate(
             { _id: req.params.shiftid, "users.user": req.params.userid },
-            { $set: { "users.$.approved": true } }
+            { $set: { "users.$.approved": approvalStatus } }
         );
 
         const approveUserResponse = await User.findOneAndUpdate(
             { _id: req.params.userid, "shifts.shift": req.params.shiftid },
-            { $set: { "shifts.$.approved": true } }
+            { $set: { "shifts.$.approved": approvalStatus } }
         );
         if (approveUserResponse) {
             res.status(200).json({
@@ -355,6 +397,10 @@ export const removeUser = async (req: Request, res: Response) => {
             return;
         }
         const userObj = await User.findOne({ _id: req.params.userid });
+        if (!userObj) {
+            res.status(404).json({ message: "User doesn't exist with that ID", success: false });
+            return;
+        }
         const userShiftAllocationIdx = targetShift?.users.findIndex(
             (shiftUser) => shiftUser.user.toString() === userObj?._id.toString()
         );
@@ -363,25 +409,58 @@ export const removeUser = async (req: Request, res: Response) => {
             return;
         }
 
-        const selectedVolunteerTypeID = targetShift?.users[userShiftAllocationIdx].chosenVolunteerType.toString();
+        const selectedVolunteerTypeID = targetShift?.users[userShiftAllocationIdx].chosenVolunteerType;
 
-        if (!selectedVolunteerTypeID || selectedVolunteerTypeID == "") {
+        if (!selectedVolunteerTypeID) {
             res.status(401).json({ message: "Error getting chosen volunteer type for user in shift.", success: false });
             return;
         }
 
-        await Shift.findOneAndUpdate(
-            { _id: req.params.shiftid, "volunteerTypeAllocations.type": selectedVolunteerTypeID },
-            { $pull: { users: { user: req.params.userid } }, $inc: { "volunteerTypeAllocations.$.currentNum": -1 } }
+        const updatedShift = await Shift.findOneAndUpdate(
+            {
+                _id: req.params.shiftid,
+                "volunteerTypeAllocations.type": selectedVolunteerTypeID,
+            },
+            {
+                $pull: { users: { user: req.params.userid } },
+                $inc: { "volunteerTypeAllocations.$.currentNum": -1 },
+            }
         );
 
-        await User.findOneAndUpdate({ _id: userObj?._id }, { $pull: { shifts: { shift: req.params.shiftid } } });
+        if (!updatedShift) {
+            res.status(401).json({
+                message: "Error updating shift",
+                success: false,
+            });
+            return;
+        }
+
+        // Qual type increment needs to be done manually cause $ operator only gives 1st match
+        const userApprovedQualificationType = await getUserApprovedQualificationTypes(userObj);
+        const newQualAllocs = updatedShift?.requiredQualifications;
+
+        for (let index = 0; index < newQualAllocs.length; index++) {
+            const qualAlloc = newQualAllocs[index];
+            if (userApprovedQualificationType.includes(qualAlloc.qualificationType.toString())) {
+                newQualAllocs[index].currentNum -= 1;
+            }
+        }
+
+        const updateShiftQualAllocs = await Shift.updateOne(
+            {
+                _id: req.params.shiftid,
+            },
+            {
+                $set: { requiredQualifications: newQualAllocs },
+            }
+        );
 
         const assignShiftResponse = await User.findOneAndUpdate(
             { _id: req.params.userid },
-            { $pull: { shifts: req.params.shiftid } }
+            { $pull: { shifts: { shift: req.params.shiftid } } }
         );
-        if (assignShiftResponse) {
+
+        if (assignShiftResponse && updateShiftQualAllocs) {
             res.status(200).json({
                 message: "User removed from shift",
                 success: true,

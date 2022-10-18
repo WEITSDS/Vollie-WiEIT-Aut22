@@ -15,7 +15,7 @@ import backIcon from "../assets/backIcon.svg";
 import editIcon from "../assets/editIcon.svg";
 import categoryIcon from "../assets/categoryIcon.svg";
 import { assignUserToShift, unassignUserFromShift } from "../api/shiftApi";
-import { completeShift } from "../api/userApi";
+import { setCompleteShift } from "../api/userApi";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 
@@ -84,7 +84,7 @@ const ShiftInformation = () => {
     const handleComplete = async () => {
         try {
             if (typeof shiftId === "string" && userObj?._id) {
-                await completeShift(userObj?._id, shiftId);
+                await setCompleteShift(userObj?._id, shiftId, "complete");
                 await refetch();
                 await userQuery.refetch();
             }
@@ -117,6 +117,7 @@ const ShiftInformation = () => {
 
     const onCloseParticipantModal = async () => {
         try {
+            console.log("reloading stuff");
             await refetch();
             await userQuery.refetch();
         } catch (error) {

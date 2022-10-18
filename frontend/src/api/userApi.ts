@@ -127,6 +127,6 @@ export async function setApprovalUserVolunteerType(id: string, userId: string, s
     return patch(`${PATH}/set-volunteerType-approval/${id}/${userId}/${status}`);
 }
 
-export async function completeShift(userId: string, shiftid: string) {
-    return patch(`${PATH}/${userId}/complete-shift/${shiftid}`);
+export async function setCompleteShift(userId: string, shiftid: string, completionStatus: string) {
+    return patch(`${PATH}/${userId}/set-complete-shift/${shiftid}/${completionStatus}`);
 }

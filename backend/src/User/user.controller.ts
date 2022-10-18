@@ -341,7 +341,7 @@ export const getOwnUser = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
-export const completeShift = async (req: Request, res: Response) => {
+export const setCompleteShift = async (req: Request, res: Response) => {
     try {
         const userObj = await User.findOne({ _id: req.session.user?._id });
         if (!userObj) {
@@ -359,15 +359,17 @@ export const completeShift = async (req: Request, res: Response) => {
             return;
         }
 
+        const completionStatus = req.params.completionstatus === "complete";
+
         //Add some checking to ensure the time is past that of the shift so it cant be completed before?
         const completeShiftResult = await User.findOneAndUpdate(
             { _id: sessionUserId, "shifts.shift": req.params.shiftid },
-            { $set: { "shifts.$.completed": true } }
+            { $set: { "shifts.$.completed": completionStatus } }
         );
 
         if (completeShiftResult) {
             res.status(200).json({
-                message: "User completed shift",
+                message: "User set completion success",
                 success: true,
             });
             return;

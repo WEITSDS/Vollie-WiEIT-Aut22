@@ -69,11 +69,11 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
 
     const [showQualificationModal, setShowQualificationModal] = useState(false);
 
-    const handleDeleteModalClose = async () => {
+    const handleDeleteModalClose = async (shouldDelete: boolean) => {
         try {
             setshowDeleteModal(false);
 
-            if (selectedQualification) await deleteQualification(selectedQualification?._id);
+            if (selectedQualification && shouldDelete) await deleteQualification(selectedQualification?._id);
 
             await refetchQualifications();
             setselectedQualification(null);
@@ -191,7 +191,7 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
             {showDeleteModal && selectedQualification && (
                 <ConfirmDeleteModal
                     qualification={selectedQualification}
-                    onClose={() => void handleDeleteModalClose()}
+                    onClose={(shouldDelete: boolean) => void handleDeleteModalClose(shouldDelete)}
                 />
             )}
             <Modal

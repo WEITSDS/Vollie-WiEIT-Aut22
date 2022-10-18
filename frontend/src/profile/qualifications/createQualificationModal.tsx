@@ -181,11 +181,11 @@ export const CreateOrEditQualificationModal = (props: CreateOrEditQualificationP
 };
 interface ConfirmDeleteModalProps {
     qualification: Qualification;
-    onClose: (id?: string) => void;
+    onClose: (shouldDelete: boolean) => void;
 }
 export const ConfirmDeleteModal = ({ qualification, onClose }: ConfirmDeleteModalProps): JSX.Element => {
     return (
-        <Modal show={true} onHide={onClose}>
+        <Modal show={true} onHide={() => onClose(false)}>
             <Modal.Header closeButton>
                 <Modal.Title>Delete Qualification</Modal.Title>
             </Modal.Header>
@@ -193,10 +193,10 @@ export const ConfirmDeleteModal = ({ qualification, onClose }: ConfirmDeleteModa
                 Are you sure you want to delete the qualification '{qualification.title}'? This action cannot be undone.
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => onClose()}>
+                <Button variant="secondary" onClick={() => onClose(false)}>
                     Cancel
                 </Button>
-                <Button variant="danger" onClick={() => onClose(qualification._id)}>
+                <Button variant="danger" onClick={() => onClose(true)}>
                     Delete
                 </Button>
             </Modal.Footer>

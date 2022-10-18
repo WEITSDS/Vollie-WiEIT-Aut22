@@ -200,3 +200,11 @@ export async function getShiftAttendanceList(
         ? Promise.reject(new Error("Invalid id"))
         : await getDataResponse(`${ROOT_URL}/api/shifts/attendance-list/${shiftId}`);
 }
+
+export async function setApprovalUserForShift(
+    userId: string,
+    shiftId: string,
+    approvalStatus: string
+): Promise<ResponseWithStatus> {
+    return await patchBasicResponse(`${ROOT_URL}/api/shifts/${shiftId}/approve-user/${userId}/${approvalStatus}`);
+}

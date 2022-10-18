@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { UserShiftAttendaceSummary } from "../api/shiftApi";
+import { setApprovalUserForShift, UserShiftAttendaceSummary } from "../api/shiftApi";
 import participantsIcon from "../assets/participants.svg";
 //import AttendanceList from "./attendanceList.json";
 import { useAttendanceList } from "../hooks/useAttendanceList";
@@ -8,6 +8,7 @@ import RemoveUserFromShiftModal from "./removeUserFromShiftModal";
 // import axios from "axios";
 import "./attendanceList.css";
 import { Link } from "react-router-dom";
+import { setCompleteShift } from "../api/userApi";
 
 type AttendanceListProps = {
     shiftId: string;
@@ -24,11 +25,6 @@ export default function AttendanceListModal({
     hideButton,
     onCloseModal,
 }: AttendanceListProps) {
-    /*For Testing Purposes, the Attendance List Modal/Table is mapped to the help button on the NAV bar
-    To revert to previous state, 
-    1) Link helpModal.ts to Navbar.TSX (All Under Components Folder)
-    2) Test  */
-
     const [modalBox, setModalBox] = useState(false);
     const handleClose = () => setModalBox(false);
     const handleShow = () => setModalBox(true);
@@ -44,6 +40,49 @@ export default function AttendanceListModal({
         if (onCloseModal) {
             onCloseModal();
         }
+    };
+
+    const onApproveUser = async (targetUserId: string) => {
+        try {
+            await setApprovalUserForShift(targetUserId, shiftId, "approve");
+            await refetch();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const onUnApproveUser = async (targetUserId: string) => {
+        try {
+            await setApprovalUserForShift(targetUserId, shiftId, "unapprove");
+            await refetch();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const onMarkAsComplete = async (targetUserId: string) => {
+        try {
+            await setCompleteShift(targetUserId, shiftId, "complete");
+            await refetch();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const onMarkAsIncomplete = async (targetUserId: string) => {
+        try {
+            await setCompleteShift(targetUserId, shiftId, "incomplete");
+            await refetch();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleClosingThis = () => {
+        if (onCloseModal) onCloseModal();
+
+        if (setShowModal) setShowModal();
+        else if (handleClose) handleClose();
     };
 
     //With typescript, we should be defining a type for the users variable because it's a non standard datatype.
@@ -78,22 +117,30 @@ export default function AttendanceListModal({
      */
 
     const displayAttendanceList = (attendanceList: UserShiftAttendaceSummary[]) => {
-        return attendanceList?.map((user, index) => (
-            <tr key={user._id}>
+        return attendanceList?.map((userShift, index) => (
+            <tr key={userShift._id}>
                 <th scope="row">{index + 1}</th>
                 <td>
-                    <Link to={`/profile/${user._id}`}>
-                        {user.firstName}&nbsp;{user.lastName}
+                    <Link to={`/profile/${userShift._id}`}>
+                        {userShift.firstName}&nbsp;{userShift.lastName}
                     </Link>
                 </td>
-                <td>{user.volTypeName}</td>
-                <td>{user.approved ? "Approved" : "Not Approved"}</td>
-                <td>{user.completed ? "Completed" : "Not Completed"}</td>
+                <td>{userShift.volTypeName}</td>
+                <td>{userShift.approved ? "Approved" : "Not Approved"}</td>
+                <td>{userShift.completed ? "Completed" : "Not Completed"}</td>
                 <td>
-                    <Button>Approve</Button>
+                    {!userShift.approved ? (
+                        <Button onClick={() => void onApproveUser(userShift._id)}>Approve</Button>
+                    ) : (
+                        <Button onClick={() => void onUnApproveUser(userShift._id)}>UnApprove</Button>
+                    )}
                 </td>
                 <td>
-                    <Button>Mark Completed</Button>
+                    {!userShift.completed ? (
+                        <Button onClick={() => void onMarkAsComplete(userShift._id)}>Mark Complete</Button>
+                    ) : (
+                        <Button onClick={() => void onMarkAsIncomplete(userShift._id)}>Mark Incomplete</Button>
+                    )}
                 </td>
                 <td>
                     <RemoveUserFromShiftModal
@@ -101,7 +148,7 @@ export default function AttendanceListModal({
                             void onDeleteUser();
                         }}
                         shiftId={shiftId || ""}
-                        userId={user._id || ""}
+                        userId={userShift._id || ""}
                     />
                 </td>
             </tr>
@@ -126,7 +173,7 @@ export default function AttendanceListModal({
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={showModal || modalBox}
-                onHide={setShowModal || handleClose}
+                onHide={handleClosingThis}
                 backdrop="static"
             >
                 <Modal.Header closeButton>
@@ -154,7 +201,7 @@ export default function AttendanceListModal({
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={setShowModal || handleClose}>Close</Button>
+                    <Button onClick={handleClosingThis}>Close</Button>
                 </Modal.Footer>
             </Modal>
         </>

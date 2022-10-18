@@ -48,6 +48,7 @@ export const createQualification = async (req: Request, res: Response) => {
             fileId: uploadResponse.public_id,
             qualificationType: newQualification?.qualificationType,
             approved: !qualificationtype.requiresApproval, // assume that the qualification is approved if it required no admin approval
+            user: user._id,
         });
 
         qual.id = new mongoose.Types.ObjectId();
@@ -138,15 +139,20 @@ export const deleteQualificationById = async (req: Request, res: Response) => {
             return;
         }
 
+        console.log(qual);
+
+        const pullIDResponse = await User.updateOne(
+            { _id: qual.user.toString() },
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            { $pull: { qualifications: qual._id } }
+        );
+        console.log(pullIDResponse);
         await cloudinary.uploader.destroy(qual.fileId);
         await qual.remove();
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        await User.updateOne({ _id: qual.user }, { $pull: { qualifications: qual.id } });
-
         res.status(200).json({
             message: "Deleted qualification",
-            data: qual,
+            data: null,
             success: true,
         });
     } catch (err) {

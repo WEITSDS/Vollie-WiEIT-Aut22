@@ -6,7 +6,7 @@ import {
     createUser,
     setUserPassword,
     getOwnUser,
-    completeShift,
+    setCompleteShift,
     setApprovalVolunteerTypeForUser,
     assignVolunteerType,
 } from "./user.controller";
@@ -25,6 +25,6 @@ router.patch(
 );
 
 router.patch("/:userid/assign-volunteer-type/:volunteertypeid", wrapAsync(assignVolunteerType));
-router.patch("/:userid/complete-shift/:shiftid", wrapAsync(completeShift));
+router.patch("/:userid/set-complete-shift/:shiftid/:completionstatus", wrapAsync(setCompleteShift));
 
 export = router;

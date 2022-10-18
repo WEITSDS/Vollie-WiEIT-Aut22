@@ -11,8 +11,8 @@ import {
     getShiftById,
     getShiftAttendanceList,
     updateShift,
-    approveUser,
     getAvailableRolesForShiftUser,
+    setUserApproval,
 } from "./shift.controller";
 
 const router = express.Router();
@@ -29,7 +29,7 @@ router.post("/update/:shiftid", wrapAsync(updateShift));
 
 router.patch("/:shiftid/assign-user/:userid/:selectedVolunteerTypeID", wrapAsync(assignUser));
 router.patch("/:shiftid/unassign-user/:userid", wrapAsync(removeUser));
-router.patch("/:shiftid/approve-user/:userid", wrapAsync(approveUser));
+router.patch("/:shiftid/approve-user/:userid/:approvalstatus", wrapAsync(setUserApproval));
 
 router.delete("/:shiftid", wrapAsync(deleteShift));
 
