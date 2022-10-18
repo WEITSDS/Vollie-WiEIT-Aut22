@@ -87,6 +87,7 @@ const ShiftInformation = () => {
             if (typeof shiftId === "string" && userObj?._id) {
                 const completeResponse = await completeShift(userObj?._id, shiftId);
                 console.log(completeResponse);
+                await refetch();
             }
         } catch (error) {
             console.log("Error completing shift");
@@ -203,15 +204,16 @@ const ShiftInformation = () => {
                                                 Apply to Shift
                                             </button>
                                         )}
-                                        {!!userObj && shiftId && targetShiftInUser && !targetShiftInUser.completed && (
+                                        {!!userObj && shiftId && targetShiftInUser && (
                                             <button
                                                 className="apply-btn"
+                                                disabled={targetShiftInUser.completed}
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     void handleComplete();
                                                 }}
                                             >
-                                                Complete Shift
+                                                {!targetShiftInUser.completed ? "Complete Shift" : "Shift Completed"}
                                             </button>
                                         )}
                                     </div>
@@ -317,7 +319,7 @@ const ShiftInformation = () => {
                             </div>
                             <hr className="notes-divider" />
                             <div className="footer-container">
-                                {!!userObj && shiftId && userObj?.shifts.find((shift) => shiftId === shift.shift) && (
+                                {!!userObj && shiftId && targetShiftInUser && !targetShiftInUser.completed && (
                                     <button
                                         className="cancel-shift-btn"
                                         onClick={(e) => {

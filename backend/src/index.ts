@@ -29,7 +29,7 @@ logger.info(`Server started at ${PROTOCOL}://${HOST}:${PORT}`);
 //http://localhost/vollie
 
 mongoose
-    .connect("mongodb://127.0.0.1/vollie", config.mongo.options)
+    .connect(config.mongo.url, config.mongo.options)
     .then((_result) => {
         logger.info(`Connected to MongoDB`);
     })
