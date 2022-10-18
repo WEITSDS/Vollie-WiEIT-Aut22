@@ -83,7 +83,6 @@ export class VolunteerLandingPage extends React.Component<Record<string, never>>
         const shiftResponse = (await shiftData.json()) as string;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const responseJSON = JSON.parse(shiftResponse);
-        console.log(responseJSON);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         for (let i = 0; i < responseJSON.length; i++) {
             myEventsList.push({

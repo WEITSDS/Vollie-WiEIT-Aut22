@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
 import { IShift } from "./shift.interface";
-import { IUser, mapUserToAttendanceSummary } from "../User/user.interface";
+import { IUser, UserShiftAttendaceSummary } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
 import Qualifications from "../Qualifications/qualification.model";
 // import { IQualificationType } from "../QualificationType/qualificationType.interface";
@@ -579,11 +579,37 @@ export const getShiftAttendanceList = async (req: Request, res: Response) => {
 
         const shift = await Shift.findOne({ _id: shiftid });
 
-        const participants = await User.find({ _id: { $in: shift?.users || [] } });
+        if (!shift?.users) {
+            res.status(200).json({
+                message: "success",
+                data: [],
+                success: true,
+            });
+            return;
+        }
+
+        const participantMapResult: UserShiftAttendaceSummary[] = [];
+
+        for (let idx = 0; idx < shift?.users?.length; idx++) {
+            const participant = shift?.users[idx];
+            const targetVolType = await VolunteerType.findOne({ _id: participant.chosenVolunteerType });
+            const targetUser = await User.findOne({ _id: participant.user });
+            participantMapResult.push({
+                _id: targetUser?._id.toString() || "",
+                firstName: targetUser?.firstName || "",
+                lastName: targetUser?.lastName || "",
+                email: targetUser?.email || "",
+                volTypeName: targetVolType?.name || "",
+                volTypeId: targetVolType?._id.toString() || "",
+                approved: participant.approved,
+                completed:
+                    targetUser?.shifts?.find((uShift) => uShift.shift.toString() === shiftid)?.completed || false,
+            });
+        }
 
         res.status(200).json({
             message: "success",
-            data: participants.map(mapUserToAttendanceSummary),
+            data: participantMapResult,
             success: true,
         });
         return;

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
+import { unassignUserFromShift } from "../api/shiftApi";
 import removeIcon from "../assets/removeIcon.svg";
 
 const centerText = {
@@ -9,14 +10,30 @@ const centerText = {
 type RemoveUserFromShiftModalProps = {
     shiftId: string;
     userId: string;
+    onDelete: () => void;
     showModal?: boolean;
     setShowModal?: () => void;
 };
 
-export default function RemoveUserFromShiftModal({ showModal, setShowModal }: RemoveUserFromShiftModalProps) {
+export default function RemoveUserFromShiftModal({
+    shiftId,
+    userId,
+    onDelete,
+    showModal,
+    setShowModal,
+}: RemoveUserFromShiftModalProps) {
     const [modalBox, setModalBox] = useState(false);
     const handleClose = () => setModalBox(false);
     const handleShow = () => setModalBox(true);
+
+    const removeUser = async () => {
+        try {
+            await unassignUserFromShift({ shiftid: shiftId, userid: userId });
+            onDelete();
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <>
@@ -38,7 +55,13 @@ export default function RemoveUserFromShiftModal({ showModal, setShowModal }: Re
                     <p style={centerText}>Are you sure you want to remove this user?</p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button>Yes</Button>
+                    <Button
+                        onClick={() => {
+                            void removeUser();
+                        }}
+                    >
+                        Yes
+                    </Button>
                     <Button onClick={setShowModal || handleClose}>No</Button>
                 </Modal.Footer>
             </Modal>

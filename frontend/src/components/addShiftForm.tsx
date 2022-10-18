@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { createShift, updateShift, IShift } from "../api/shiftApi";
 import LoadingSpinner from "../components/loadingSpinner";
 import { useNavigate } from "react-router-dom";
@@ -61,33 +61,22 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
             : shiftFormFields()
     );
 
-    useEffect(() => {
-        console.log("useeffect", formFields);
-    }, [formFields]);
-
     const handleVolChange = (event: React.FormEvent<HTMLInputElement>, volId: string) => {
         const target = event.target as HTMLInputElement;
         // console.log(target.value, volId);
         // Find this allocation, if none exists, push to array
         setFormFields((prevFormFields) => {
-            console.log("oldstate", prevFormFields);
             const newFormFields = cloneDeep(prevFormFields);
             const volIdx = newFormFields.volunteerTypeAllocations.findIndex((vol) => vol.type === volId);
-            console.log(volIdx);
             if (volIdx === -1) {
-                console.log("pushing vol alloc");
-
                 newFormFields.volunteerTypeAllocations.push({
                     type: volId,
                     numMembers: parseInt(target.value),
                     currentNum: 0,
                 });
-                console.log("newstate", newFormFields);
                 return { ...newFormFields };
             } else {
-                console.log("upading vol alloc");
                 newFormFields.volunteerTypeAllocations[volIdx].numMembers = parseInt(target.value);
-                console.log("newstate", newFormFields);
                 return { ...newFormFields };
             }
         });
@@ -96,24 +85,17 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
     const handleQualChange = (event: React.FormEvent<HTMLInputElement>, qualId: string) => {
         const target = event.target as HTMLInputElement;
         setFormFields((prevFormFields) => {
-            console.log("oldstate", prevFormFields);
             const newFormFields = cloneDeep(prevFormFields);
             const volIdx = newFormFields.requiredQualifications.findIndex((qual) => qual.qualificationType === qualId);
-            console.log(volIdx);
             if (volIdx === -1) {
-                console.log("pushing qual alloc");
-
                 newFormFields.requiredQualifications.push({
                     qualificationType: qualId,
                     numRequired: parseInt(target.value),
                     currentNum: 0,
                 });
-                console.log("newstate", newFormFields);
                 return { ...newFormFields };
             } else {
-                console.log("upading qual alloc");
                 newFormFields.requiredQualifications[volIdx].numRequired = parseInt(target.value);
-                console.log("newstate", newFormFields);
                 return { ...newFormFields };
             }
         });
@@ -123,7 +105,6 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
         event.preventDefault();
         const target = event.target as HTMLInputElement | HTMLSelectElement;
         const value = target.type === "number" ? parseInt(target.value) : target.value;
-        console.log(value);
         setFormFields((prevFormFields) => {
             return { ...prevFormFields, [`${target.name}`]: value };
         });
@@ -147,7 +128,6 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
     const handleSubmit = async (): Promise<void> => {
         try {
             setIsLoading(true);
-            console.log(formFields);
             let response;
             if (previousShiftFields) {
                 // do update
@@ -158,7 +138,6 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
             }
 
             setIsLoading(false);
-            console.log(response);
             if (response.success && response?.data?._id) {
                 handleClose();
                 navigate(`/shift/${response.data._id}`);

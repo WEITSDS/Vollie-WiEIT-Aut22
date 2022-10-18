@@ -1,4 +1,4 @@
-// import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import { SetStateAction, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useParams } from "react-router-dom";
@@ -14,14 +14,17 @@ import timeIcon from "../assets/timeIcon.svg";
 import backIcon from "../assets/backIcon.svg";
 import editIcon from "../assets/editIcon.svg";
 import categoryIcon from "../assets/categoryIcon.svg";
-import checkIcon from "../assets/checkIcon.svg";
 import { assignUserToShift, unassignUserFromShift } from "../api/shiftApi";
 import { completeShift } from "../api/userApi";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
 
 // import AttendanceListModal from "./attendanceList";
 import AddShiftForm from "../components/addShiftForm";
 import AttendanceListModal from "../components/attendanceList";
 import { useVoltypesForUserShift } from "../hooks/useVolTypesForUserShift";
+import { VolTypeAllocation } from "./volTypeAllocation";
+import { QualTypeAllocation } from "./qualTypeAllocation";
 
 const ShiftInformation = () => {
     const { shiftId } = useParams();
@@ -31,9 +34,6 @@ const ShiftInformation = () => {
         userQuery.data?.data?._id,
         shiftId
     );
-
-    console.log(userQuery?.data?.data);
-
     const [showEditModal, setshowEditModal] = useState(false);
     const [showParticipantsModal, setshowParticipantsModal] = useState(false);
     const navigate = useNavigate();
@@ -66,7 +66,6 @@ const ShiftInformation = () => {
     } = data?.data || {};
 
     const handleBack = () => {
-        console.log("");
         navigate(-1);
     };
 
@@ -85,8 +84,7 @@ const ShiftInformation = () => {
     const handleComplete = async () => {
         try {
             if (typeof shiftId === "string" && userObj?._id) {
-                const completeResponse = await completeShift(userObj?._id, shiftId);
-                console.log(completeResponse);
+                await completeShift(userObj?._id, shiftId);
                 await refetch();
                 await userQuery.refetch();
             }
@@ -117,14 +115,22 @@ const ShiftInformation = () => {
         setshowParticipantsModal((prev) => !prev);
     };
 
+    const onCloseParticipantModal = async () => {
+        try {
+            await refetch();
+            await userQuery.refetch();
+        } catch (error) {
+            console.log("Error refetching", error);
+        }
+    };
+
     const handleCancel = async () => {
         try {
             if (typeof shiftId === "string" && userObj?._id) {
-                const cancelResponse = await unassignUserFromShift({
+                await unassignUserFromShift({
                     shiftid: shiftId,
                     userid: userObj?._id,
                 });
-                console.log(cancelResponse);
                 await refetch();
                 await userQuery.refetch();
             }
@@ -134,7 +140,6 @@ const ShiftInformation = () => {
     };
 
     const handleChange = (e: { target: { value: SetStateAction<string> } }) => {
-        console.log(e.target.value);
         setUserType(e.target.value);
     };
 
@@ -143,12 +148,11 @@ const ShiftInformation = () => {
         // Handle applying to shift
         try {
             if (typeof shiftId === "string" && userObj?._id) {
-                const assignResponse = await assignUserToShift({
+                await assignUserToShift({
                     shiftid: shiftId,
                     userid: userObj?._id,
                     selectedVolType: userType,
                 });
-                console.log(assignResponse);
                 await refetch();
                 await userQuery.refetch();
                 setShow(false);
@@ -171,6 +175,8 @@ const ShiftInformation = () => {
     const endDate = new Date(endAt);
 
     const targetShiftInUser = userObj?.shifts.find((shift) => shiftId === shift.shift);
+
+    const localizer = momentLocalizer(moment);
 
     return (
         <div className="page-background">
@@ -208,13 +214,17 @@ const ShiftInformation = () => {
                                         {!!userObj && shiftId && targetShiftInUser && (
                                             <button
                                                 className="apply-btn"
-                                                disabled={targetShiftInUser.completed}
+                                                disabled={targetShiftInUser.completed || !targetShiftInUser.approved}
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     void handleComplete();
                                                 }}
                                             >
-                                                {!targetShiftInUser.completed ? "Complete Shift" : "Shift Completed"}
+                                                {targetShiftInUser.completed
+                                                    ? "Shift Completed"
+                                                    : !targetShiftInUser.approved
+                                                    ? "Requires Approval"
+                                                    : "Complete Shift"}
                                             </button>
                                         )}
                                     </div>
@@ -292,16 +302,6 @@ const ShiftInformation = () => {
                                             <h3 className="info-body">{category}</h3>
                                         </div>
                                     </div>
-                                    <div className="info-box">
-                                        <div className="info-box-left-container">
-                                            <img className="venueIcon" src={checkIcon}></img>
-                                            <h2 className="info-title">WWCC?</h2>
-                                        </div>
-
-                                        {/* <div className="info-box-right-container">
-                                            <h3 className="info-body">{requiresWWCC ? "Yes" : "No"}</h3>
-                                        </div> */}
-                                    </div>
                                 </div>
                             </div>
                             <hr className="info-divider" />
@@ -336,7 +336,7 @@ const ShiftInformation = () => {
                         <div className="right-box-container">
                             <div className="header-right-box-container">
                                 <div className="header-flex">
-                                    <h1 className="right-box-title">Volunteer allocations</h1>
+                                    <h1 className="right-box-title">Volunteer Allocations</h1>
                                     {userObj?.isAdmin && (
                                         <button className="participants-btn" onClick={handleParticipants}>
                                             Participants
@@ -351,36 +351,57 @@ const ShiftInformation = () => {
                                     <thead>
                                         <tr>
                                             <th scope="col">Type</th>
-                                            <th scope="col">Available Slots</th>
+                                            <th scope="col">Allocated Slots</th>
+                                            <th scope="col">Currently Allocated</th>
+                                            <td scope="col">Slots Available</td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {/* <tr key={0}>
-                                            <td>General Volunteers</td>
-                                            <td>{numGeneralVolunteers}</td>
+                                        {data.data.volunteerTypeAllocations.map((volAlloc) => (
+                                            <VolTypeAllocation key={volAlloc.type} volAllocationObj={volAlloc} />
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <hr className="right-box-header-divider" />
+                            <div className="volunteer-table-container">
+                                <h1 className="calendar-title">Qualification Allocations</h1>
+                                <table className="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Allocated Slots</th>
+                                            <th scope="col">Currently Allocated</th>
+                                            <td scope="col">Slots Remaining</td>
                                         </tr>
-                                        <tr key={1}>
-                                            <td>Undergrad Ambassadors</td>
-                                            <td>{numUndergradAmbassadors}</td>
-                                        </tr>
-                                        <tr key={2}>
-                                            <td>Postgrad Ambassadors</td>
-                                            <td>{numPostgradAmbassadors}</td>
-                                        </tr>
-                                        <tr key={3}>
-                                            <td>Staff Ambassadors</td>
-                                            <td>{numStaffAmbassadors}</td>
-                                        </tr>
-                                        <tr key={4}>
-                                            <td>SPROUT</td>
-                                            <td>{numSprouts}</td>
-                                        </tr> */}
+                                    </thead>
+                                    <tbody>
+                                        {data.data.requiredQualifications.map((qualAlloc) => (
+                                            <QualTypeAllocation
+                                                key={qualAlloc.qualificationType}
+                                                qualAllocationObj={qualAlloc}
+                                            />
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
                             <hr className="table-divider" />
                             <div className="calender-title-box">
                                 <h1 className="calendar-title">Calendar</h1>
+                                <Calendar
+                                    localizer={localizer}
+                                    events={[
+                                        {
+                                            startAt: new Date(data.data.startAt),
+                                            endAt: new Date(data.data.endAt),
+                                            name: data.data.name,
+                                        },
+                                    ]}
+                                    startAccessor="startAt"
+                                    endAccessor="endAt"
+                                    titleAccessor="name"
+                                    style={{ height: 500 }}
+                                />
                                 <hr className="calendar-title-divider" />
                             </div>
                         </div>
@@ -433,6 +454,9 @@ const ShiftInformation = () => {
                                 hideButton={true}
                                 shiftId={data?.data._id || ""}
                                 setShowModal={handleParticipants}
+                                onCloseModal={() => {
+                                    void onCloseParticipantModal();
+                                }}
                             />
                             <Modal show={showEditModal}>
                                 <AddShiftForm

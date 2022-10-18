@@ -60,3 +60,9 @@ export async function updateQualificationType(
 export function deleteQualificationType(qualificationTypeId: string): Promise<ResponseWithStatus> {
     return deleteAndGetBasicResponse(`${PATH}/qualification-types/${qualificationTypeId}`);
 }
+
+export async function getQualTypeById(qualTypeId: string | undefined): Promise<ResponseWithData<IQualificationType>> {
+    return typeof qualTypeId === "undefined"
+        ? Promise.reject(new Error("Please pass qualTypeId"))
+        : getDataResponse(`${PATH}/qualification-types/qualificationTypeById/${qualTypeId}`);
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { AttendaceSummary } from "../api/shiftApi";
+import { UserShiftAttendaceSummary } from "../api/shiftApi";
 import participantsIcon from "../assets/participants.svg";
 //import AttendanceList from "./attendanceList.json";
 import { useAttendanceList } from "../hooks/useAttendanceList";
@@ -14,9 +14,16 @@ type AttendanceListProps = {
     showModal?: boolean;
     hideButton?: boolean;
     setShowModal?: () => void;
+    onCloseModal?: () => void;
 };
 
-export default function AttendanceListModal({ shiftId, showModal, setShowModal, hideButton }: AttendanceListProps) {
+export default function AttendanceListModal({
+    shiftId,
+    showModal,
+    setShowModal,
+    hideButton,
+    onCloseModal,
+}: AttendanceListProps) {
     /*For Testing Purposes, the Attendance List Modal/Table is mapped to the help button on the NAV bar
     To revert to previous state, 
     1) Link helpModal.ts to Navbar.TSX (All Under Components Folder)
@@ -26,11 +33,18 @@ export default function AttendanceListModal({ shiftId, showModal, setShowModal, 
     const handleClose = () => setModalBox(false);
     const handleShow = () => setModalBox(true);
 
-    const { data: attendanceListUsers, isLoading, isError, refetch } = useAttendanceList(shiftId || "");
+    const { data: attendanceListUsers, isLoading, isError, refetch } = useAttendanceList(shiftId);
 
     useEffect(() => {
         void refetch();
     }, [showModal, modalBox]);
+
+    const onDeleteUser = async () => {
+        await refetch();
+        if (onCloseModal) {
+            onCloseModal();
+        }
+    };
 
     //With typescript, we should be defining a type for the users variable because it's a non standard datatype.
     //We set this type prior to setting the default value. Where null is the default. since we cant set a type, User[], as the default
@@ -63,7 +77,7 @@ export default function AttendanceListModal({ shiftId, showModal, setShowModal, 
      *
      */
 
-    const displayAttendanceList = (attendanceList: AttendaceSummary[]) => {
+    const displayAttendanceList = (attendanceList: UserShiftAttendaceSummary[]) => {
         return attendanceList?.map((user, index) => (
             <tr key={user._id}>
                 <th scope="row">{index + 1}</th>
@@ -72,9 +86,23 @@ export default function AttendanceListModal({ shiftId, showModal, setShowModal, 
                         {user.firstName}&nbsp;{user.lastName}
                     </Link>
                 </td>
-                <td>{user.volunteerType}</td>
+                <td>{user.volTypeName}</td>
+                <td>{user.approved ? "Approved" : "Not Approved"}</td>
+                <td>{user.completed ? "Completed" : "Not Completed"}</td>
                 <td>
-                    <RemoveUserFromShiftModal shiftId={shiftId || ""} userId={user._id || ""} />
+                    <Button>Approve</Button>
+                </td>
+                <td>
+                    <Button>Mark Completed</Button>
+                </td>
+                <td>
+                    <RemoveUserFromShiftModal
+                        onDelete={() => {
+                            void onDeleteUser();
+                        }}
+                        shiftId={shiftId || ""}
+                        userId={user._id || ""}
+                    />
                 </td>
             </tr>
         ));
@@ -113,7 +141,11 @@ export default function AttendanceListModal({ shiftId, showModal, setShowModal, 
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Name</th>
-                                    <th scope="col">Volunteer Type</th>
+                                    <th scope="col">Chosen Volunteer Type</th>
+                                    <th scope="col">Approval Status</th>
+                                    <th scope="col">Completion Status</th>
+                                    <th scope="col">Approve</th>
+                                    <th scope="col">Mark Completed</th>
                                     <th scope="col">Remove User</th>
                                 </tr>
                             </thead>

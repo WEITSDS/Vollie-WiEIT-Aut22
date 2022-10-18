@@ -87,3 +87,9 @@ export async function getVolTypesForUserShift(
         ? Promise.reject(new Error("Please pass both userId and shiftId"))
         : getDataResponse(`${PATH}/shifts/available-roles-for-shift-user/${userId}/${shiftId}`);
 }
+
+export async function getVolTypeById(volTypeId: string | undefined): Promise<ResponseWithData<IVolunteerType>> {
+    return typeof volTypeId === "undefined"
+        ? Promise.reject(new Error("Please pass volTypeId"))
+        : getDataResponse(`${PATH}/volunteer-types/volunteerTypeById/${volTypeId}`);
+}

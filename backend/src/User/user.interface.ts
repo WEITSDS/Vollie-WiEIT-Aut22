@@ -82,20 +82,13 @@ export function mapUserToUserSummary({
         shifts,
     };
 }
-export interface AttendaceSummary {
+export interface UserShiftAttendaceSummary {
     _id: string;
     firstName: string;
     lastName: string;
     email: string;
-    volunteerTypes: Array<IUserVolunteerType>;
-}
-
-export function mapUserToAttendanceSummary(userData: IUser): AttendaceSummary {
-    return {
-        _id: userData._id,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        email: userData.email,
-        volunteerTypes: userData.volunteerTypes,
-    };
+    volTypeName: string;
+    volTypeId: string;
+    approved: boolean;
+    completed: boolean;
 }
