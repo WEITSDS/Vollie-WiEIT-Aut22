@@ -226,7 +226,6 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                     onChange={handleChange}
                     aria-label="Shift category"
                     defaultValue={formFields.category}
-                    //test
                     name="category"
                 >
                     <option value="Other">Other</option>
