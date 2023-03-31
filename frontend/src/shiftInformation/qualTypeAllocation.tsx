@@ -11,8 +11,8 @@ export const QualTypeAllocation = ({ qualAllocationObj }: { qualAllocationObj: I
                 <>
                     <td>{data?.data.name}</td>
                     <td>{qualAllocationObj.numRequired}</td>
-                    <td>{qualAllocationObj.currentNum}</td>
-                    <td>{qualAllocationObj.numRequired - qualAllocationObj.currentNum}</td>
+                    <td>{qualAllocationObj.users.length}</td>
+                    <td>{qualAllocationObj.numRequired - qualAllocationObj.users.length}</td>
                 </>
             )}
         </tr>

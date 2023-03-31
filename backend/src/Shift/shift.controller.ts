@@ -174,6 +174,7 @@ export const assignUser = async (req: Request, res: Response) => {
         }
 
         const targetShift = await Shift.findOne({ _id: req.params.shiftid });
+
         if (!targetShift) {
             res.status(404).json({ message: "Shift not found", success: false });
             return;
@@ -196,14 +197,28 @@ export const assignUser = async (req: Request, res: Response) => {
         let userHasAllQualifications = true;
         // Checks if this particular qualification type has enough people in the shift (if enough ppl meet the qualification num required, then this particular user doesn't need to have it)
         // As an example, if a shift requires a minimum of 2 people with first aid training, then people without first aid training can take this shift only after the requirement has been filled
-        for (const shiftQual of targetShift.requiredQualifications) {
+
+        let totalShiftAvaliability = 0;
+        for (const shiftVolunteerType of targetShift.volunteerTypeAllocations) {
+            totalShiftAvaliability += shiftVolunteerType.numMembers - shiftVolunteerType.users.length;
+        }
+
+        let totalRemainingQualificationSlots = 0;
+
+        for (const shiftQualification of targetShift.requiredQualifications) {
+            totalRemainingQualificationSlots += shiftQualification.numRequired - shiftQualification.users.length;
             if (
-                shiftQual.currentNum < shiftQual.numRequired &&
-                !userApprovedQualificationType.includes(shiftQual.qualificationType.toString()) // Checks if the target use has this particular qualification type in an approved status
+                shiftQualification.users.length < shiftQualification.numRequired &&
+                !userApprovedQualificationType.includes(shiftQualification.qualificationType.toString()) // Checks if the target use has this particular qualification type in an approved status
             ) {
                 userHasAllQualifications = false;
             }
         }
+
+        // If there are free slots where a user does not require a qualification, allow the user to apply regardless
+        // Total number of avaliable slots minus the number of slots that require a qualification
+        userHasAllQualifications = totalShiftAvaliability - totalRemainingQualificationSlots > 0;
+
         if (!userHasAllQualifications) {
             res.status(401).json({
                 message: "Target user does not meet the required qualifications for this shift.",
@@ -249,7 +264,7 @@ export const assignUser = async (req: Request, res: Response) => {
             },
             {
                 $addToSet: {
-                    users: { user: req.params.userid, chosenVolunteerType: selectedVolunteerTypeID, approved: false },
+                    users: { user: req.params.userid },
                 },
             }
         );
@@ -261,6 +276,7 @@ export const assignUser = async (req: Request, res: Response) => {
             },
             {
                 $inc: { "volunteerTypeAllocations.$.currentNum": 1 },
+                $push: { "volunteerTypeAllocations.$.users": { user: req.params.userid } },
             }
         );
 
@@ -276,6 +292,8 @@ export const assignUser = async (req: Request, res: Response) => {
             const qualAlloc = newQualAllocs[index];
             if (userApprovedQualificationType.includes(qualAlloc.qualificationType.toString())) {
                 newQualAllocs[index].currentNum += 1;
+                const id = new mongoose.Types.ObjectId(req.params.userid);
+                newQualAllocs[index].users.push(id);
             }
         }
 
@@ -422,7 +440,10 @@ export const removeUser = async (req: Request, res: Response) => {
                 "volunteerTypeAllocations.type": selectedVolunteerTypeID,
             },
             {
-                $pull: { users: { user: req.params.userid } },
+                $pull: {
+                    users: { user: req.params.userid },
+                    "volunteerTypeAllocations.$.users": { user: req.params.userid },
+                },
                 $inc: { "volunteerTypeAllocations.$.currentNum": -1 },
             }
         );
@@ -452,6 +473,7 @@ export const removeUser = async (req: Request, res: Response) => {
             },
             {
                 $set: { requiredQualifications: newQualAllocs },
+                $pull: { "requiredQualifications.$[].users": { user: req.params.userid } },
             }
         );
 
@@ -520,7 +542,7 @@ export const getShiftById = async (req: Request, res: Response) => {
         }
 
         const shift = await Shift.findOne({ _id: req.params.shiftid });
-
+        console.log(shift);
         if (!shift) {
             res.status(404).json({ message: "Shift not found", success: false });
             return;

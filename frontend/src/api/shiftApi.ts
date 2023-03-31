@@ -105,12 +105,14 @@ export interface IShiftRequiredQualification {
     qualificationType: string; // Qualification type ID
     numRequired: number;
     currentNum: number;
+    users: Array<string>;
 }
 
 export interface IShiftVolunteerAllocations {
     type: string; // Volunteer type ID
     numMembers: number;
     currentNum: number;
+    users: Array<string>;
 }
 
 export interface IShiftUser {

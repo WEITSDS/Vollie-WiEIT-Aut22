@@ -19,12 +19,14 @@ export interface IShiftRequiredQualification {
     qualificationType: Types.ObjectId; // Qualification type ID
     numRequired: number;
     currentNum: number;
+    users: Array<Types.ObjectId>;
 }
 
 export interface IShiftVolunteerAllocations {
     type: Types.ObjectId; // Volunteer type ID
     numMembers: number;
     currentNum: number;
+    users: Array<Types.ObjectId>;
 }
 
 export interface IShiftUser {

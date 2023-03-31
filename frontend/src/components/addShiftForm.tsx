@@ -73,6 +73,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                     type: volId,
                     numMembers: parseInt(target.value),
                     currentNum: 0,
+                    users: [],
                 });
                 return { ...newFormFields };
             } else {
@@ -92,6 +93,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                     qualificationType: qualId,
                     numRequired: parseInt(target.value),
                     currentNum: 0,
+                    users: [],
                 });
                 return { ...newFormFields };
             } else {

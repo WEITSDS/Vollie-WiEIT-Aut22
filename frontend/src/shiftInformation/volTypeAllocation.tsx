@@ -11,8 +11,8 @@ export const VolTypeAllocation = ({ volAllocationObj }: { volAllocationObj: IShi
                 <>
                     <td>{data?.data.name}</td>
                     <td>{volAllocationObj.numMembers}</td>
-                    <td>{volAllocationObj.currentNum}</td>
-                    <td>{volAllocationObj.numMembers - volAllocationObj.currentNum}</td>
+                    <td>{volAllocationObj.users.length}</td>
+                    <td>{volAllocationObj.numMembers - volAllocationObj.users.length}</td>
                 </>
             )}
         </tr>

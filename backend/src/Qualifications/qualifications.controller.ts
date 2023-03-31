@@ -6,6 +6,7 @@ import { CLOUDINARY_CONFIG } from "../constants";
 import { IBasicQualification, isIBasicQualification } from "./qualifications.interface";
 import Qualification from "./qualification.model";
 import User from "../User/user.model";
+import Shift from "../Shift/shift.model";
 import mongoose, { Types } from "mongoose";
 import { getUserByEmail } from "../User/user.controller";
 import { IUser } from "../User/user.interface";
@@ -139,7 +140,40 @@ export const deleteQualificationById = async (req: Request, res: Response) => {
             return;
         }
 
-        console.log(qual);
+        // Find One User, and then go through every shift that they have applied for (that isnt completed) and
+        // Remove 1 from the currentNum of that 'requiredQualification'
+
+        const user = await (qual.user.toString() && req.session.user?.isAdmin
+            ? User.findById(qual.user.toString())
+            : getUserByEmail(req.session.user?.email || ""));
+
+        if (!user) {
+            res.status(404).json({ message: "User not found", success: false });
+            return;
+        }
+
+        console.log(user.shifts.length);
+        for (const shift of user.shifts) {
+            if (!shift.completed) {
+                console.log(shift.shift.toString());
+                const incompleteShift = await Shift.findById(shift.shift.toString());
+                console.log(incompleteShift);
+                if (incompleteShift) {
+                    if (incompleteShift?.requiredQualifications.length > 0) {
+                        await Shift.findOneAndUpdate(
+                            {
+                                _id: shift.shift.toString(),
+                                "requiredQualifications.qualificationType": qual.qualificationType,
+                            },
+                            {
+                                $pull: { "requiredQualifications.$.users": { user: qual.user.toString() } },
+                                $inc: { "requiredQualifications.$.currentNum": -1 },
+                            }
+                        );
+                    }
+                }
+            }
+        }
 
         const pullIDResponse = await User.updateOne(
             { _id: qual.user.toString() },
