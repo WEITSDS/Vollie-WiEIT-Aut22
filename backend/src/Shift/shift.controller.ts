@@ -540,7 +540,7 @@ export const getFindConfigFromFilters = (filters: IShiftFiltersRequest) => {
             $gte: Date.parse(filters.from),
         },
         endAt: {
-            $lte: Date.parse(filters.to), //Default to a year from now
+            $lte: Date.parse(filters.to),
         },
         ...(filters.hours !== "All" &&
             hoursConfigMapping[filters.hours] && {
@@ -563,7 +563,7 @@ export const getSearchShifts = async (req: Request, res: Response) => {
 
         const defaultFilters = {
             from: new Date().toDateString(),
-            to: new Date(Date.now() + 31536000000).toDateString(),
+            to: new Date(Date.now() + 31536000000).toDateString(), //Default to a year from now
             role: "All",
             category: "All",
             hours: "All",
