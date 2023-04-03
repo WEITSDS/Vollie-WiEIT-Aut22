@@ -32,3 +32,16 @@ export interface IShiftUser {
     chosenVolunteerType: Types.ObjectId; // volunteerTypeID
     approved: boolean;
 }
+
+export interface IVolType {
+    label: string;
+    value: string;
+}
+export interface IShiftFiltersRequest {
+    from: string;
+    to: string;
+    volTypes: IVolType[];
+    category: string;
+    hours: string;
+    hideUnavailable: boolean;
+}
