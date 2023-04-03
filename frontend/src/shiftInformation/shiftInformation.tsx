@@ -201,7 +201,7 @@ const ShiftInformation = () => {
                                                 Edit
                                             </button>
                                         )}
-                                        {!!userObj && shiftId && !targetShiftInUser && (
+                                        {!userObj?.isAdmin && !!userObj && shiftId && !targetShiftInUser && (
                                             <button
                                                 className="apply-btn"
                                                 onClick={(e) => {
