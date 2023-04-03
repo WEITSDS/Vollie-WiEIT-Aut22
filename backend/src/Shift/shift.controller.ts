@@ -11,7 +11,7 @@ import Qualifications from "../Qualifications/qualification.model";
 // import { IQualificationType } from "../QualificationType/qualificationType.interface";
 // import { ObjectId } from "mongodb";
 import VolunteerType from "../VolunteerType/volunteerType.model";
-const logger = new Logger({ name: "shift.controller" });
+const logger = new Logger({ name: "shift.controller+" });
 
 // const getAttributeFromVolunteerType = (userRole: string | undefined): keyof IShift => {
 //     let targetShiftAttribute: keyof IShift = "numGeneralVolunteers";
@@ -197,7 +197,6 @@ export const assignUser = async (req: Request, res: Response) => {
         let userHasAllQualifications = true;
         // Checks if this particular qualification type has enough people in the shift (if enough ppl meet the qualification num required, then this particular user doesn't need to have it)
         // As an example, if a shift requires a minimum of 2 people with first aid training, then people without first aid training can take this shift only after the requirement has been filled
-
         let totalShiftAvaliability = 0;
         for (const shiftVolunteerType of targetShift.volunteerTypeAllocations) {
             totalShiftAvaliability += shiftVolunteerType.numMembers - shiftVolunteerType.users.length;
@@ -217,7 +216,7 @@ export const assignUser = async (req: Request, res: Response) => {
 
         // If there are free slots where a user does not require a qualification, allow the user to apply regardless
         // Total number of avaliable slots minus the number of slots that require a qualification
-        userHasAllQualifications = totalShiftAvaliability - totalRemainingQualificationSlots > 0;
+        userHasAllQualifications = totalShiftAvaliability - totalRemainingQualificationSlots >= 0;
 
         if (!userHasAllQualifications) {
             res.status(401).json({
@@ -264,7 +263,7 @@ export const assignUser = async (req: Request, res: Response) => {
             },
             {
                 $addToSet: {
-                    users: { user: req.params.userid },
+                    users: { user: new mongoose.Types.ObjectId(req.params.userid) },
                 },
             }
         );
@@ -276,7 +275,7 @@ export const assignUser = async (req: Request, res: Response) => {
             },
             {
                 $inc: { "volunteerTypeAllocations.$.currentNum": 1 },
-                $push: { "volunteerTypeAllocations.$.users": { user: req.params.userid } },
+                $push: { "volunteerTypeAllocations.$.users": { user: new mongoose.Types.ObjectId(req.params.userid) } },
             }
         );
 
@@ -292,8 +291,7 @@ export const assignUser = async (req: Request, res: Response) => {
             const qualAlloc = newQualAllocs[index];
             if (userApprovedQualificationType.includes(qualAlloc.qualificationType.toString())) {
                 newQualAllocs[index].currentNum += 1;
-                const id = new mongoose.Types.ObjectId(req.params.userid);
-                newQualAllocs[index].users.push(id);
+                newQualAllocs[index].users.push(new mongoose.Types.ObjectId(req.params.userid));
             }
         }
 
@@ -442,7 +440,7 @@ export const removeUser = async (req: Request, res: Response) => {
             {
                 $pull: {
                     users: { user: req.params.userid },
-                    "volunteerTypeAllocations.$.users": { user: req.params.userid },
+                    "volunteerTypeAllocations.$.users": { user: new mongoose.Types.ObjectId(req.params.userid) },
                 },
                 $inc: { "volunteerTypeAllocations.$.currentNum": -1 },
             }
@@ -473,7 +471,7 @@ export const removeUser = async (req: Request, res: Response) => {
             },
             {
                 $set: { requiredQualifications: newQualAllocs },
-                $pull: { "requiredQualifications.$[].users": { user: req.params.userid } },
+                $pull: { "requiredQualifications.$[].users": { user: new mongoose.Types.ObjectId(req.params.userid) } },
             }
         );
 

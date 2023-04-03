@@ -160,13 +160,23 @@ export const deleteQualificationById = async (req: Request, res: Response) => {
                 console.log(incompleteShift);
                 if (incompleteShift) {
                     if (incompleteShift?.requiredQualifications.length > 0) {
+                        console.log(qual.qualificationType._id);
+                        console.log(new mongoose.Types.ObjectId(qual.qualificationType._id));
                         await Shift.findOneAndUpdate(
                             {
-                                _id: shift.shift.toString(),
-                                "requiredQualifications.qualificationType": qual.qualificationType,
+                                _id: new mongoose.Types.ObjectId(shift.shift),
+                                requiredQualifications: {
+                                    $elemMatch: {
+                                        qualificationType: qual.qualificationType._id,
+                                    },
+                                },
                             },
                             {
-                                $pull: { "requiredQualifications.$.users": { user: qual.user.toString() } },
+                                $pull: {
+                                    "requiredQualifications.$.users": {
+                                        user: new mongoose.Types.ObjectId(qual.user._id),
+                                    },
+                                },
                                 $inc: { "requiredQualifications.$.currentNum": -1 },
                             }
                         );
