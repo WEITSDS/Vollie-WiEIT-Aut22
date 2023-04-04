@@ -2,26 +2,29 @@ import * as nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/json-transport";
 import { Logger } from "tslog";
 import {
-    EMAIL_ACCESS_TOKEN,
+    /*EMAIL_ACCESS_TOKEN,
     EMAIL_CLIENT_ID,
     EMAIL_CLIENT_SECRET,
-    EMAIL_REFRESH_TOKEN,
+    EMAIL_REFRESH_TOKEN,*/
     EMAIL_USER,
     SITE_NAME,
+    SMTP_HOST,
+    SMTP_PASSWORD,
+    SMTP_PORT,
+    SMTP_USERNAME,
 } from "../constants";
 import { generateOTPForUser } from "../otps/otpManager";
 
 const logger = new Logger({ name: "mailer" });
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: false,
+    requireTLS: true,
     auth: {
-        type: "OAuth2",
-        user: EMAIL_USER,
-        clientId: EMAIL_CLIENT_ID,
-        clientSecret: EMAIL_CLIENT_SECRET,
-        refreshToken: EMAIL_REFRESH_TOKEN,
-        accessToken: EMAIL_ACCESS_TOKEN,
+        user: SMTP_USERNAME,
+        pass: SMTP_PASSWORD,
     },
 });
 

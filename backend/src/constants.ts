@@ -19,7 +19,7 @@ export const COOKIE_DURATION: number = 1000 * 60 * 60 * (+(process.env.COOKIE_DU
 
 // Emailer stuff
 export const SMTP_HOST: string = process.env.SMTP_HOST || "smtp-relay.sendinblue.com";
-export const SMTP_PORT: string = process.env.SMTP_PORT || "587";
+export const SMTP_PORT: number = +(process.env.SMTP_PORT || 0) || 587;
 export const SMTP_USERNAME: string = process.env.SMTP_USERNAME || "danny.vien101@gmail.com";
 export const SMTP_PASSWORD: string = process.env.SMTP_PASSWORD || "pFLf5GEwkVKZPqMC";
 export const EMAIL_USER: string = process.env.EMAIL_USER || "";
