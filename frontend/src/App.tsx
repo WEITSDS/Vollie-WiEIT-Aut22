@@ -26,7 +26,7 @@ import ShiftInformation from "./shiftInformation/shiftInformation";
 import AdminViewAllUsers from "./admin/adminViewAllUsers";
 
 import "./profile/data.json";
-import { HomePage } from "./homepage/homepage";
+import { ShiftPage } from "./shiftpage/shiftpage";
 
 const queryClient = new QueryClient();
 
@@ -50,20 +50,15 @@ function App(): JSX.Element {
                     <Route path="/profile/:id" element={<ProtectedRoute outlet={<ProfilePage />} />}></Route>
                     <Route
                         path="/home"
-                        element={<ProtectedRoute outlet={<HomePage shiftType={"available"} />} />}
+                        element={<ProtectedRoute outlet={<ShiftPage shiftType={"searchShifts"} />} />}
                     ></Route>
                     <Route
                         path="/dashboard"
                         element={<ProtectedRoute needsAdmin={true} outlet={<AdminDashboard />} />}
                     ></Route>
-
-                    <Route
-                        path="/allshifts"
-                        element={<ProtectedRoute outlet={<HomePage shiftType={"allShifts"} />} />}
-                    ></Route>
                     <Route
                         path="/myshifts"
-                        element={<ProtectedRoute outlet={<HomePage shiftType={"myShifts"} />} />}
+                        element={<ProtectedRoute outlet={<ShiftPage shiftType={"myShifts"} />} />}
                     ></Route>
 
                     <Route path="/shift/:shiftId" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
