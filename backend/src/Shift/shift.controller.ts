@@ -4,7 +4,7 @@ import Shift from "./shift.model";
 import mongoose from "mongoose";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
-import { IShift } from "./shift.interface";
+import { IShift, IShiftRequiredQualification, IShiftVolunteerAllocations } from "./shift.interface";
 import { IUser, UserShiftAttendaceSummary } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
 import Qualifications from "../Qualifications/qualification.model";
@@ -204,14 +204,39 @@ export const assignUser = async (req: Request, res: Response) => {
                 userHasAllQualifications = false;
             }
         }
-        if (!userHasAllQualifications) {
+        console.log(targetShift.volunteerTypeAllocations);
+        //Current Number > Total Number - Total Qualifications and Qualification is not valid
+        const currentApplied = targetShift.users.length;
+        // let totalNumber: number;
+        // for(const volunteer of targetShift.volunteerTypeAllocations){
+        //    totalNumber += volunteer.currentNum;
+        // }
+        const totalNumber = (volTypeAllocations: Array<IShiftVolunteerAllocations>) => {
+            let totalNumber = 0;
+            for (const volunteer of volTypeAllocations) {
+                totalNumber += volunteer.numMembers;
+            }
+            return totalNumber;
+        };
+        const totalNumberQual = (requiredQualifications: Array<IShiftRequiredQualification>) => {
+            let totalNumber = 0;
+            for (const qualification of requiredQualifications) {
+                totalNumber += qualification.numRequired;
+            }
+            return totalNumber;
+        };
+        if (
+            currentApplied <=
+                totalNumber(targetShift.volunteerTypeAllocations) -
+                    totalNumberQual(targetShift.requiredQualifications) &&
+            !userHasAllQualifications
+        ) {
             res.status(401).json({
                 message: "Target user does not meet the required qualifications for this shift.",
                 success: false,
             });
             return;
         }
-
         // Check if user's selected volunteer type is approved
         const selectedVolunteerTypeID = req.params.selectedVolunteerTypeID;
         // -1 if either voltype doesnt exist for the user OR the type is not approved yet
