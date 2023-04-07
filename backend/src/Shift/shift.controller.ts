@@ -4,7 +4,7 @@ import Shift from "./shift.model";
 import mongoose from "mongoose";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
-import { IShift, IShiftFiltersRequest } from "./shift.interface";
+import { IShift, IShiftRequiredQualification, IShiftVolunteerAllocations, IShiftFiltersRequest } from "./shift.interface";
 import { IUser, UserShiftAttendaceSummary } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
 import Qualifications from "../Qualifications/qualification.model";
@@ -94,8 +94,6 @@ export const updateShift = async (req: Request, res: Response) => {
     }
 
     const shiftFields = req.body as IShift;
-
-    console.log(shiftFields);
 
     try {
         const updatedShift = await Shift.findOneAndUpdate({ _id: shiftId }, shiftFields);
@@ -193,25 +191,43 @@ export const assignUser = async (req: Request, res: Response) => {
         // Check if user has the required qualifications for the shift
         // Loop through the qualifications required by the shift, if any are not approved on the user, set to false and return
         const userApprovedQualificationType = await getUserApprovedQualificationTypes(targetUser);
-        let userHasAllQualifications = true;
+        let userHasAllQualifications = false;
         // Checks if this particular qualification type has enough people in the shift (if enough ppl meet the qualification num required, then this particular user doesn't need to have it)
         // As an example, if a shift requires a minimum of 2 people with first aid training, then people without first aid training can take this shift only after the requirement has been filled
         for (const shiftQual of targetShift.requiredQualifications) {
             if (
-                shiftQual.currentNum < shiftQual.numRequired &&
-                !userApprovedQualificationType.includes(shiftQual.qualificationType.toString()) // Checks if the target use has this particular qualification type in an approved status
+                userApprovedQualificationType.includes(shiftQual.qualificationType.toString()) // Checks if the target use has this particular qualification type in an approved status
             ) {
-                userHasAllQualifications = false;
+                userHasAllQualifications = true;
             }
         }
-        if (!userHasAllQualifications) {
+        //Current Number > Total Number - Total Qualifications and Qualification is not valid
+        const totalNumber = (volTypeAllocations: Array<IShiftVolunteerAllocations>) => {
+            let totalNumber = 0;
+            for (const volunteer of volTypeAllocations) {
+                totalNumber += volunteer.numMembers;
+            }
+            return totalNumber;
+        };
+        const totalNumberQual = (requiredQualifications: Array<IShiftRequiredQualification>) => {
+            let totalNumber = 0;
+            for (const qualification of requiredQualifications) {
+                totalNumber += qualification.numRequired;
+            }
+            return totalNumber;
+        };
+        if (
+            targetShift.users.length >=
+                totalNumber(targetShift.volunteerTypeAllocations) -
+                    totalNumberQual(targetShift.requiredQualifications) &&
+            !userHasAllQualifications
+        ) {
             res.status(401).json({
                 message: "Target user does not meet the required qualifications for this shift.",
                 success: false,
             });
             return;
         }
-
         // Check if user's selected volunteer type is approved
         const selectedVolunteerTypeID = req.params.selectedVolunteerTypeID;
         // -1 if either voltype doesnt exist for the user OR the type is not approved yet
