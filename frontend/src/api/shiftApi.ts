@@ -1,4 +1,14 @@
-import { isBasicResponse, patch, ResponseWithStatus, post, del, getDataResponse, ResponseWithData } from "./utility";
+import { Filters } from "../components/filterResultsModal/types";
+import {
+    isBasicResponse,
+    patch,
+    ResponseWithStatus,
+    post,
+    del,
+    getDataResponse,
+    ResponseWithData,
+    postAndGetDataResponse,
+} from "./utility";
 const ROOT_URL = window.location.origin;
 
 async function patchBasicResponse(url: string): Promise<ResponseWithStatus> {
@@ -155,12 +165,12 @@ export function deleteShift(req: DeleteDetails): Promise<ResponseWithStatus> {
     return deleteBasicResponse(`${ROOT_URL}/api/shifts/${req._id}`);
 }
 
-export async function getAvailableShifts(): Promise<ResponseWithData<IShift[]>> {
-    return await getDataResponse(`${ROOT_URL}/api/shifts/get-available-shifts`);
-}
-
-export async function getAllShifts(): Promise<ResponseWithData<IShift[]>> {
-    return await getDataResponse(`${ROOT_URL}/api/shifts/get-all-shifts`);
+export async function getSearchShifts(filters: Filters | undefined): Promise<ResponseWithData<IShift[]>> {
+    return typeof filters === "undefined"
+        ? Promise.reject(new Error("Invalid id"))
+        : await postAndGetDataResponse(`${ROOT_URL}/api/shifts/get-search-shifts`, {
+              filters,
+          });
 }
 
 // being explicit with undefined check for userId, for why, see type safety with enabled

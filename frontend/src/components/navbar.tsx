@@ -39,16 +39,13 @@ export class NavigationBar extends React.Component<Record<string, never>, NavBar
                     <Navbar.Collapse id="navbar-options">
                         <Nav className="me-auto">
                             <Nav.Link href="/home" className="text-body me-1">
-                                <i className="bi bi-house" /> Available Shifts
+                                <i className="bi bi-search" /> Search Shifts
                             </Nav.Link>
                             {currentUser?.isAdmin && (
                                 <Nav.Link href="/dashboard" className="text-body me-1">
                                     <i className="bi bi-activity" /> Admin Dashboard
                                 </Nav.Link>
                             )}
-                            <Nav.Link href="/allshifts" className="text-body me-1">
-                                <i className="bi bi-calendar-plus" /> All Shifts
-                            </Nav.Link>
                             <Nav.Link href="/myshifts" className="text-body">
                                 <i className="bi bi-alarm" /> My Shifts
                             </Nav.Link>

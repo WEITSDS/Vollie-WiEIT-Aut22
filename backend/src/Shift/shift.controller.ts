@@ -4,7 +4,7 @@ import Shift from "./shift.model";
 import mongoose from "mongoose";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
-import { IShift, IShiftRequiredQualification, IShiftVolunteerAllocations } from "./shift.interface";
+import { IShift, IShiftRequiredQualification, IShiftVolunteerAllocations, IShiftFiltersRequest } from "./shift.interface";
 import { IUser, UserShiftAttendaceSummary } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
 import Qualifications from "../Qualifications/qualification.model";
@@ -499,28 +499,6 @@ export const removeUser = async (req: Request, res: Response) => {
     }
 };
 
-export const getAllShifts = async (_req: Request, res: Response) => {
-    try {
-        const availableShifts = await Shift.find().sort({
-            startAt: 1,
-        });
-        res.status(200).json({
-            message: "success",
-            data: availableShifts,
-            success: true,
-        });
-        return;
-    } catch (error) {
-        console.log("get all shifts error", error);
-        res.status(500).json({
-            message: "get all shifts error",
-            error,
-            success: false,
-        });
-        return;
-    }
-};
-
 export const getShiftById = async (req: Request, res: Response) => {
     try {
         const { _id: userID } = req.session.user || {};
@@ -559,7 +537,39 @@ export const getShiftById = async (req: Request, res: Response) => {
     }
 };
 
-export const getAvailableShifts = async (req: Request, res: Response) => {
+const hoursConfigMapping = {
+    Short: {
+        $lte: 2,
+    },
+    Medium: {
+        $gte: 3,
+        $lte: 4,
+    },
+    Long: {
+        $gte: 5,
+    },
+} as { [key: string]: Record<string, number> };
+
+export const getFindConfigFromFilters = (filters: IShiftFiltersRequest) => {
+    return {
+        startAt: {
+            $gte: Date.parse(filters.from),
+        },
+        endAt: {
+            $lte: Date.parse(filters.to),
+        },
+        ...(filters.hours !== "All" &&
+            hoursConfigMapping[filters.hours] && {
+                hours: hoursConfigMapping[filters.hours],
+            }),
+        ...(filters.category !== "All" && { category: filters.category }),
+        ...(filters.volTypes.length > 0 && {
+            "volunteerTypeAllocations.type": { $in: filters.volTypes.map((volType) => volType.value) },
+        }),
+    };
+};
+
+export const getSearchShifts = async (req: Request, res: Response) => {
     try {
         const { _id: userID } = req.session.user || {};
         if (!userID) {
@@ -567,34 +577,44 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
             return;
         }
 
+        const defaultFilters = {
+            from: new Date().toDateString(),
+            to: new Date(Date.now() + 31536000000).toDateString(), //Default to a year from now
+            role: "All",
+            category: "All",
+            hours: "All",
+            hideUnavailable: true,
+            volTypes: [],
+        } as IShiftFiltersRequest;
+
+        const filters = { ...defaultFilters, ...req?.body?.filters } as IShiftFiltersRequest;
+
         const userObj = await User.findOne({ _id: userID });
         if (!userObj) {
             res.status(403).json({ message: "Could not find user object", success: false });
             return;
         }
 
-        const approvedUserVolTypes = getUserApprovedVolunteerTypes(userObj);
         // Only show events that are UPCOMING and sort by upcoming start at dates
         let availableShifts = await Shift.find({
-            startAt: { $gte: Date.now() },
-            "volunteerTypeAllocations.type": { $in: approvedUserVolTypes },
+            ...getFindConfigFromFilters(filters),
         }).sort({
             startAt: 1,
         });
-        // filter to ensure that only return shifts where approved user vol types have available slots
-        availableShifts = availableShifts.filter((shift) => {
-            let hasSlotsAvailable = false;
-            for (const volAllocation of shift.volunteerTypeAllocations) {
-                if (
-                    approvedUserVolTypes.includes(volAllocation.type.toString()) &&
-                    volAllocation.currentNum < volAllocation.numMembers
-                ) {
-                    hasSlotsAvailable = true;
-                    break;
+
+        if (filters.hideUnavailable) {
+            // filter to ensure that only return shifts where approved user vol types have available slots
+            availableShifts = availableShifts.filter((shift) => {
+                let hasSlotsAvailable = false;
+                for (const volAllocation of shift.volunteerTypeAllocations) {
+                    if (volAllocation.currentNum < volAllocation.numMembers) {
+                        hasSlotsAvailable = true;
+                        break;
+                    }
                 }
-            }
-            return hasSlotsAvailable;
-        });
+                return hasSlotsAvailable;
+            });
+        }
 
         res.status(200).json({
             message: "success",
@@ -603,9 +623,9 @@ export const getAvailableShifts = async (req: Request, res: Response) => {
         });
         return;
     } catch (error) {
-        console.log("get available shifts error", error);
+        console.log("get search shifts error", error);
         res.status(500).json({
-            message: "get available shifts error",
+            message: "get search shifts error",
             error,
             success: false,
         });
