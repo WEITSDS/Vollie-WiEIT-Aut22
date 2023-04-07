@@ -95,8 +95,6 @@ export const updateShift = async (req: Request, res: Response) => {
 
     const shiftFields = req.body as IShift;
 
-    console.log(shiftFields);
-
     try {
         const updatedShift = await Shift.findOneAndUpdate({ _id: shiftId }, shiftFields);
 
@@ -193,24 +191,17 @@ export const assignUser = async (req: Request, res: Response) => {
         // Check if user has the required qualifications for the shift
         // Loop through the qualifications required by the shift, if any are not approved on the user, set to false and return
         const userApprovedQualificationType = await getUserApprovedQualificationTypes(targetUser);
-        let userHasAllQualifications = true;
+        let userHasAllQualifications = false;
         // Checks if this particular qualification type has enough people in the shift (if enough ppl meet the qualification num required, then this particular user doesn't need to have it)
         // As an example, if a shift requires a minimum of 2 people with first aid training, then people without first aid training can take this shift only after the requirement has been filled
         for (const shiftQual of targetShift.requiredQualifications) {
             if (
-                shiftQual.currentNum < shiftQual.numRequired &&
-                !userApprovedQualificationType.includes(shiftQual.qualificationType.toString()) // Checks if the target use has this particular qualification type in an approved status
+                userApprovedQualificationType.includes(shiftQual.qualificationType.toString()) // Checks if the target use has this particular qualification type in an approved status
             ) {
-                userHasAllQualifications = false;
+                userHasAllQualifications = true;
             }
         }
-        console.log(targetShift.volunteerTypeAllocations);
         //Current Number > Total Number - Total Qualifications and Qualification is not valid
-        const currentApplied = targetShift.users.length;
-        // let totalNumber: number;
-        // for(const volunteer of targetShift.volunteerTypeAllocations){
-        //    totalNumber += volunteer.currentNum;
-        // }
         const totalNumber = (volTypeAllocations: Array<IShiftVolunteerAllocations>) => {
             let totalNumber = 0;
             for (const volunteer of volTypeAllocations) {
@@ -226,7 +217,7 @@ export const assignUser = async (req: Request, res: Response) => {
             return totalNumber;
         };
         if (
-            currentApplied <=
+            targetShift.users.length >=
                 totalNumber(targetShift.volunteerTypeAllocations) -
                     totalNumberQual(targetShift.requiredQualifications) &&
             !userHasAllQualifications
