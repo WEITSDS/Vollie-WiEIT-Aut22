@@ -117,6 +117,7 @@ export default function AttendanceListModal({
      */
 
     const displayAttendanceList = (attendanceList: UserShiftAttendaceSummary[]) => {
+        console.log(attendanceList);
         return attendanceList?.map((userShift, index) => (
             <tr key={userShift._id}>
                 <th scope="row">{index + 1}</th>
