@@ -34,23 +34,29 @@ export async function sendOTPEmail(userFirstName: string, userEmail: string): Pr
     const content = `Hey ${userFirstName},\n\nHere's the one time password you requested:\n${userOTP}`;
     return await sendEmail(`Your ${SITE_NAME} One Time Password`, content, userEmail);
 }
-
-interface IShift {
-    name: string;
-    startTime: string; // should probs be a raw date that we format in the email
-    endTime: string;
-    location: string;
-}
-export async function sendSignedUpShiftEmail(userFirstName: string, userEmail: string, shift: IShift): Promise<void> {
-    logger.debug(`Sending shift signup email for '${userEmail}' for shift ''${shift.name}`);
+export async function sendSignedUpShiftEmail(
+    userFirstName: string,
+    userEmail: string,
+    shiftName: string,
+    shiftLocation: string,
+    shiftStartTime: Date,
+    shiftEndTime: Date
+): Promise<void> {
+    logger.debug(`Sending shift signup email for '${userEmail}' for shift ''${shiftName}`);
     const content =
         `Hey ${userFirstName},\n\n` +
-        `You've signed up for the shift '${shift.name}' at ${shift.location} from ${shift.startTime} to ${shift.endTime}. See you there!`;
+        `You've signed up for the shift '${shiftName}' at ${shiftLocation} from ${shiftStartTime} to ${shiftEndTime}. See you there!`;
     return await sendEmail(`Your ${SITE_NAME} Shift Details`, content, userEmail);
 }
-export async function sendCancelledShiftEmail(userFirstName: string, userEmail: string, shift: IShift): Promise<void> {
-    logger.debug(`Sending shift cancelled email for '${userEmail}' for shift ''${shift.name}`);
-    const content = `Hey ${userFirstName},\n\nYour shift '${shift.name}' at ${shift.startTime} at ${shift.location} was cancelled.`;
+export async function sendCancelledShiftEmail(
+    userFirstName: string,
+    userEmail: string,
+    shiftName: string,
+    shiftLocation: string,
+    shiftStartTime: Date
+): Promise<void> {
+    logger.debug(`Sending shift cancelled email for '${userEmail}' for shift ''${shiftName}`);
+    const content = `Hey ${userFirstName},\n\nYour shift '${shiftName}' at ${shiftStartTime} at ${shiftLocation} was cancelled.`;
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail);
 }
 
