@@ -1,18 +1,7 @@
 import * as nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/json-transport";
 import { Logger } from "tslog";
-import {
-    /*EMAIL_ACCESS_TOKEN,
-    EMAIL_CLIENT_ID,
-    EMAIL_CLIENT_SECRET,
-    EMAIL_REFRESH_TOKEN,*/
-    EMAIL_USER,
-    SITE_NAME,
-    SMTP_HOST,
-    SMTP_PASSWORD,
-    SMTP_PORT,
-    SMTP_USERNAME,
-} from "../constants";
+import { EMAIL_USER, SITE_NAME, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USERNAME } from "../constants";
 import { generateOTPForUser } from "../otps/otpManager";
 
 const logger = new Logger({ name: "mailer" });
