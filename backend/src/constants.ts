@@ -18,7 +18,11 @@ export const COOKIE_SECRET: string = process.env.COOKIE_SECRET || "d2y3hjaksd09a
 export const COOKIE_DURATION: number = 1000 * 60 * 60 * (+(process.env.COOKIE_DURATION || 0) || 24);
 
 // Emailer stuff
-export const EMAIL_USER: string = process.env.EMAIL_USER || "";
+export const SMTP_HOST: string = process.env.SMTP_HOST || "smtp-relay.sendinblue.com";
+export const SMTP_PORT: number = +(process.env.SMTP_PORT || 0) || 587;
+export const SMTP_USERNAME: string = process.env.SMTP_USERNAME || "danny.vien101@gmail.com";
+export const SMTP_PASSWORD: string = process.env.SMTP_PASSWORD || "pFLf5GEwkVKZPqMC";
+export const EMAIL_USER: string = process.env.EMAIL_USER || "Vollie-WIEIT@gmail.com";
 export const EMAIL_CLIENT_ID: string = process.env.EMAIL_CLIENT_ID || "";
 export const EMAIL_CLIENT_SECRET: string = process.env.EMAIL_CLIENT_SECRET || "";
 export const EMAIL_REFRESH_TOKEN: string = process.env.EMAIL_REFRESH_TOKEN || "";
@@ -58,3 +62,4 @@ export const CLOUDINARY_CONFIG = {
     api_key: process.env.CLOUDINARY_API_KEY || "881199877291791",
     api_secret: process.env.CLOUDINARY_API_SECRET || "q1SqdYYyXU612DoBUEEESHhggdw",
 };
+
