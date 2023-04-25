@@ -1,0 +1,83 @@
+.filter-modal .modal-content {
+    background: #8f8f8f;
+}
+
+.filter-modal .modal-body {
+    display: flex;
+    padding: 0;
+}
+
+.filter-modal .modal-header {
+    border-bottom: 3px solid black;
+}
+
+.left-section {
+    height: 100%;
+    width: 200px;
+    padding: 1rem;
+    min-height: 400px;
+}
+
+.right-section {
+    background: #d9d9d9;
+    padding: 1rem;
+    flex-grow: 1;
+    border-bottom-right-radius: 10px;
+}
+
+.filter-modal label {
+    margin: 20px 0px 20px 0px;
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 30px;
+
+    color: #000000;
+}
+
+.filter-modal .left-section button {
+    background-color: transparent;
+    border: none;
+    color: black;
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+    display: block;
+}
+
+.filter-modal .left-section button:hover {
+    font-weight: 900px;
+    text-decoration: underline;
+}
+
+.filter-modal label:first-child {
+    margin-top: 0px;
+}
+
+.date {
+    height: 40px;
+    align-self: center;
+    border-radius: 10px;
+    border: 0px;
+    font-size: 20px;
+    text-indent: 8px;
+}
+
+.filter-modal .filter-date-input {
+    background: #ffffff;
+    border: 1px solid #f5f2f2;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.filter-modal .react-datetime-picker__wrapper {
+    border: none;
+    padding: 5px;
+}
+
+.filter-modal select {
+    width: 100% !important;
+}
