@@ -11,6 +11,7 @@ import Qualifications from "../Qualifications/qualification.model";
 // import { IQualificationType } from "../QualificationType/qualificationType.interface";
 // import { ObjectId } from "mongodb";
 import VolunteerType from "../VolunteerType/volunteerType.model";
+import { sendSignedUpShiftEmail, sendCancelledShiftEmail } from "../mailer/mailer";
 const logger = new Logger({ name: "shift.controller" });
 
 // const getAttributeFromVolunteerType = (userRole: string | undefined): keyof IShift => {
@@ -316,6 +317,15 @@ export const assignUser = async (req: Request, res: Response) => {
 
         if (assignShiftResponse) {
             res.status(200).json({ message: "User assigned to shift", success: true });
+            //Send sign up email
+            void sendSignedUpShiftEmail(
+                targetUser.firstName,
+                targetUser.email,
+                targetShift.name,
+                targetShift.address,
+                targetShift.startAt,
+                targetShift.endAt
+            );
             return;
         } else {
             res.status(404).json({ message: "User not found", success: true });
@@ -425,6 +435,12 @@ export const removeUser = async (req: Request, res: Response) => {
             return;
         }
 
+        const targetUser = await User.findById(req.params.userid);
+        if (!targetUser) {
+            res.status(404).json({ message: "Target user not found", success: false });
+            return;
+        }
+
         const selectedVolunteerTypeID = targetShift?.users[userShiftAllocationIdx].chosenVolunteerType;
 
         if (!selectedVolunteerTypeID) {
@@ -477,10 +493,15 @@ export const removeUser = async (req: Request, res: Response) => {
         );
 
         if (assignShiftResponse && updateShiftQualAllocs) {
-            res.status(200).json({
-                message: "User removed from shift",
-                success: true,
-            });
+            res.status(200).json({ message: "User removed from shift", success: true });
+            //Send shift cancelled email
+            void sendCancelledShiftEmail(
+                targetUser.firstName,
+                targetUser.email,
+                targetShift.name,
+                targetShift.address,
+                targetShift.startAt
+            );
             return;
         } else {
             res.status(404).json({
