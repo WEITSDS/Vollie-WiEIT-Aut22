@@ -67,7 +67,7 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftC
                     <Stack direction="horizontal" style={{ justifyContent: "space-between" }}>
                         <Card.Title style={titleTextStyle}>{name}</Card.Title>
                         <Stack direction="horizontal">
-                            {isAdmin && <AttendanceListModal shiftId={shiftData._id || ""} />}
+                            {isAdmin && <AttendanceListModal shift={shiftData || {}} />}
                             {isAdmin && (
                                 <>
                                     <Button
