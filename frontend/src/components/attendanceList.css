@@ -1,4 +1,4 @@
-.remove-btn { 
+.remove-btn {
     background: #c13d3d;
     border-radius: 7px;
     height: 35px;
@@ -16,4 +16,8 @@
     width: 16px;
     margin-bottom: 3.5px;
     border-radius: 0px;
+}
+
+.attendance-modal-footer {
+    justify-content: space-between;
 }

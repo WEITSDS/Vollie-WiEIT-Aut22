@@ -453,7 +453,7 @@ const ShiftInformation = () => {
                             <AttendanceListModal
                                 showModal={showParticipantsModal}
                                 hideButton={true}
-                                shiftId={data?.data._id || ""}
+                                shift={data?.data || {}}
                                 setShowModal={handleParticipants}
                                 onCloseModal={() => {
                                     void onCloseParticipantModal();
