@@ -3,6 +3,7 @@ import { MailOptions } from "nodemailer/lib/json-transport";
 import { Logger } from "tslog";
 import { EMAIL_USER, SITE_NAME, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USERNAME } from "../constants";
 import { generateOTPForUser } from "../otps/otpManager";
+//import User from "../User/user.model";
 
 const logger = new Logger({ name: "mailer" });
 
@@ -16,6 +17,15 @@ const transporter = nodemailer.createTransport({
         pass: SMTP_PASSWORD,
     },
 });
+
+/*async function getAdminEmails(): Promise<void> {
+    User.find()
+    .exec()
+    .then((results => {
+        //Need to Find all users where isAdmin is true
+    }));
+
+}*/
 
 export async function sendOTPEmail(userFirstName: string, userEmail: string): Promise<void> {
     const userOTP = generateOTPForUser(userEmail);
