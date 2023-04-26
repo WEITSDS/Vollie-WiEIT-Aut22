@@ -10,7 +10,6 @@ import { IUser } from "../User/user.interface";
 
 const logger = new Logger({ name: "notification.controller" });
 
-/*
 export const createNotification = async (req: Request, res: Response) => {
     const newNotification = req.body as INotification;
     if (!isINotification(newNotification)) {
@@ -42,8 +41,4 @@ export const createNotification = async (req: Request, res: Response) => {
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occureed while creating notification.");
     }
-}*/
-
-/*export const createNotification = async(userFirstname: string, userEmail: string, content: string, time: string): Promise<void> {
-    logger.debug('Saving shift signup notification for '${userEmail}' for shift ''${}');
-}*/
+}

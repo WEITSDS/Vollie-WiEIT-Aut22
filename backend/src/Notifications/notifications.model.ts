@@ -5,8 +5,7 @@ import { INotification } from "./notifications.interface";
 const NotificationSchema: Schema = new Schema(
     {
         content: { type: String, required: true },
-        //user: { type: mongoose.Types.ObjectId, ref: "User" },
-        user: { type: String, required: true},
+        user: { type: mongoose.Types.ObjectId, ref: "User" },
         time: { type: Date, required: true },
     },
     {
