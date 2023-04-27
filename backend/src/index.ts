@@ -136,29 +136,3 @@ app.use("/api/volunteer-types", volunteerTypeRoutes);
 // });
 /** Qualification Routes */
 app.use("/api/qualifications", qualificationRoutes);
-
-//Only Start The Sever If Mongoose Is Connected
-/*const StartServer = async () => {
-    //Mail SMTP Connection
-    Logger.info('Connecting with SMTP Server...');
-    const mailService = MailService.getInstance();
-    if (process.env.NODE_ENV === 'local') {
-        await mailService.createLocalConnection();
-    } else if (process.env.NODE_ENV === 'production') {
-        await mailService.createConnection();
-    }
-    Logger.info('SMTP Server Connected');
-    Logger.info('SMTP Connection verified');
-
-    router.use((req, res, next) => {
-        Logger.info(
-            'Incoming -> Method: [${req.method}] - Url: [${req.url}] - IP: [${req.socket.remoteAddress}]'
-        );
-        res.on('finish', () => {
-            Logger.info(
-                'Incoming -> Method: [${req.method}] - Url: [${req.url}] IP: [${req.socket.remoteAddress}] - Status: [${res.statusCode}]'
-            );
-        })
-    });
-    next();
-});*/
