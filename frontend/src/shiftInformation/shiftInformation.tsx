@@ -201,7 +201,7 @@ const ShiftInformation = () => {
                                                 Edit
                                             </button>
                                         )}
-                                        {!!userObj && shiftId && !targetShiftInUser && (
+                                        {!userObj?.isAdmin && !!userObj && shiftId && !targetShiftInUser && (
                                             <button
                                                 className="apply-btn"
                                                 onClick={(e) => {
@@ -453,7 +453,7 @@ const ShiftInformation = () => {
                             <AttendanceListModal
                                 showModal={showParticipantsModal}
                                 hideButton={true}
-                                shiftId={data?.data._id || ""}
+                                shift={data?.data || {}}
                                 setShowModal={handleParticipants}
                                 onCloseModal={() => {
                                     void onCloseParticipantModal();
