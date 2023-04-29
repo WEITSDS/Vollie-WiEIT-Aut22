@@ -354,7 +354,6 @@ export const setCompleteShift = async (req: Request, res: Response) => {
         // Will likely have to make DB adjustments for this to identify if user is supervisor
         const isAdmin = userObj?.isAdmin || false;
         let targettedUserId = userObj._id;
-        console.log(userObj);
         if (isAdmin) {
             targettedUserId = req.params.userid;
         }
