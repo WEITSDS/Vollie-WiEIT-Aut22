@@ -47,6 +47,7 @@ export const createQualification = async (req: Request, res: Response) => {
             filePath: uploadResponse.secure_url,
             fileId: uploadResponse.public_id,
             qualificationType: newQualification?.qualificationType,
+            expiryDate: newQualification.expiryDate,
             approved: !qualificationtype.requiresApproval, // assume that the qualification is approved if it required no admin approval
             user: user._id,
         });
@@ -114,6 +115,7 @@ export const updateQualificationById = async (req: Request, res: Response) => {
 
         qualification.title = qualificationFields.title;
         qualification.description = qualificationFields.description;
+        qualification.expiryDate = qualificationFields.expiryDate;
 
         await qualification.save();
 
