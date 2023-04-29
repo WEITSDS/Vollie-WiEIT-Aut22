@@ -30,7 +30,6 @@ export const CreateOrEditQualificationModal = (props: CreateOrEditQualificationP
     const [description, setDescription] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [selectedQualType, setSelectedQualType] = useState<string>("");
-    const [expiryDate, setExpiryDate] = useState("");
 
     const [uploading, setUploading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -46,10 +45,6 @@ export const CreateOrEditQualificationModal = (props: CreateOrEditQualificationP
     const handleQualTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         console.log(e.target.value);
         setSelectedQualType(e.target.value);
-    };
-
-    const onChangeExpiryDate = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setExpiryDate(e.target.value);
     };
 
     const onChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,10 +64,6 @@ export const CreateOrEditQualificationModal = (props: CreateOrEditQualificationP
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedQualType) return setErrorMessage("You must select a qualification type.");
-
-        if (Date.parse(expiryDate) < Date.now()) {
-            return setErrorMessage("You cannot submit an expired qualification.");
-        }
 
         if (!props.isNew) {
             void uploadImage("");
@@ -102,20 +93,12 @@ export const CreateOrEditQualificationModal = (props: CreateOrEditQualificationP
         try {
             const { isNew, qualification } = props;
             const response = await (isNew
-                ? createQualification(
-                      title,
-                      description,
-                      base64EncodedImage,
-                      selectedQualType,
-                      expiryDate,
-                      qualification.user
-                  )
+                ? createQualification(title, description, base64EncodedImage, selectedQualType, qualification.user)
                 : updateQualification({
                       _id: qualification._id,
                       title,
                       description,
                       selectedQualType,
-                      expiryDate,
                       user: qualification.user,
                   }));
             if (!response.success) {
@@ -134,7 +117,7 @@ export const CreateOrEditQualificationModal = (props: CreateOrEditQualificationP
 
     // const { title, description, fileName, file, errorMessage, uploading } = this.state;
     const { isNew, onClose } = props || {};
-    const disabled = (isNew && !(title && fileName && file && expiryDate)) || !(title && description) || uploading;
+    const disabled = (isNew && !(title && fileName && file)) || !(title && description) || uploading;
     return (
         <Modal show={true} onHide={onClose} backdrop="static">
             <Modal.Header closeButton={!uploading}>
@@ -168,16 +151,6 @@ export const CreateOrEditQualificationModal = (props: CreateOrEditQualificationP
                                 );
                             })}
                         </Form.Select>
-                    </Form.Group>
-                    <Form.Group controlId="qExpiryDate" className="mb-3">
-                        <Form.Label>Expiry Date</Form.Label>
-                        <Form.Control
-                            type="date"
-                            name="qExpiryDate"
-                            value={expiryDate}
-                            onChange={onChangeExpiryDate}
-                            required
-                        />
                     </Form.Group>
                     {isNew && (
                         <Form.Group controlId="qFile" className="mb-3">

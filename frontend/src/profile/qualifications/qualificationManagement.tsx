@@ -121,7 +121,6 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
                     <tr>
                         <th>Name</th>
                         <th>Qualification Type</th>
-                        <th>Expiry Date</th>
                         <th>Approval Status</th>
                         <th>Delete</th>
                         <th>Evidence</th>
@@ -135,16 +134,6 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
                                 <tr key={qual._id}>
                                     <td>{qual.title}</td>
                                     <td>{qual.qualificationType.name}</td>
-                                    <td>
-                                        {Date.parse(qual.expiryDate) < Date.now() ? (
-                                            <div title="This qualification is expired." style={{ color: "red" }}>
-                                                {qual.expiryDate} {"   "}
-                                                <i className="bi bi-exclamation-square" />
-                                            </div>
-                                        ) : (
-                                            <div>{qual.expiryDate}</div>
-                                        )}
-                                    </td>
                                     <td>{qual.approved ? "Yes" : "No"}</td>
                                     <td>
                                         <Button
@@ -191,7 +180,6 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
                         title: "",
                         user: isAdmin && userId ? userId : "",
                         qualificationType: "",
-                        expiryDate: "",
                         fileId: "",
                     }}
                     onClose={() => {
@@ -222,7 +210,6 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
                             <>
                                 <p>Name: {selectedQualification.title}</p>
                                 <p>Description: {selectedQualification?.description}</p>
-                                <p>Expiry Date: {selectedQualification.expiryDate}</p>
                                 <p>Approval Status: {selectedQualification.approved ? "Yes" : "No"}</p>
                                 <img src={selectedQualification.filePath}></img>
                             </>

@@ -16,7 +16,6 @@ export interface Qualification {
     fileId: string;
     user: string;
     qualificationType: IQualificationType;
-    expiryDate: string;
     approved: boolean;
 }
 
@@ -28,7 +27,6 @@ export interface NewQualification {
     fileId: string;
     user: string;
     qualificationType: string;
-    expiryDate: string;
 }
 
 const PATH = `${window.location.origin}/api/qualifications`;
@@ -50,7 +48,6 @@ export async function createQualification(
     description: string,
     filePath: string,
     selectedQualType: string,
-    expiryDate: string,
     userId?: string
 ): Promise<ResponseWithStatus> {
     const payload: NewQualification = {
@@ -61,7 +58,6 @@ export async function createQualification(
         description,
         filePath,
         qualificationType: selectedQualType,
-        expiryDate,
     };
     return await postAndGetBasicResponse(`${PATH}/create`, payload as unknown as Record<string, unknown>);
 }
@@ -71,7 +67,6 @@ interface QualificationPatch {
     title: string;
     description: string;
     selectedQualType: string;
-    expiryDate: string;
     user?: string;
 }
 export async function updateQualification({
@@ -79,7 +74,6 @@ export async function updateQualification({
     title,
     description,
     user,
-    expiryDate,
     selectedQualType,
 }: QualificationPatch): Promise<ResponseWithStatus> {
     const payload: NewQualification = {
@@ -89,7 +83,6 @@ export async function updateQualification({
         title,
         description,
         filePath: "",
-        expiryDate,
         qualificationType: selectedQualType,
     };
 
