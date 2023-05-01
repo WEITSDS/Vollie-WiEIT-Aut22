@@ -4,7 +4,6 @@ import { Logger } from "tslog";
 import { EMAIL_USER, SITE_NAME, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USERNAME } from "../constants";
 import { generateOTPForUser } from "../otps/otpManager";
 import User from "../User/user.model";
-import { createNotification } from "../Notifications/notifications.controller";
 
 const logger = new Logger({ name: "mailer" });
 
@@ -37,9 +36,7 @@ export async function sendSignedUpShiftEmail(
     const content =
         `Hey ${userFirstName},\n\n` +
         `You've signed up for the shift '${shiftName}' at ${shiftLocation} from ${shiftStartTime} to ${shiftEndTime}. See you there!`;
-    createNotification(userEmail, content, userFirstName);  
-    const ccEmails = await getAdminEmails();
-    return await sendEmail(`Your ${SITE_NAME} Shift Details`, content, userEmail, ccEmails);
+    return await sendEmail(`Your ${SITE_NAME} Shift Details`, content, userEmail);
 }
 export async function sendCancelledShiftEmail(
     userFirstName: string,
@@ -50,9 +47,7 @@ export async function sendCancelledShiftEmail(
 ): Promise<void> {
     logger.debug(`Sending shift cancelled email for '${userEmail}' for shift ''${shiftName}`);
     const content = `Hey ${userFirstName},\n\nYour shift '${shiftName}' at ${shiftStartTime} at ${shiftLocation} was cancelled.`;
-    createNotification(userEmail, content, userFirstName);  
-    const ccEmails = await getAdminEmails();
-    return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail, ccEmails);
+    return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail);
 }
 
 /** Send an email with the provided parameters.
