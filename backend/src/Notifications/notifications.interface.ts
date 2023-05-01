@@ -2,7 +2,7 @@ import { Document, Types } from "mongoose";
 
 export interface INotification extends Document {
     content: string;
-    user: Types.ObjectId;
+    user: Types.ObjectId; //userID
     time: Date;
 }
 
