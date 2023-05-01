@@ -24,11 +24,9 @@ export const createNotification = async (userEmail: string, content: string, use
             user: user._id,
             time: new Date(),
         });
-
         notif.id = new mongoose.Types.ObjectId();
-
-        //await user.update({$push: { notifications: notif._id as string } });
-        //await Promise.all([notif.save(), user.save()]);
+        await user.update({$push: { notifications: notif._id as string } });
+        await Promise.all([notif.save(), user.save()]);
         logger.debug(`Created notification successfully for ${userFirstName}`);
         return;
     } catch (err) {
