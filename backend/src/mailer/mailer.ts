@@ -40,8 +40,6 @@ export async function sendSignedUpShiftEmail(
     createNotification(userEmail, content, userFirstName);  
     const ccEmails = await getAdminEmails();
     return await sendEmail(`Your ${SITE_NAME} Shift Details`, content, userEmail, ccEmails);
-    createNotification(userEmail, content, userFirstName);    
-    return await sendEmail(`Your ${SITE_NAME} Shift Details`, content, userEmail);
 }
 export async function sendCancelledShiftEmail(
     userFirstName: string,
@@ -55,8 +53,6 @@ export async function sendCancelledShiftEmail(
     createNotification(userEmail, content, userFirstName);  
     const ccEmails = await getAdminEmails();
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail, ccEmails);
-    createNotification(userEmail, content, userFirstName); 
-    return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail);
 }
 
 /** Send an email with the provided parameters.
