@@ -62,3 +62,4 @@ export const CLOUDINARY_CONFIG = {
     api_key: process.env.CLOUDINARY_API_KEY || "881199877291791",
     api_secret: process.env.CLOUDINARY_API_SECRET || "q1SqdYYyXU612DoBUEEESHhggdw",
 };
+
