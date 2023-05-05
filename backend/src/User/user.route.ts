@@ -9,6 +9,7 @@ import {
     setCompleteShift,
     setApprovalVolunteerTypeForUser,
     assignVolunteerType,
+    removeVolunteerType,
 } from "./user.controller";
 
 const router = express.Router();
@@ -25,6 +26,7 @@ router.patch(
 );
 
 router.patch("/:userid/assign-volunteer-type/:volunteertypeid", wrapAsync(assignVolunteerType));
+router.patch("/:userid/remove-volunteer-type/:volunteertypeid", wrapAsync(removeVolunteerType));
 router.patch("/:userid/set-complete-shift/:shiftid/:completionstatus", wrapAsync(setCompleteShift));
 
 export = router;

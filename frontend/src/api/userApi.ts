@@ -130,3 +130,11 @@ export async function setApprovalUserVolunteerType(id: string, userId: string, s
 export async function setCompleteShift(userId: string, shiftid: string, completionStatus: string) {
     return patch(`${PATH}/${userId}/set-complete-shift/${shiftid}/${completionStatus}`);
 }
+
+export async function assignVolunteerType(userId: string, volunteerTypeId: string) {
+    return patch(`${PATH}/${userId}/assign-volunteer-type/${volunteerTypeId}`);
+}
+
+export async function removeVolunteerType(userId: string, volunteerTypeId: string) {
+    return patch(`${PATH}/${userId}/remove-volunteer-type/${volunteerTypeId}`);
+}

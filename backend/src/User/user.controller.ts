@@ -478,3 +478,47 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
         handleError(logger, res, err, "Volunteer type assignment to user failed");
     }
 };
+
+export const removeVolunteerType = async (req: Request, res: Response) => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) {
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
+            return;
+        }
+
+        const sessionUserId = userObj._id;
+        if (sessionUserId.toString() !== req.params.userid) {
+            res.status(401).json({
+                message: "Unauthorised, you can only remove volunteer types from yourself",
+                success: false,
+            });
+            return;
+        }
+
+        const removeVolTypeResult = await User.updateOne(
+            { _id: sessionUserId },
+            {
+                $pull: {
+                    volunteerTypes: { type: req.params.volunteertypeid },
+                },
+            }
+        );
+
+        if (removeVolTypeResult) {
+            res.status(200).json({
+                message: "Volunteer type removed from user",
+                success: true,
+            });
+            return;
+        } else {
+            res.status(404).json({
+                message: "User not found",
+                success: true,
+            });
+            return;
+        }
+    } catch (err) {
+        handleError(logger, res, err, "Volunteer type removal from user failed");
+    }
+};
