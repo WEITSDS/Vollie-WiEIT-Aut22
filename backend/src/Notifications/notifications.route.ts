@@ -1,11 +1,11 @@
 import express from "express";
 import {
-    createNotification,
+    getNotifications,
 } from "./notifications.controller";
 import { wrapAsync } from "../utility";
 
 const router = express.Router();
 
-//router.post("/create", wrapAsync(createNotification));
+router.get("/self", wrapAsync(getNotifications));
 
 export = router;

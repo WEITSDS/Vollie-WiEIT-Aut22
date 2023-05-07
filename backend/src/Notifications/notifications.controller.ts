@@ -109,3 +109,35 @@ export const deleteQualificationById = async (req: Request, res: Response) => {
         handleError(logger, res, err, "Delete notification failed");
     }
 };
+
+/*export const getUserNotifications = async (req: Request, res: Response) => {
+    try {
+        console.log(req.params);
+        const targetUserID = req.params.userid;
+
+        const userObj = await User.findOne({ _id: targetUserID});
+        if (!userObj) {
+            res.status(403).json({ message: "Could not find user object", success: false });
+            return;
+        }
+
+        const userNotifcations = await Notification.find({ "users.user": targetUserID }).sort({
+            startAt: 1,
+        });
+
+        res.status(200).json({
+            message: "success",
+            data: userNotifcations,
+            success: true,
+        });
+        return;
+    } catch (error) {
+        console.log("Get user notifications error", error);
+        res.status(500).json({
+            message: "Get user notifications error",
+            error,
+            success: false,
+        });
+        return;
+    }
+};*/
