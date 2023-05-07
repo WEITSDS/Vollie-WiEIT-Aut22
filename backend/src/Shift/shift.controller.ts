@@ -4,7 +4,13 @@ import Shift from "./shift.model";
 import mongoose from "mongoose";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
-import { IShift, IShiftRequiredQualification, IShiftVolunteerAllocations, IShiftFiltersRequest } from "./shift.interface";
+import {
+    IShift,
+    IShiftRequiredQualification,
+    IShiftVolunteerAllocations,
+    IShiftFiltersRequest,
+    IExportShiftRequest,
+} from "./shift.interface";
 import { IUser, UserShiftAttendaceSummary } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
 import Qualifications from "../Qualifications/qualification.model";
@@ -608,6 +614,7 @@ export const getSearchShifts = async (req: Request, res: Response) => {
             volTypes: [],
         } as IShiftFiltersRequest;
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         const filters = { ...defaultFilters, ...req?.body?.filters } as IShiftFiltersRequest;
 
         const userObj = await User.findOne({ _id: userID });
@@ -647,6 +654,193 @@ export const getSearchShifts = async (req: Request, res: Response) => {
         console.log("get search shifts error", error);
         res.status(500).json({
             message: "get search shifts error",
+            error,
+            success: false,
+        });
+        return;
+    }
+};
+
+export const exportAdminShifts = async (req: Request, res: Response) => {
+    try {
+        const { _id: userID } = req.session.user || {};
+        if (!userID) {
+            res.status(403).json({ message: "Authorisation error", success: false });
+            return;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const dateRanges = req?.body?.dateRange as IExportShiftRequest;
+
+        // Only show events that are UPCOMING and sort by upcoming start at dates
+        const shifts = await Shift.find({
+            startAt: {
+                $gte: Date.parse(dateRanges.start),
+            },
+            endAt: {
+                $lte: Date.parse(dateRanges.end),
+            },
+        }).sort({
+            startAt: 1,
+        });
+
+        let csvOutput = [] as string[][];
+
+        for (let i = 0; i < shifts.length; i++) {
+            const shift = shifts[i];
+
+            const rows = [
+                [
+                    "Shift ID",
+                    "Name",
+                    "Venue",
+                    "Address",
+                    "Start Date/Time",
+                    "End Date/Time",
+                    "Length (Hours)",
+                    "Category",
+                    "Description",
+                    "Notes",
+                ],
+                [
+                    shift._id,
+                    shift.name,
+                    shift.venue,
+                    shift.address,
+                    shift.startAt,
+                    shift.endAt,
+                    shift.hours,
+                    shift.category,
+                    shift.description,
+                    shift.notes,
+                ],
+                [],
+                ["Volunteer ID", "First Name", "Last Name", "Volunteer Type", "Approval Status", "Completion Status"],
+            ] as string[][];
+
+            for (let idx = 0; idx < shift?.users?.length; idx++) {
+                const participant = shift?.users[idx];
+                const targetVolType = await VolunteerType.findOne({ _id: participant.chosenVolunteerType });
+                const targetUser = await User.findOne({ _id: participant.user });
+                const completed =
+                    targetUser?.shifts?.find((uShift) => uShift.shift.toString() === shift._id)?.completed || false;
+
+                rows.push([
+                    targetUser?._id.toString() || "",
+                    targetUser?.firstName || "",
+                    targetUser?.lastName || "",
+                    targetVolType?.name || "",
+                    participant.approved ? "Approved" : "Pending Approval",
+                    completed ? "Completed" : "Pending Completion",
+                ]);
+            }
+            rows.push([]);
+
+            csvOutput = [...csvOutput, ...rows];
+        }
+
+        if (shifts.length === 0) {
+            csvOutput.push(["No shifts found within this range"]);
+        }
+
+        const csvContent = "data:text/csv;charset=utf-8," + csvOutput.map((e) => e.join(",")).join("\n");
+        const encodedUri = encodeURI(csvContent);
+
+        res.status(200).json({
+            message: "success",
+            data: { csv: encodedUri },
+            success: true,
+        });
+        return;
+    } catch (error) {
+        console.log("export admin shifts error", error);
+        res.status(500).json({
+            message: "export admin shifts error",
+            error,
+            success: false,
+        });
+        return;
+    }
+};
+
+export const exportVolunteerShifts = async (req: Request, res: Response) => {
+    try {
+        const { _id: userID } = req.session.user || {};
+        if (!userID) {
+            res.status(403).json({ message: "Authorisation error", success: false });
+            return;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const dateRanges = req?.body?.dateRange as IExportShiftRequest;
+
+        // Only show events that are UPCOMING and sort by upcoming start at dates
+        const shifts = await Shift.find({
+            startAt: {
+                $gte: Date.parse(dateRanges.start),
+            },
+            endAt: {
+                $lte: Date.parse(dateRanges.end),
+            },
+            "users.user": userID,
+        }).sort({
+            startAt: 1,
+        });
+
+        let csvOutput = [
+            [
+                "Shift ID",
+                "Name",
+                "Venue",
+                "Address",
+                "Start Date/Time",
+                "End Date/Time",
+                "Length (Hours)",
+                "Category",
+                "Description",
+                "Notes",
+            ],
+        ] as string[][];
+
+        for (let i = 0; i < shifts.length; i++) {
+            const shift = shifts[i];
+
+            const rows = [
+                [
+                    shift._id,
+                    shift.name,
+                    shift.venue,
+                    shift.address,
+                    shift.startAt,
+                    shift.endAt,
+                    shift.hours,
+                    shift.category,
+                    shift.description,
+                    shift.notes,
+                ],
+            ] as string[][];
+
+            csvOutput = [...csvOutput, ...rows];
+        }
+
+        if (shifts.length === 0) {
+            csvOutput = [];
+            csvOutput.push(["No shifts found within this range"]);
+        }
+
+        const csvContent = "data:text/csv;charset=utf-8," + csvOutput.map((e) => e.join(",")).join("\n");
+        const encodedUri = encodeURI(csvContent);
+
+        res.status(200).json({
+            message: "success",
+            data: { csv: encodedUri },
+            success: true,
+        });
+        return;
+    } catch (error) {
+        console.log("export volunteer shifts error", error);
+        res.status(500).json({
+            message: "export volunteer shifts error",
             error,
             success: false,
         });

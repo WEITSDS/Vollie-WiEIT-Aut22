@@ -73,3 +73,21 @@ h1 {
 .btn-icon {
     margin-right: 20px;
 }
+
+.export-parent {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+}
+
+.export-parent button {
+    border-radius: 4rem;
+    padding: 0.9rem 1.75rem;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 19px;
+    color: rgb(255, 253, 253);
+    font-family: Lato;
+    font-style: normal;
+    border: 0;
+}

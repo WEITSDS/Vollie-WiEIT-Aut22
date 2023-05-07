@@ -1,0 +1,55 @@
+.export-modal .modal-content {
+    background: #d9d9d9;
+}
+
+.export-modal .modal-body {
+    display: flex;
+    padding: 0;
+}
+
+.export-modal .modal-header {
+    border-bottom: 3px solid black;
+}
+
+.btn-export {
+    border-radius: 4rem;
+    padding: 0.9rem 1.75rem;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 19px;
+    color: rgb(255, 253, 253);
+    font-family: Lato;
+    font-style: normal;
+    border: 0;
+    margin-left: auto;
+    margin-right: 0px;
+    display: block;
+}
+
+.export-modal-content {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    padding: 50px 100px 50px 100px;
+    width: 100%;
+}
+
+.range-date-picker {
+    margin-top: 10px;
+    margin-bottom: 40px;
+    margin-left: 20px;
+}
+
+@media only screen and (max-width: 990px) {
+    .range-date-picker {
+        transform: scale(0.75) translate(-35%);
+    }
+}
+
+.range-label {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: block;
+    text-align: center;
+}

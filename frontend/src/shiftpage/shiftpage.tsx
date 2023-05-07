@@ -21,6 +21,7 @@ import { Filters } from "../components/filterResultsModal/types";
 import { getDefaultFilters } from "../components/filterResultsModal/util";
 import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
+import { ExportModal } from "../components/exportModal/exportModal";
 
 type ShiftPageProps = {
     shiftType: string;
@@ -45,6 +46,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
 
     const [show, setShow] = useState<boolean>(false);
     const [filterPanelVisible, setFilterPanelVisible] = useState<boolean>(false);
+    const [exportModalVisible, setExportModalVisible] = useState<boolean>(false);
     const [isDeleteLoading, setisDeleteLoading] = useState<boolean>(false);
     const [selectedShifts, setselectedShifts] = useState<string[]>([]);
 
@@ -159,6 +161,16 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                 : !isLoading && <p>No available shifts.</p>}
                         </div>
                     </div>
+                    <div className="export-parent">
+                        <button className="btn-primary" onClick={() => setExportModalVisible(true)}>
+                            Export
+                        </button>
+                    </div>
+                    <ExportModal
+                        visible={exportModalVisible}
+                        onClose={() => setExportModalVisible(false)}
+                        isAdmin={userData?.data?.isAdmin || false}
+                    />
                     <Modal show={show}>
                         <AddShiftForm handleClose={closeAddShift} />
                     </Modal>

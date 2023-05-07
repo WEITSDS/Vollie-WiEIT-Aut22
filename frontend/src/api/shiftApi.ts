@@ -111,6 +111,10 @@ export interface IShift {
     volunteerTypeAllocations: Array<IShiftVolunteerAllocations>;
 }
 
+export interface IExportData {
+    csv: string;
+}
+
 export interface IShiftRequiredQualification {
     qualificationType: string; // Qualification type ID
     numRequired: number;
@@ -170,6 +174,28 @@ export async function getSearchShifts(filters: Filters | undefined): Promise<Res
         ? Promise.reject(new Error("Invalid id"))
         : await postAndGetDataResponse(`${ROOT_URL}/api/shifts/get-search-shifts`, {
               filters,
+          });
+}
+
+export async function postAdminExportShifts(dateRange: {
+    start: Date;
+    end: Date;
+}): Promise<ResponseWithData<IExportData>> {
+    return typeof dateRange === "undefined"
+        ? Promise.reject(new Error("Invalid id"))
+        : await postAndGetDataResponse(`${ROOT_URL}/api/shifts/admin-export-shifts`, {
+              dateRange,
+          });
+}
+
+export async function postVolunteerExportShifts(dateRange: {
+    start: Date;
+    end: Date;
+}): Promise<ResponseWithData<IExportData>> {
+    return typeof dateRange === "undefined"
+        ? Promise.reject(new Error("Invalid id"))
+        : await postAndGetDataResponse(`${ROOT_URL}/api/shifts/volunteer-export-shifts`, {
+              dateRange,
           });
 }
 
