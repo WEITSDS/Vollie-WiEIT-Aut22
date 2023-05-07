@@ -37,8 +37,8 @@ export async function sendSignedUpShiftEmail(
     const content =
         `Hey ${userFirstName},\n\n` +
         `You've signed up for the shift '${shiftName}' at ${shiftLocation} from ${shiftStartTime} to ${shiftEndTime}. See you there!`;
-    createNotification(userEmail, content, userFirstName);
     const ccEmails = await getAdminEmails();
+    createNotification(userEmail, content, userFirstName, ccEmails); 
     return await sendEmail(`Your ${SITE_NAME} Shift Details`, content, userEmail, ccEmails);
 }
 export async function sendCancelledShiftEmail(
@@ -50,8 +50,8 @@ export async function sendCancelledShiftEmail(
 ): Promise<void> {
     logger.debug(`Sending shift cancelled email for '${userEmail}' for shift ''${shiftName}`);
     const content = `Hey ${userFirstName},\n\nYour shift '${shiftName}' at ${shiftStartTime} at ${shiftLocation} was cancelled.`;
-    createNotification(userEmail, content, userFirstName);
     const ccEmails = await getAdminEmails();
+    createNotification(userEmail, content, userFirstName, ccEmails);
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail, ccEmails);
 }
 

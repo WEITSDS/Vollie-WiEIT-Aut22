@@ -11,7 +11,7 @@ import { IUser } from "../User/user.interface";
 
 const logger = new Logger({ name: "notification.controller" });
 
-export const createNotification = async (userEmail: string, content: string, userFirstName: string): Promise<void> => {
+export const createNotification = async (userEmail: string, content: string, userFirstName: string, ccEmails: string | string[]): Promise<void> => {
     try {
         const user = await (getUserByEmail(userEmail));
         if(!user) {
@@ -19,13 +19,31 @@ export const createNotification = async (userEmail: string, content: string, use
             return;
         }
 
+        const adminLists = [];
+        for (let i = 0; i < ccEmails.length; i++) {
+            const adminId = await (getUserByEmail(ccEmails[i]));
+            if(!adminId) {
+                logger.debug(`User not found for '${userEmail}'for notification ${userFirstName}`);
+                return;
+            }
+            adminLists.push(adminId);
+        }
+
+
         const notif = new Notification({
             content: content,
             user: user._id,
+            admins: adminLists,
             time: new Date(),
         });
         notif.id = new mongoose.Types.ObjectId();
         await user.update({$push: { notifications: notif._id as string } });
+
+        for (let i = 0; i < adminLists.length; i++) {
+            await adminLists[i].update({$push: { notifications: notif._id as string } });
+            await Promise.all([adminLists[i].save()]);
+        }
+
         await Promise.all([notif.save(), user.save()]);
         logger.debug(`Created notification successfully for ${userFirstName}`);
         return;
