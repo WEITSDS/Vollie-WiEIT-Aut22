@@ -349,7 +349,7 @@ export const setCompleteShift = async (req: Request, res: Response) => {
             return;
         }
 
-        //Cbeck to see if user is admin so they can mark other users as complete
+        //Check to see if user is admin so they can mark other users as complete
         // This should be adjusted to check if the user is a supervising volunteer not admin
         // Will likely have to make DB adjustments for this to identify if user is supervisor
         const isAdmin = userObj?.isAdmin || false;
