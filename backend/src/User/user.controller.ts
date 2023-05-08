@@ -31,6 +31,16 @@ export const getAllUsers = (_req: Request, res: Response, _next: NextFunction) =
         });
 };
 
+export const getAllAdmins = async (): Promise<IUser[] | undefined> => {
+    try {
+        const admins = await User.find({ isAdmin: true });
+        return admins;
+    } catch (err: unknown) {
+        logger.error(err);
+        return undefined;
+    }
+};
+
 /**
  * Get a single user by their Student ID request
  * If a user is found, return the array of students and a response of 200

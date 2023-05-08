@@ -1,7 +1,7 @@
 import * as nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/json-transport";
 import { Logger } from "tslog";
-import { EMAIL_USER, SITE_NAME, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USERNAME } from "../constants";
+import { EMAIL_USER, SITE_NAME, HOST, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USERNAME } from "../constants";
 import { generateOTPForUser } from "../otps/otpManager";
 
 const logger = new Logger({ name: "mailer" });
@@ -47,6 +47,22 @@ export async function sendCancelledShiftEmail(
     logger.debug(`Sending shift cancelled email for '${userEmail}' for shift ''${shiftName}`);
     const content = `Hey ${userFirstName},\n\nYour shift '${shiftName}' at ${shiftStartTime} at ${shiftLocation} was cancelled.`;
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail);
+}
+
+export async function sendQualificationExpiryEmail(
+    userFirstName: string,
+    userLastName: string,
+    userId: string,
+    email: string | string[],
+    qualTitle: string
+): Promise<void> {
+    logger.debug(
+        `Sending qualification expiry email for ${userFirstName} ${userLastName} for expired qualification '${qualTitle}`
+    );
+    const content = `Dear ${SITE_NAME}administrator,\n\nThis email is to let you know that a qualification (${qualTitle}) 
+    of user ${userFirstName} ${userLastName} has expired.\n You can visit their page (${HOST}/profile/${userId}) to revoke 
+    approval for this qualification.\n`;
+    return await sendEmail(`Volunteer qualification expiry notification (${userId})`, content, email);
 }
 
 /** Send an email with the provided parameters.
