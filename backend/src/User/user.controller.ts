@@ -363,8 +363,11 @@ export const setCompleteShift = async (req: Request, res: Response) => {
         // This should be adjusted to check if the user is a supervising volunteer not admin
         // Will likely have to make DB adjustments for this to identify if user is supervisor
         const isAdmin = userObj?.isAdmin || false;
-        const sessionUserId = userObj._id;
-        if (!isAdmin && sessionUserId.toString() !== req.params.userid) {
+        let targettedUserId = userObj._id;
+        if (isAdmin) {
+            targettedUserId = req.params.userid;
+        }
+        if (!isAdmin && targettedUserId.toString() !== req.params.userid) {
             res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
             return;
         }
@@ -373,7 +376,7 @@ export const setCompleteShift = async (req: Request, res: Response) => {
 
         //Add some checking to ensure the time is past that of the shift so it cant be completed before?
         const completeShiftResult = await User.findOneAndUpdate(
-            { _id: sessionUserId, "shifts.shift": req.params.shiftid },
+            { _id: targettedUserId, "shifts.shift": req.params.shiftid },
             { $set: { "shifts.$.completed": completionStatus } }
         );
 

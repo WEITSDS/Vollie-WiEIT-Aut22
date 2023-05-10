@@ -3,6 +3,7 @@ import { MailOptions } from "nodemailer/lib/json-transport";
 import { Logger } from "tslog";
 import { EMAIL_USER, SITE_NAME, HOST, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USERNAME } from "../constants";
 import { generateOTPForUser } from "../otps/otpManager";
+import User from "../User/user.model";
 
 const logger = new Logger({ name: "mailer" });
 
@@ -35,7 +36,8 @@ export async function sendSignedUpShiftEmail(
     const content =
         `Hey ${userFirstName},\n\n` +
         `You've signed up for the shift '${shiftName}' at ${shiftLocation} from ${shiftStartTime} to ${shiftEndTime}. See you there!`;
-    return await sendEmail(`Your ${SITE_NAME} Shift Details`, content, userEmail);
+    const ccEmails = await getAdminEmails();
+    return await sendEmail(`Your ${SITE_NAME} Shift Details`, content, userEmail, ccEmails);
 }
 export async function sendCancelledShiftEmail(
     userFirstName: string,
@@ -46,7 +48,8 @@ export async function sendCancelledShiftEmail(
 ): Promise<void> {
     logger.debug(`Sending shift cancelled email for '${userEmail}' for shift ''${shiftName}`);
     const content = `Hey ${userFirstName},\n\nYour shift '${shiftName}' at ${shiftStartTime} at ${shiftLocation} was cancelled.`;
-    return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail);
+    const ccEmails = await getAdminEmails();
+    return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail, ccEmails);
 }
 
 export async function sendQualificationExpiryEmail(
@@ -101,4 +104,13 @@ async function sendEmail(
     } catch (error: unknown) {
         logger.error(error);
     }
+}
+
+async function getAdminEmails(): Promise<string | string[]> {
+    const adminEmail = await User.find({ isAdmin: true }).exec();
+    const emails = [];
+    for (let i = 0; i < adminEmail.length; i++) {
+        emails.push(adminEmail[i].email);
+    }
+    return emails;
 }
