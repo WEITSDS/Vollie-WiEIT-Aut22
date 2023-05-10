@@ -47,8 +47,6 @@ export interface INotification {
     time: Date;
 }
 
-export async function getMyNotifications(userId: string | undefined): Promise<ResponseWithData<INotification[]>> {
-    return typeof userId === "undefined"
-        ? Promise.reject(new Error("Invalid id"))
-        : await getDataResponse(`${ROOT_URL}/api/notifications/self/${userId}`);
+export async function getMyNotifications(): Promise<ResponseWithData<INotification[]>> {
+    return await getDataResponse(`${ROOT_URL}/api/notifications/my-notifications`);
 }

@@ -1,34 +1,38 @@
 import { Request, Response } from "express";
 import { Logger } from "tslog";
-import  {handleError} from "../utility";
+//import { handleError } from "../utility";
 //import {INotification, isINotification } from "./notifications.interface";
 import Notification from "./notifications.model";
 import User from "../User/user.model";
 //import mongoose, { Types } from "mongoose";
 import mongoose from "mongoose";
 import { getUserByEmail } from "../User/user.controller";
-import { IUser } from "../User/user.interface";
+//import { IUser } from "../User/user.interface";
 
 const logger = new Logger({ name: "notification.controller" });
 
-export const createNotification = async (userEmail: string, content: string, userFirstName: string, ccEmails: string | string[]): Promise<void> => {
+export const createNotification = async (
+    userEmail: string,
+    content: string,
+    userFirstName: string,
+    ccEmails: string | string[]
+): Promise<void> => {
     try {
-        const user = await (getUserByEmail(userEmail));
-        if(!user) {
+        const user = await getUserByEmail(userEmail);
+        if (!user) {
             logger.debug(`User not found for '${userEmail}'for notification ${userFirstName}`);
             return;
         }
 
         const adminLists = [];
         for (let i = 0; i < ccEmails.length; i++) {
-            const adminId = await (getUserByEmail(ccEmails[i]));
-            if(!adminId) {
+            const adminId = await getUserByEmail(ccEmails[i]);
+            if (!adminId) {
                 logger.debug(`User not found for '${userEmail}'for notification ${userFirstName}`);
                 return;
             }
             adminLists.push(adminId);
         }
-
 
         const notif = new Notification({
             content: content,
@@ -37,10 +41,10 @@ export const createNotification = async (userEmail: string, content: string, use
             time: new Date(),
         });
         notif.id = new mongoose.Types.ObjectId();
-        await user.update({$push: { notifications: notif._id as string } });
+        await user.update({ $push: { notifications: notif._id as string } });
 
         for (let i = 0; i < adminLists.length; i++) {
-            await adminLists[i].update({$push: { notifications: notif._id as string } });
+            await adminLists[i].update({ $push: { notifications: notif._id as string } });
             await Promise.all([adminLists[i].save()]);
         }
 
@@ -50,8 +54,9 @@ export const createNotification = async (userEmail: string, content: string, use
     } catch (err) {
         logger.error(err);
     }
-}
+};
 
+/*
 export const getNotifications= async (req: Request, res: Response) => {
     await getNotificationsForUser(getUserByEmail(req.session.user?.email || ""), res);
 };
@@ -76,52 +81,20 @@ const getNotificationsForUser = async (userPromise: Promise<IUser | undefined | 
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occured");
     }
-};
+};*/
 
-export const deleteQualificationById = async (req: Request, res: Response) => {
-    try {
-        const notif = await Notification.findById(req.params.id).populate("notifications");
-        
-        if(!notif) {
-            res.status(404).json({
-                message: "Could not find matching notification",
-                success: false,
-            });
-            return;
-        }
-
-        console.log(notif);
-
-        const pullIDResponse = await User.updateOne(
-            {_id: notif.user.toString() },
-            /// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            { $pull: { notifications: notif.id } }
-        );
-        console.log(pullIDResponse);
-        await notif.remove();
-
-        res.status(200).json({
-            message: "Deleted notification",
-            data: null,
-            success: true,
-        });
-    } catch (err) {
-        handleError(logger, res, err, "Delete notification failed");
-    }
-};
-
-/*export const getUserNotifications = async (req: Request, res: Response) => {
+export const getNotifications = async (req: Request, res: Response) => {
     try {
         console.log(req.params);
-        const targetUserID = req.params.userid;
+        const { _id: userID } = req.session.user || {};
 
-        const userObj = await User.findOne({ _id: targetUserID});
+        const userObj = await User.findOne({ _id: userID });
         if (!userObj) {
             res.status(403).json({ message: "Could not find user object", success: false });
             return;
         }
 
-        const userNotifcations = await Notification.find({ "users.user": targetUserID }).sort({
+        const userNotifcations = await Notification.find({ "users.user": userID }).sort({
             startAt: 1,
         });
 
@@ -140,4 +113,4 @@ export const deleteQualificationById = async (req: Request, res: Response) => {
         });
         return;
     }
-};*/
+};
