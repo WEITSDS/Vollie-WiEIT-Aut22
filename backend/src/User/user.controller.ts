@@ -7,6 +7,7 @@ import * as sessionManager from "../Common/middleware/sessionManagement";
 import { handleError } from "../utility";
 import { isIBasicUser, IUser, IUserVolunteerType, mapUserToUserSummary } from "./user.interface";
 import VolunteerType from "../VolunteerType/volunteerType.model";
+import { sendVolunteerRequestEmail } from "../mailer/mailer";
 import bcrypt from "bcrypt";
 
 const logger = new Logger({ name: "user.controller" });
@@ -29,6 +30,16 @@ export const getAllUsers = (_req: Request, res: Response, _next: NextFunction) =
         .catch((err: unknown) => {
             handleError(logger, res, err, "Get all users failed");
         });
+};
+
+export const getAllAdmins = async (): Promise<IUser[] | undefined> => {
+    try {
+        const admins = await User.find({ isAdmin: true });
+        return admins;
+    } catch (err: unknown) {
+        logger.error(err);
+        return undefined;
+    }
 };
 
 /**
@@ -452,7 +463,7 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
         }
 
         const targetVolType = await VolunteerType.findById(req.params.volunteertypeid);
-        const completeShiftResult = await User.findOneAndUpdate(
+        const assignVolTypeResult = await User.findOneAndUpdate(
             { _id: sessionUserId },
             {
                 $addToSet: {
@@ -461,11 +472,23 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
             }
         );
 
-        if (completeShiftResult) {
+        if (assignVolTypeResult && targetVolType) {
             res.status(200).json({
                 message: "User assigned to volunteer type",
                 success: true,
             });
+            const admins = await getAllAdmins();
+            const adminEmails: Array<string> = [""];
+            for (let i = 0; admins && i < admins.length; i++) {
+                adminEmails[i] = admins[i].email;
+            }
+            void sendVolunteerRequestEmail(
+                adminEmails,
+                sessionUserId,
+                userObj.firstName,
+                userObj.lastName,
+                targetVolType.name
+            );
             return;
         } else {
             res.status(404).json({

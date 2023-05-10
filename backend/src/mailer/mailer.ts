@@ -1,7 +1,7 @@
 import * as nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/json-transport";
 import { Logger } from "tslog";
-import { EMAIL_USER, SITE_NAME, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USERNAME } from "../constants";
+import { EMAIL_USER, SITE_NAME, HOST, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USERNAME } from "../constants";
 import { generateOTPForUser } from "../otps/otpManager";
 
 const logger = new Logger({ name: "mailer" });
@@ -48,6 +48,20 @@ export async function sendCancelledShiftEmail(
     const content = `Hey ${userFirstName},\n\nYour shift '${shiftName}' at ${shiftStartTime} at ${shiftLocation} was cancelled.`;
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail);
 }
+export async function sendVolunteerRequestEmail(
+    email: string | string[],
+    userID: string,
+    userFirstName: string,
+    userLastName: string,
+    volunteerType: string
+): Promise<void> {
+    logger.debug(`
+        Sending volunteer type approval email to admin email '${email.toString()}' for user ${userFirstName} ${userLastName}
+    `);
+    const content = `Dear ${SITE_NAME} administrator,\n\n${userFirstName} ${userLastName} is requesting approval for volunteer type "${volunteerType}".\n
+    If you approve of this change, head to their page (${HOST}/profile/${userID}) and click "Approve".`;
+    return await sendEmail(`${SITE_NAME}: User requesting volunteer type approval`, content, email);
+}
 
 /** Send an email with the provided parameters.
  * @param subject The subject / title of the email
@@ -81,6 +95,10 @@ async function sendEmail(
         // TODO: Re-enable error logging!
         if (sentMessageInfo.rejected) {
             // logger.error(`Email to '${toEmails}' was rejected...`);
+            // logger.error(`response: ` + sentMessageInfo.response);
+            // logger.error(`accepted: ` + sentMessageInfo.accepted.toString());
+            // logger.error(`rejected: ` + sentMessageInfo.rejected.toString());
+            // logger.error(sentMessageInfo.pending);
         }
     } catch (error: unknown) {
         logger.error(error);
