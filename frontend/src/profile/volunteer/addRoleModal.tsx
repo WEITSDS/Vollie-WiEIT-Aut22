@@ -16,10 +16,6 @@ export const AddRoleModal = (props: AddRoleProps) => {
     const id = props.userId;
     const { data: volTypesData } = useAllVolTypes();
     const volTypesSelection = volTypesData?.data;
-    // ? volTypesData.data.map((vol) => {
-    //       return { value: vol._id, label: vol.name };
-    //   })
-    // : [];
     const [selectedVolType, setSelectedVolType] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState("");
     const [updating, setUpdating] = useState(false);

@@ -75,21 +75,10 @@ export const ProfilePage = () => {
     const onDeleteRoleClose = async (shouldDelete: boolean) => {
         try {
             setshowDeleteModal(false);
-            console.log(
-                // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-                "id: " +
-                    user?._id +
-                    " selectedVolType: " +
-                    selectedVolType?.name +
-                    " shouldDelete: " +
-                    shouldDelete.toString()
-            );
-
             if (user?._id && selectedVolType && shouldDelete) {
                 await removeVolunteerType(user?._id, selectedVolType?._id);
                 console.log("Trying to delete");
             }
-
             await refetchVolTypeUser();
         } catch (error) {
             console.log(error);
@@ -172,7 +161,7 @@ export const ProfilePage = () => {
                                                             onClick={() => handleDeleteRole(volType)}
                                                             title={`Delete`}
                                                             variant="danger"
-                                                            disabled={isAdmin}
+                                                            disabled={!editingSelf && !isAdmin}
                                                         >
                                                             <i className="bi bi-trash" />
                                                         </Button>
@@ -200,7 +189,7 @@ export const ProfilePage = () => {
                                 title="Add Volunteer Type"
                                 variant="success"
                                 onClick={() => handleAddRole()}
-                                disabled={isAdmin}
+                                disabled={!editingSelf && !isAdmin}
                             >
                                 Add Volunteer Type {"   "}
                                 <i className="bi bi-plus-square" />

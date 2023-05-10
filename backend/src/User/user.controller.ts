@@ -457,9 +457,9 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
         }
 
         const sessionUserId = userObj._id;
-        if (sessionUserId.toString() !== req.params.userid) {
+        if ((sessionUserId !== req.params.userid) && !userObj.isAdmin) {
             res.status(401).json({
-                message: "Unauthorised, you can only assign volunteer types to yourself",
+                message: "Unauthorised, you can only assign volunteer types to yourself unless you are an admin",
                 success: false,
             });
             return;
@@ -467,7 +467,7 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
 
         const targetVolType = await VolunteerType.findById(req.params.volunteertypeid);
         const assignVolTypeResult = await User.findOneAndUpdate(
-            { _id: sessionUserId },
+            { _id: req.params.userid },
             {
                 $addToSet: {
                     volunteerTypes: { type: req.params.volunteertypeid, approved: !targetVolType?.requiresApproval },
@@ -514,16 +514,16 @@ export const removeVolunteerType = async (req: Request, res: Response) => {
         }
 
         const sessionUserId = userObj._id;
-        if (sessionUserId.toString() !== req.params.userid) {
+        if ((sessionUserId !== req.params.userid) && !userObj.isAdmin) {
             res.status(401).json({
-                message: "Unauthorised, you can only remove volunteer types from yourself",
+                message: "Unauthorised, you can only remove volunteer types from yourself unless you are an admin",
                 success: false,
             });
             return;
         }
 
         const removeVolTypeResult = await User.updateOne(
-            { _id: sessionUserId },
+            { _id: req.params.userid },
             {
                 $pull: {
                     volunteerTypes: { type: req.params.volunteertypeid },
