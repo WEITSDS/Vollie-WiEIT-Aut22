@@ -39,7 +39,6 @@ function App(): JSX.Element {
                     <Route path="/login" element={<LoginPage />}></Route>
                     <Route path="/forgotpassword" element={<ResetPaswordForm redirectTo="/home" />}></Route>
                     <Route path="/register" element={<RegisterPage />}></Route>
-                    <Route path="/notifications" element={<ProtectedRoute outlet={<NotificationPage />} />}></Route>
                     <></>
                     <Route
                         path="/search"
@@ -63,6 +62,7 @@ function App(): JSX.Element {
                         path="/myshifts"
                         element={<ProtectedRoute outlet={<ShiftPage shiftType={"myShifts"} />} />}
                     ></Route>
+                    <Route path="/notifications" element={<ProtectedRoute outlet={<NotificationPage />} />}></Route>
 
                     <Route path="/shift/:shiftId" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
 

@@ -1,13 +1,9 @@
 import { Request, Response } from "express";
 import { Logger } from "tslog";
-//import { handleError } from "../utility";
-//import {INotification, isINotification } from "./notifications.interface";
 import Notification from "./notifications.model";
 import User from "../User/user.model";
-//import mongoose, { Types } from "mongoose";
 import mongoose from "mongoose";
 import { getUserByEmail } from "../User/user.controller";
-//import { IUser } from "../User/user.interface";
 
 const logger = new Logger({ name: "notification.controller" });
 
@@ -56,36 +52,8 @@ export const createNotification = async (
     }
 };
 
-/*
-export const getNotifications= async (req: Request, res: Response) => {
-    await getNotificationsForUser(getUserByEmail(req.session.user?.email || ""), res);
-};
-
-const getNotificationsForUser = async (userPromise: Promise<IUser | undefined | null>, res: Response) => {
-    try {
-        const currentUser = await userPromise;
-        if (!currentUser) {
-            res.status(404).json({message: "Could not find user", success: false});
-            return;
-        }
-        // find all the notifications and populate the notification type nested doc instead of sending back an id
-        const notifications= await Notification.find({ _id: { $in: currentUser.notifications } }).populate(
-            "qualificationType"
-        );
-
-        res.status(200).json({
-            message: "Got notifications for current user successfully",
-            data: notifications,
-            success: true,
-        });
-    } catch (err) {
-        handleError(logger, res, err, "An unexpected error occured");
-    }
-};*/
-
 export const getNotifications = async (req: Request, res: Response) => {
     try {
-        console.log(req.params);
         const { _id: userID } = req.session.user || {};
 
         const userObj = await User.findOne({ _id: userID });
@@ -94,8 +62,8 @@ export const getNotifications = async (req: Request, res: Response) => {
             return;
         }
 
-        const userNotifcations = await Notification.find({ "users.user": userID }).sort({
-            startAt: 1,
+        const userNotifcations = await Notification.find({ "user": userID }).sort({
+            $natural: -1,
         });
 
         res.status(200).json({

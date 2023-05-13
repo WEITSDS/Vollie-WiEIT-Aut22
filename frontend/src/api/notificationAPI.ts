@@ -42,6 +42,7 @@ async function deleteBasicResponse(url: string): Promise<ResponseWithStatus> {
 }*/
 
 export interface INotification {
+    _id: string;
     content: string;
     user: string;
     time: Date;
