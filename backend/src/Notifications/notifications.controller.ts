@@ -11,7 +11,8 @@ export const createNotification = async (
     userEmail: string,
     content: string,
     userFirstName: string,
-    ccEmails: string | string[]
+    ccEmails: string | string[],
+    type: string
 ): Promise<void> => {
     try {
         const user = await getUserByEmail(userEmail);
@@ -30,11 +31,16 @@ export const createNotification = async (
             adminLists.push(adminId);
         }
 
+        const date = new Date();
+
+
         const notif = new Notification({
             content: content,
             user: user._id,
             admins: adminLists,
-            time: new Date(),
+            userFirstName: userFirstName,
+            type: type,
+            time: date.toLocaleString(),
         });
         notif.id = new mongoose.Types.ObjectId();
         await user.update({ $push: { notifications: notif._id as string } });

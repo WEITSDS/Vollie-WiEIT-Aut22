@@ -1,22 +1,5 @@
-//import { useParams } from "react-router-dom";
 import "./notificationpage.css";
 import { useMyNotifications } from "../hooks/useMyNotifications";
-/*import { useOwnUser } from "../hooks/useOwnUser";
-import { useUserById } from "../hooks/useUserById";
-import { NavigationBar } from "../components/navbar";
-import { WEITBackground } from "../components/background";
-import ModalBody from "react-bootstrap/ModalBody";
-import { useOwnUser } from "../hooks/useOwnUser";
-import { useMyShifts } from "../hooks/useMyShifts";
-import Modal from "react-bootstrap/Modal";
-import { useState, useEffect } from "react";
-import LoadingSpinner from "../components/loadingSpinner";
-import { ResponseWithStatus } from "../api/utility";
-import { useMyNotifications } from "../hooks/useMyNotifications";
-import { useUserById } from "../hooks/useUserById";
-import { useParams } from "react-router-dom";
-*/
-//import { useState } from "react";
 import { NavigationBar } from "../components/navbar";
 import { Table } from "react-bootstrap";
 
@@ -32,6 +15,7 @@ export const NotificationPage = () => {
                         <tr>
                             <th>#</th>
                             <th>User</th>
+                            <th>Type</th>
                             <th>Content</th>
                             <th>Time</th>
                         </tr>
@@ -43,7 +27,8 @@ export const NotificationPage = () => {
                                 return (
                                     <tr key={notif._id}>
                                         <td>{index + 1}</td>
-                                        <td>{notif.user}</td>
+                                        <td>{notif.userFirstName}</td>
+                                        <td>{notif.type}</td>
                                         <td>{notif.content}</td>
                                         <td>{notif.time}</td>
                                     </tr>
