@@ -21,10 +21,7 @@ import { NavigationBar } from "../components/navbar";
 import { Table } from "react-bootstrap";
 
 export const NotificationPage = () => {
-    const {
-        data: userNotificationsData,
-        isLoading: isLoadingNotifications,
-    } = useMyNotifications();
+    const { data: userNotificationsData, isLoading: isLoadingNotifications } = useMyNotifications();
 
     return (
         <>
@@ -50,11 +47,11 @@ export const NotificationPage = () => {
                                         <td>{notif.content}</td>
                                         <td>{notif.time}</td>
                                     </tr>
-                                );                                   
+                                );
                             })}
                     </tbody>
                 </Table>
             </div>
         </>
-    )
+    );
 };
