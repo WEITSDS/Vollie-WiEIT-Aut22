@@ -1,4 +1,3 @@
-//import { useParams } from "react-router-dom";
 import "./notificationpage.css";
 import { useMyNotifications } from "../hooks/useMyNotifications";
 import { NavigationBar } from "../components/navbar";
