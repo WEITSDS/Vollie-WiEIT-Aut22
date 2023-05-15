@@ -1,0 +1,100 @@
+import { Request, Response } from "express";
+import { Logger } from "tslog";
+import Notification from "./notifications.model";
+import User from "../User/user.model";
+import mongoose from "mongoose";
+import { getUserByEmail } from "../User/user.controller";
+
+const logger = new Logger({ name: "notification.controller" });
+
+export const createNotification = async (
+    userEmail: string,
+    content: string,
+    userFirstName: string,
+    ccEmails: string | string[],
+    type: string
+): Promise<void> => {
+    try {
+        const user = await getUserByEmail(userEmail);
+        if (!user) {
+            logger.debug(`User not found for '${userEmail}'for notification ${userFirstName}`);
+            return;
+        }
+
+        const adminLists = [];
+        for (let i = 0; i < ccEmails.length; i++) {
+            const adminId = await getUserByEmail(ccEmails[i]);
+            if (!adminId) {
+                logger.debug(`User not found for '${userEmail}'for notification ${userFirstName}`);
+                return;
+            }
+            adminLists.push(adminId);
+        }
+
+        const date = new Date();
+
+        const notif = new Notification({
+            content: content,
+            user: user._id,
+            admins: adminLists,
+            userFirstName: userFirstName,
+            type: type,
+            time: date.toLocaleString(),
+        });
+        notif.id = new mongoose.Types.ObjectId();
+        await user.update({ $push: { notifications: notif._id as string } });
+
+        for (let i = 0; i < adminLists.length; i++) {
+            await adminLists[i].update({ $push: { notifications: notif._id as string } });
+            await Promise.all([adminLists[i].save()]);
+        }
+
+        await Promise.all([notif.save(), user.save()]);
+        logger.debug(`Created notification successfully for ${userFirstName}`);
+        return;
+    } catch (err) {
+        logger.error(err);
+    }
+};
+
+export const getNotifications = async (req: Request, res: Response) => {
+    try {
+        const { _id: userID } = req.session.user || {};
+
+        const userObj = await User.findOne({ _id: userID });
+        if (!userObj) {
+            res.status(403).json({ message: "Could not find user object", success: false });
+            return;
+        }
+
+        if (userObj.isAdmin) {
+            const userNotifcations = await Notification.find({ }).sort({
+                $natural: -1,
+            });
+            res.status(200).json({
+                message: "success",
+                data: userNotifcations,
+                success: true,
+            }); 
+        }
+        if (!userObj.isAdmin) {
+            const userNotifcations = await Notification.find({ "user": userID }).sort({
+                $natural: -1,
+            });
+            res.status(200).json({
+                message: "success",
+                data: userNotifcations,
+                success: true,
+            });
+        }
+        return;
+    } catch (error) {
+        console.log("Get user notifications error", error);
+        res.status(500).json({
+            message: "Get user notifications error",
+            error,
+            success: false,
+        });
+        return;
+    }
+};

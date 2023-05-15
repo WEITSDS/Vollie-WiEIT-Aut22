@@ -27,6 +27,7 @@ import AdminViewAllUsers from "./admin/adminViewAllUsers";
 
 import "./profile/data.json";
 import { ShiftPage } from "./shiftpage/shiftpage";
+import { NotificationPage } from "./notificationpage/notificationpage";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ function App(): JSX.Element {
                         path="/myshifts"
                         element={<ProtectedRoute outlet={<ShiftPage shiftType={"myShifts"} />} />}
                     ></Route>
+                    <Route path="/notifications" element={<ProtectedRoute outlet={<NotificationPage />} />}></Route>
 
                     <Route path="/shift/:shiftId" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
 
