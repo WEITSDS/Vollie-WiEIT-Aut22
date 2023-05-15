@@ -39,7 +39,6 @@ function App(): JSX.Element {
                     <Route path="/login" element={<LoginPage />}></Route>
                     <Route path="/forgotpassword" element={<ResetPaswordForm redirectTo="/home" />}></Route>
                     <Route path="/register" element={<RegisterPage />}></Route>
-                    <></>
                     <Route
                         path="/search"
                         element={<ProtectedRoute needsAdmin={true} outlet={<AdminViewAllUsers />} />}
