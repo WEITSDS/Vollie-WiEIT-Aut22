@@ -33,7 +33,6 @@ export const createNotification = async (
 
         const date = new Date();
 
-
         const notif = new Notification({
             content: content,
             user: user._id,
@@ -68,15 +67,26 @@ export const getNotifications = async (req: Request, res: Response) => {
             return;
         }
 
-        const userNotifcations = await Notification.find({ "user": userID }).sort({
-            $natural: -1,
-        });
-
-        res.status(200).json({
-            message: "success",
-            data: userNotifcations,
-            success: true,
-        });
+        if (userObj.isAdmin) {
+            const userNotifcations = await Notification.find({ }).sort({
+                $natural: -1,
+            });
+            res.status(200).json({
+                message: "success",
+                data: userNotifcations,
+                success: true,
+            }); 
+        }
+        if (!userObj.isAdmin) {
+            const userNotifcations = await Notification.find({ "user": userID }).sort({
+                $natural: -1,
+            });
+            res.status(200).json({
+                message: "success",
+                data: userNotifcations,
+                success: true,
+            });
+        }
         return;
     } catch (error) {
         console.log("Get user notifications error", error);

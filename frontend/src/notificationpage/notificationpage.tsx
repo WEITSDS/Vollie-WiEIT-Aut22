@@ -13,24 +13,22 @@ export const NotificationPage = () => {
                 <Table striped bordered hover>
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>Time</th>
                             <th>User</th>
                             <th>Type</th>
                             <th>Content</th>
-                            <th>Time</th>
                         </tr>
                     </thead>
                     <tbody>
                         {!isLoadingNotifications &&
                             userNotificationsData?.data &&
-                            userNotificationsData.data.map((notif, index) => {
+                            userNotificationsData.data.map((notif) => {
                                 return (
                                     <tr key={notif._id}>
-                                        <td>{index + 1}</td>
+                                        <td>{notif.time}</td>
                                         <td>{notif.userFirstName}</td>
                                         <td>{notif.type}</td>
                                         <td>{notif.content}</td>
-                                        <td>{notif.time}</td>
                                     </tr>
                                 );
                             })}
