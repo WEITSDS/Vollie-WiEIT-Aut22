@@ -457,7 +457,7 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
         }
 
         const sessionUserId = userObj._id;
-        if ((sessionUserId !== req.params.userid) && !userObj.isAdmin) {
+        if (sessionUserId != req.params.userid && !userObj.isAdmin) {
             res.status(401).json({
                 message: "Unauthorised, you can only assign volunteer types to yourself unless you are an admin",
                 success: false,
@@ -514,7 +514,9 @@ export const removeVolunteerType = async (req: Request, res: Response) => {
         }
 
         const sessionUserId = userObj._id;
-        if ((sessionUserId !== req.params.userid) && !userObj.isAdmin) {
+        console.log("session id:" + sessionUserId);
+        console.log("params id:" + req.params.userid);
+        if (sessionUserId != req.params.userid && !userObj.isAdmin) {
             res.status(401).json({
                 message: "Unauthorised, you can only remove volunteer types from yourself unless you are an admin",
                 success: false,
