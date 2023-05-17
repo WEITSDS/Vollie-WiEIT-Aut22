@@ -31,9 +31,9 @@ export const getAllUsers = (_req: Request, res: Response, _next: NextFunction) =
         });
 };
 
-export const getAllAdmins = async (): Promise<IUser[] | undefined> => {
+export const getAllAdmins = () => {
     try {
-        const admins = await User.find({ isAdmin: true });
+        const admins = User.find({ isAdmin: true });
         return admins;
     } catch (err: unknown) {
         logger.error(err);

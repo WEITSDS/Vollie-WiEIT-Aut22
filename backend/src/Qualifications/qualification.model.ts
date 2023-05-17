@@ -10,7 +10,8 @@ const QualificationSchema: Schema = new Schema(
         fileId: { type: String, required: true },
         user: { type: mongoose.Types.ObjectId, ref: "User" },
         qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType" },
-        expiryDate: {type: String, required: true },
+        expiryDate: { type: String, required: true },
+        expiredAndNotified: { type: Boolean, default: false },
         approved: { type: Boolean, default: false },
     },
     {

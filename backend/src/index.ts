@@ -16,6 +16,7 @@ import * as sessionManager from "./Common/middleware/sessionManagement";
 import { config } from "./constants";
 import { Logger } from "tslog";
 import { handleLogin, isSignedIn } from "./User/user.controller";
+import { handleQualificationExpiry } from "./Qualifications/qualifications.controller";
 import { wrapAsync } from "./utility";
 
 const logger = new Logger({ name: "index" });
@@ -45,6 +46,8 @@ app.use(cors({ origin: `${PROTOCOL}://${HOST}:${PORT}` }));
 app.use(express.json({ limit: "10mb" }) as RequestHandler);
 
 sessionManager.useSessionManagement(app);
+
+handleQualificationExpiry();
 
 app.use("/api/otp", otpRouter);
 

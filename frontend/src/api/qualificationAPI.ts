@@ -17,6 +17,7 @@ export interface Qualification {
     user: string;
     qualificationType: IQualificationType;
     expiryDate: string;
+    expiredAndNotified: boolean;
     approved: boolean;
 }
 

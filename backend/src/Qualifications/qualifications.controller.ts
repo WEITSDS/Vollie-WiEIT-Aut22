@@ -16,6 +16,16 @@ import { sendQualificationExpiryEmail } from "../mailer/mailer";
 cloudinary.config(CLOUDINARY_CONFIG);
 const logger = new Logger({ name: "qualifications.controller" });
 
+export const getValidQualifications = () => {
+    try {
+        const qualifications = Qualification.find({ expiredAndNotified: false });
+        return qualifications;
+    } catch (err: unknown) {
+        logger.error(err);
+        return undefined;
+    }
+};
+
 export const createQualification = async (req: Request, res: Response) => {
     const newQualification = req.body as IBasicQualification;
     if (!isIBasicQualification(newQualification)) {
@@ -60,16 +70,16 @@ export const createQualification = async (req: Request, res: Response) => {
         await Promise.all([qual.save(), user.save()]);
 
         res.status(200).json({ message: "Created qualification successfully", success: true });
-        const adminEmails: string[] = [""];
-        const admins: IUser[] | undefined = await getAllAdmins();
-        for (let i = 0; admins && i < admins.length; i++) {
-            adminEmails[i] = admins[i].email;
-        }
+        // const adminEmails: string[] = [""];
+        // const admins: IUser[] | undefined = await getAllAdmins();
+        // for (let i = 0; admins && i < admins.length; i++) {
+        //     adminEmails[i] = admins[i].email;
+        // }
         // const now = new Date(Date.now() + 5000);
-        schedule.scheduleJob(`${qual.id}-expiry-email`, Date.parse(qual.expiryDate), function () {
-            void sendQualificationExpiryEmail(user.firstName, user.lastName, user._id, adminEmails, qual.title);
-            return;
-        });
+        // schedule.scheduleJob(`${qual.id}-expiry-email`, Date.parse(qual.expiryDate), function () {
+        //     //void sendQualificationExpiryEmail(user.firstName, user.lastName, user._id, adminEmails, qual.title);
+        //     return;
+        // });
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occured while creating qualification.");
         return;
@@ -169,8 +179,6 @@ export const deleteQualificationById = async (req: Request, res: Response) => {
             data: null,
             success: true,
         });
-        const expiryEmailJob = schedule.scheduledJobs[`${qual.id}-expiry-email`];
-        expiryEmailJob.cancel();
     } catch (err) {
         handleError(logger, res, err, "Delete qualification failed");
     }
@@ -218,4 +226,40 @@ export const setApprovalQualificationForUser = async (req: Request, res: Respons
     } catch (err) {
         handleError(logger, res, err, "Update qualification failed");
     }
+};
+
+export const handleQualificationExpiry = async() => {
+    const qualifications: IBasicQualification[] | undefined = await getValidQualifications();
+    qualifications && console.log(qualifications);
+    const adminEmails: string[] = [""];
+    const admins: IUser[] | undefined = await getAllAdmins();
+    for (let i = 0; admins && i < admins.length; i++) {
+        adminEmails[i] = admins[i].email;
+    }
+    logger.info("handling expiry..");
+    schedule.scheduleJob("0 1 * * *", async () => { // check for qualification expiry every day at 1AM
+        if (qualifications) {
+            console.log("qualifications true");
+            for (const qual of qualifications) {
+                const today = new Date().toISOString().slice(0, 10);
+                const user = await User.findById(qual.user);
+                if (user && Date.parse(qual.expiryDate) <= Date.parse(today) && !qual.expiredAndNotified) {
+                    void sendQualificationExpiryEmail(
+                        user.firstName,
+                        user.lastName,
+                        user._id,
+                        adminEmails,
+                        qual.title
+                    );
+                    const qualUpdate = await Qualification.updateOne({ _id: qual }, { expiredAndNotified: true });
+                    if (qualUpdate.modifiedCount > 0) {
+                        console.log("Updated expiredAndNotified");
+                    } else {
+                        console.log("Failed to update expiredAndNotified");
+                    }
+                }
+            }
+        }
+    })
+    
 };
