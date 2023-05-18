@@ -93,8 +93,9 @@ export async function sendVolunteerApprovalEmail(
     `);
     const content = `Hey ${userFirstName},\n\nYour request for volunteer type '${volunteerType}' was approved. Congratulations!`;
     const type = "Volunteer Type Request Approved";
-    await createNotification(userEmail, content, userFirstName, "", type);
-    return await sendEmail(`Your ${SITE_NAME} Volunteer Type Request was Approved`, content, userEmail);
+    const ccEmails = await getAdminEmails();
+    await createNotification(userEmail, content, userFirstName, ccEmails, type);
+    return await sendEmail(`Your ${SITE_NAME} Volunteer Type Request was Approved`, content, userEmail, ccEmails);
 }
 
 /** Send an email with the provided parameters.
