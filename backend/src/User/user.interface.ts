@@ -17,6 +17,7 @@ export interface IUser extends Document, IBasicUser {
     createdAt: Date;
     shifts: Array<IUserShiftType>; // shift IDs
     volunteerTypes: IUserVolunteerType[];
+    notifications: Array<Types.ObjectId>; // notification IDs
 }
 
 export interface IUserShiftType {
