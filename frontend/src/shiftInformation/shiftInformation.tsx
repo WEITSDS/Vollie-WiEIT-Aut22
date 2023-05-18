@@ -1,6 +1,6 @@
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { SetStateAction, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Toast, ToastContainer } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { NavigationBar } from "../components/navbar";
 import { useOwnUser } from "../hooks/useOwnUser";
@@ -39,6 +39,8 @@ const ShiftInformation = () => {
     const navigate = useNavigate();
     const [userType, setUserType] = useState("");
     const [show, setShow] = useState<boolean>(false);
+    const [showError, setShowError] = useState<boolean>(false);
+    const toggleShow = () => setShowError(false);
 
     if (isLoading || userQuery.isLoading) return <p>Loading...</p>;
     if (isError || userQuery.isError) return <p>Error loading data...{error || userQuery.error}</p>;
@@ -149,11 +151,14 @@ const ShiftInformation = () => {
         // Handle applying to shift
         try {
             if (typeof shiftId === "string" && userObj?._id) {
-                await assignUserToShift({
+                const result = await assignUserToShift({
                     shiftid: shiftId,
                     userid: userObj?._id,
                     selectedVolType: userType,
                 });
+                if (result.success == false) {
+                    setShowError(true);
+                }
                 await refetch();
                 await userQuery.refetch();
                 setShow(false);
@@ -471,6 +476,15 @@ const ShiftInformation = () => {
                     )}
                 </>
             )}
+            <ToastContainer position="top-center" style={{ zIndex: 9999 }}>
+                <Toast bg="danger" onClose={toggleShow} show={showError}>
+                    <Toast.Header>
+                        <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
+                        <strong className="me-auto">Error</strong>
+                    </Toast.Header>
+                    <Toast.Body>Unable to assign user to shift</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </div>
     );
 };
