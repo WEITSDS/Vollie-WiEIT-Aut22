@@ -56,6 +56,16 @@ export async function sendCancelledShiftEmail(
     await createNotification(userEmail, content, userFirstName, ccEmails, type);
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail, ccEmails);
 }
+export async function sendUpdateShiftEmail(userFirstName: string, userEmail: string, shiftName: string, shiftLocation: string, shiftStartTime: Date, shiftEndTime: Date): Promise<void> {
+    logger.debug(`Sending shift update email email for '${userEmail}' for shift ''${shiftName}`);
+    const content =
+        `Hey ${userFirstName},\n\n` +
+        `Your shift has been updated '${shiftName}' at ${shiftLocation} from ${shiftStartTime} to ${shiftEndTime}. See you there!`;
+    const ccEmails = await getAdminEmails();
+    const type = "Updated Shift";
+    await createNotification(userEmail, content, userFirstName, ccEmails, type);
+    return await sendEmail(`Your ${SITE_NAME} Shift Has Been Updated`, content, userEmail, ccEmails);
+}
 
 /** Send an email with the provided parameters.
  * @param subject The subject / title of the email

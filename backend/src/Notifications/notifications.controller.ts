@@ -68,7 +68,6 @@ export const getNotifications = async (req: Request, res: Response) => {
         }
 
         const respNotifications = [];
-        //
         for (let idx = 0; idx < userObj.notifications.length; idx++) {
             const notificationID = userObj.notifications[idx];
             respNotifications.unshift(await Notification.findOne({ _id: notificationID }));
