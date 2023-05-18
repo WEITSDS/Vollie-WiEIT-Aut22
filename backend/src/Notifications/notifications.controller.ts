@@ -67,27 +67,17 @@ export const getNotifications = async (req: Request, res: Response) => {
             return;
         }
 
-        if (userObj.isAdmin) {
-            const userNotifcations = await Notification.find({ }).sort({
-                $natural: -1,
-            });
-            res.status(200).json({
-                message: "success",
-                data: userNotifcations,
-                success: true,
-            }); 
+        const respNotifications = [];
+        for (let idx = 0; idx < userObj.notifications.length; idx++) {
+            const notificationID = userObj.notifications[idx];
+            respNotifications.unshift(await Notification.findOne({ _id: notificationID }));
         }
-        if (!userObj.isAdmin) {
-            const userNotifcations = await Notification.find({ "user": userID }).sort({
-                $natural: -1,
-            });
-            res.status(200).json({
-                message: "success",
-                data: userNotifcations,
-                success: true,
-            });
-        }
-        return;
+
+        res.status(200).json({
+            message: "success",
+            data: respNotifications,
+            success: true,
+        });
     } catch (error) {
         console.log("Get user notifications error", error);
         res.status(500).json({

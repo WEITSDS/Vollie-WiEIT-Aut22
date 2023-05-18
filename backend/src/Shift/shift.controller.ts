@@ -17,7 +17,7 @@ import Qualifications from "../Qualifications/qualification.model";
 // import { IQualificationType } from "../QualificationType/qualificationType.interface";
 // import { ObjectId } from "mongodb";
 import VolunteerType from "../VolunteerType/volunteerType.model";
-import { sendSignedUpShiftEmail, sendCancelledShiftEmail } from "../mailer/mailer";
+import { sendSignedUpShiftEmail, sendCancelledShiftEmail, sendUpdateShiftEmail } from "../mailer/mailer";
 const logger = new Logger({ name: "shift.controller" });
 
 // const getAttributeFromVolunteerType = (userRole: string | undefined): keyof IShift => {
@@ -100,10 +100,23 @@ export const updateShift = async (req: Request, res: Response) => {
         return;
     }
 
+
     const shiftFields = req.body as IShift;
 
     try {
         const updatedShift = await Shift.findOneAndUpdate({ _id: shiftId }, shiftFields);
+        const shiftObj = await Shift.findOne({ _id: shiftId });
+
+        if (!shiftObj) {
+            res.status(403).json({ message: "Could not find shift object", success: false });
+            return;
+        }
+
+        for (let idx = 0; idx < shiftObj.users.length; idx++) {
+            const participant = shiftObj.users[idx];
+            const targetUser = await User.findOne({ _id: participant.user });
+            sendUpdateShiftEmail(targetUser?.firstName || "", targetUser?.email || "", shiftObj.name, shiftObj.address, shiftObj.startAt, shiftObj.endAt);
+        }
 
         res.status(200).json({
             message: "Shift updated",
