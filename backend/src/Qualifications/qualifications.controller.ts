@@ -228,38 +228,37 @@ export const setApprovalQualificationForUser = async (req: Request, res: Respons
     }
 };
 
-export const handleQualificationExpiry = async() => {
-    const qualifications: IBasicQualification[] | undefined = await getValidQualifications();
-    qualifications && console.log(qualifications);
-    const adminEmails: string[] = [""];
-    const admins: IUser[] | undefined = await getAllAdmins();
-    for (let i = 0; admins && i < admins.length; i++) {
-        adminEmails[i] = admins[i].email;
-    }
-    logger.info("handling expiry..");
-    schedule.scheduleJob("0 1 * * *", async () => { // check for qualification expiry every day at 1AM
-        if (qualifications) {
-            console.log("qualifications true");
-            for (const qual of qualifications) {
-                const today = new Date().toISOString().slice(0, 10);
-                const user = await User.findById(qual.user);
-                if (user && Date.parse(qual.expiryDate) <= Date.parse(today) && !qual.expiredAndNotified) {
-                    void sendQualificationExpiryEmail(
-                        user.firstName,
-                        user.lastName,
-                        user._id,
-                        adminEmails,
-                        qual.title
-                    );
-                    const qualUpdate = await Qualification.updateOne({ _id: qual }, { expiredAndNotified: true });
-                    if (qualUpdate.modifiedCount > 0) {
-                        console.log("Updated expiredAndNotified");
-                    } else {
-                        console.log("Failed to update expiredAndNotified");
+export const handleQualificationExpiry = () => {
+    schedule.scheduleJob("0 1 * * *", async () => {
+        // check for qualification expiry every day at 1AM
+        const adminEmails: string[] = [""];
+        const admins: IUser[] | undefined = await getAllAdmins();
+        if (admins) {
+            for (let i = 0; i < admins.length; i++) {
+                adminEmails[i] = admins[i].email;
+            }
+            const qualifications: IBasicQualification[] | undefined = await getValidQualifications();
+            if (qualifications) {
+                for (const qual of qualifications) {
+                    const today = new Date().toISOString().slice(0, 10);
+                    const user = await User.findById(qual.user);
+                    if (user && Date.parse(qual.expiryDate) <= Date.parse(today)) {
+                        void sendQualificationExpiryEmail(
+                            user.firstName,
+                            user.lastName,
+                            user._id,
+                            adminEmails,
+                            qual.title
+                        );
+                        const qualUpdate = await Qualification.updateOne({ _id: qual }, { expiredAndNotified: true });
+                        if (qualUpdate.modifiedCount > 0) {
+                            logger.debug("Updated expiredAndNotified");
+                        } else {
+                            logger.error("Failed to update expiredAndNotified");
+                        }
                     }
                 }
             }
         }
-    })
-    
+    });
 };

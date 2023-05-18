@@ -65,13 +65,23 @@ export async function sendQualificationExpiryEmail(
     qualTitle: string
 ): Promise<void> {
     logger.debug(
-        `Sending qualification expiry email for ${userFirstName} ${userLastName} for expired qualification '${qualTitle}`
+        `Sending qualification expiry email for ${userFirstName} ${userLastName} for expired qualification '${qualTitle}'`
     );
     const content = `Dear ${SITE_NAME} administrator,\n\nThis email is to let you know that a qualification (${qualTitle}) 
     of user ${userFirstName} ${userLastName} expires today.\n You can visit their page (${HOST}/profile/${userId}) to revoke 
     approval for this qualification.\n`;
-    //const type = "Expired Qualification";
-    return await sendEmail(`Volunteer qualification expiry notification (${userId})`, content, email);
+    const type = "Expired Qualification";
+    const adminCCs: string[] = [];
+    const isArray = Array.isArray(email);
+    // if there is more than one administrator
+    if (isArray && email.length > 1) {
+        // notification doesn't support multiple emails so copying every email after the first into a new array to be used for CCs
+        for (let i = 1; i < email.length; i++) {
+            adminCCs[i - 1] = email[i];
+        }
+        await createNotification(email[0], content, userFirstName, adminCCs, type);
+    } else if (!isArray) await createNotification(email, content, userFirstName, adminCCs, type);
+    return await sendEmail(`${SITE_NAME} - Volunteer qualification expiry notification`, content, email);
 }
 
 /** Send an email with the provided parameters.
