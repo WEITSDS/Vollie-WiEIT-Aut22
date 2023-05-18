@@ -12,12 +12,16 @@ import {
     getAvailableRolesForShiftUser,
     setUserApproval,
     getSearchShifts,
+    exportAdminShifts,
+    exportVolunteerShifts,
 } from "./shift.controller";
 
 const router = express.Router();
 
 router.get("/get-user-shifts/:userid", wrapAsync(getUserShifts));
 router.post("/get-search-shifts", wrapAsync(getSearchShifts));
+router.post("/admin-export-shifts", wrapAsync(exportAdminShifts));
+router.post("/volunteer-export-shifts", wrapAsync(exportVolunteerShifts));
 router.get("/shift/:shiftid", wrapAsync(getShiftById));
 router.get("/attendance-list/:shiftid", wrapAsync(getShiftAttendanceList));
 router.get("/available-roles-for-shift-user/:userid/:shiftid", wrapAsync(getAvailableRolesForShiftUser));
