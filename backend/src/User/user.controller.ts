@@ -7,7 +7,7 @@ import * as sessionManager from "../Common/middleware/sessionManagement";
 import { handleError } from "../utility";
 import { isIBasicUser, IUser, IUserVolunteerType, mapUserToUserSummary } from "./user.interface";
 import VolunteerType from "../VolunteerType/volunteerType.model";
-import { sendVolunteerRequestEmail } from "../mailer/mailer";
+import { sendVolunteerRequestEmail, sendVolunteerApprovalEmail } from "../mailer/mailer";
 import bcrypt from "bcrypt";
 
 const logger = new Logger({ name: "user.controller" });
@@ -443,6 +443,15 @@ export const setApprovalVolunteerTypeForUser = async (req: Request, res: Respons
             data: saveResult,
             success: true,
         });
+
+        if (req.params.status === "approve") {
+            void sendVolunteerApprovalEmail(
+                targetUser.email,
+                targetUser.firstName,
+                targetUser.lastName,
+                volunteerType.name
+            );
+        }
     } catch (err) {
         handleError(logger, res, err, "Update qualification failed");
     }
@@ -482,8 +491,10 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
             });
             const admins = await getAllAdmins();
             const adminEmails: Array<string> = [""];
-            for (let i = 0; admins && i < admins.length; i++) {
-                adminEmails[i] = admins[i].email;
+            if (admins) {
+                for (let i = 0; i < admins.length; i++) {
+                    adminEmails[i] = admins[i].email;
+                }
             }
             void sendVolunteerRequestEmail(
                 adminEmails,

@@ -68,7 +68,33 @@ export async function sendVolunteerRequestEmail(
     `);
     const content = `Dear ${SITE_NAME} administrator,\n\n${userFirstName} ${userLastName} is requesting approval for volunteer type "${volunteerType}".\n
     If you approve of this change, head to their page (${HOST}/profile/${userID}) and click "Approve".`;
-    return await sendEmail(`${SITE_NAME}: User requesting volunteer type approval`, content, email);
+    const type = "Volunteer Role Request for Approval";
+    const adminCCs: string[] = [];
+    const isArray = Array.isArray(email);
+    // if there is more than one administrator
+    if (isArray && email.length > 1) {
+        // notification doesn't support multiple emails so copying every email after the first into a new array to be used for CCs
+        for (let i = 1; i < email.length; i++) {
+            adminCCs[i - 1] = email[i];
+        }
+        await createNotification(email[0], content, userFirstName, adminCCs, type);
+    } else if (!isArray) await createNotification(email, content, userFirstName, adminCCs, type);
+    return await sendEmail(`${SITE_NAME} - User Requesting Volunteer Type Approval`, content, email);
+}
+
+export async function sendVolunteerApprovalEmail(
+    userEmail: string,
+    userFirstName: string,
+    userLastName: string,
+    volunteerType: string
+): Promise<void> {
+    logger.debug(`
+        Sending volunteer type approval email to admin email '${userEmail.toString()}' for user ${userFirstName} ${userLastName}
+    `);
+    const content = `Hey ${userFirstName},\n\nYour request for volunteer type '${volunteerType}' was approved. Congratulations!`;
+    const type = "Volunteer Type Request Approved";
+    await createNotification(userEmail, content, userFirstName, "", type);
+    return await sendEmail(`Your ${SITE_NAME} Volunteer Type Request was Approved`, content, userEmail);
 }
 
 /** Send an email with the provided parameters.
