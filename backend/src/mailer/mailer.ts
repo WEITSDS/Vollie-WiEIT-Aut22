@@ -84,6 +84,22 @@ export async function sendQualificationExpiryEmail(
     return await sendEmail(`${SITE_NAME} - Volunteer qualification expiry notification`, content, email);
 }
 
+export async function sendQualificationApprovalEmail(
+    userFirstName: string,
+    userLastName: string,
+    userEmail: string,
+    qualTitle: string
+): Promise<void> {
+    logger.debug(
+        `Sending qualification approval email for ${userFirstName} ${userLastName} for approved qualification '${qualTitle}'`
+    );
+    const content = `Hey ${userFirstName},\n\nYour qualification (${qualTitle}) on ${SITE_NAME} was approved.\n`;
+    const ccEmails = await getAdminEmails();
+    const type = "Qualification Approved";
+    await createNotification(userEmail, content, userFirstName, ccEmails, type);
+    return await sendEmail(`${SITE_NAME} - Volunteer qualification expiry notification`, content, userEmail, ccEmails);
+}
+
 /** Send an email with the provided parameters.
  * @param subject The subject / title of the email
  * @param content The content / body of the email (can be pure string or HTML as string)

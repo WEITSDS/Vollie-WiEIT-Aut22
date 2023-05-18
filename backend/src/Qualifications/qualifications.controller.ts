@@ -11,7 +11,7 @@ import schedule from "node-schedule";
 import { getAllAdmins, getUserByEmail } from "../User/user.controller";
 import { IUser } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
-import { sendQualificationExpiryEmail } from "../mailer/mailer";
+import { sendQualificationExpiryEmail, sendQualificationApprovalEmail } from "../mailer/mailer";
 
 cloudinary.config(CLOUDINARY_CONFIG);
 const logger = new Logger({ name: "qualifications.controller" });
@@ -223,6 +223,15 @@ export const setApprovalQualificationForUser = async (req: Request, res: Respons
             data: updateResult,
             success: true,
         });
+
+        if (req.params.status === "approve") {
+            void sendQualificationApprovalEmail(
+                targetUser.firstName,
+                targetUser.lastName,
+                targetUser.email,
+                qualification.title
+            );
+        }
     } catch (err) {
         handleError(logger, res, err, "Update qualification failed");
     }
