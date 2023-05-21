@@ -127,14 +127,6 @@ async function sendEmail(
 
     try {
         const sentMessageInfo = await transporter.sendMail(options);
-        // TODO: Re-enable error logging!
-        if (sentMessageInfo.rejected) {
-            // logger.error(`Email to '${toEmails}' was rejected...`);
-            // logger.error(`response: ` + sentMessageInfo.response);
-            // logger.error(`accepted: ` + sentMessageInfo.accepted.toString());
-            // logger.error(`rejected: ` + sentMessageInfo.rejected.toString());
-            // logger.error(sentMessageInfo.pending);
-        }
     } catch (error: unknown) {
         logger.error(error);
     }
