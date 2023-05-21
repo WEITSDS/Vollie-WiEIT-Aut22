@@ -70,16 +70,6 @@ export const createQualification = async (req: Request, res: Response) => {
         await Promise.all([qual.save(), user.save()]);
 
         res.status(200).json({ message: "Created qualification successfully", success: true });
-        // const adminEmails: string[] = [""];
-        // const admins: IUser[] | undefined = await getAllAdmins();
-        // for (let i = 0; admins && i < admins.length; i++) {
-        //     adminEmails[i] = admins[i].email;
-        // }
-        // const now = new Date(Date.now() + 5000);
-        // schedule.scheduleJob(`${qual.id}-expiry-email`, Date.parse(qual.expiryDate), function () {
-        //     //void sendQualificationExpiryEmail(user.firstName, user.lastName, user._id, adminEmails, qual.title);
-        //     return;
-        // });
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occured while creating qualification.");
         return;
