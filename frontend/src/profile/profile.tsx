@@ -211,7 +211,9 @@ export const ProfilePage = () => {
                             )}
                         </div>
                         <br></br>
-                        {user?._id && <QualificationsSection userId={user._id} isAdmin={isAdmin} />}
+                        {user?._id && (
+                            <QualificationsSection userId={user._id} isAdmin={isAdmin} editingSelf={editingSelf} />
+                        )}
                     </div>
                 </div>
             </div>

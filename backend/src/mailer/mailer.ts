@@ -56,6 +56,18 @@ export async function sendCancelledShiftEmail(
     await createNotification(userEmail, content, userFirstName, ccEmails, type);
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail, ccEmails);
 }
+
+export async function sendUpdateShiftEmail(userFirstName: string, userEmail: string, shiftName: string, shiftLocation: string, shiftStartTime: Date, shiftEndTime: Date): Promise<void> {
+    logger.debug(`Sending shift update email email for '${userEmail}' for shift ''${shiftName}`);
+    const content =
+        `Hey ${userFirstName},\n\n` +
+        `Your shift has been updated '${shiftName}' at ${shiftLocation} from ${shiftStartTime} to ${shiftEndTime}. See you there!`;
+    const ccEmails = await getAdminEmails();
+    const type = "Updated Shift";
+    await createNotification(userEmail, content, userFirstName, ccEmails, type);
+    return await sendEmail(`Your ${SITE_NAME} Shift Has Been Updated`, content, userEmail, ccEmails);
+}
+
 export async function sendVolunteerRequestEmail(
     email: string | string[],
     userID: string,
@@ -98,6 +110,49 @@ export async function sendVolunteerApprovalEmail(
     return await sendEmail(`Your ${SITE_NAME} Volunteer Type Request was Approved`, content, userEmail, ccEmails);
 }
 
+export async function sendQualificationExpiryEmail(
+    userFirstName: string,
+    userLastName: string,
+    userId: string,
+    email: string | string[],
+    qualTitle: string
+): Promise<void> {
+    logger.debug(
+        `Sending qualification expiry email for ${userFirstName} ${userLastName} for expired qualification '${qualTitle}'`
+    );
+    const content = `Dear ${SITE_NAME} administrator,\n\nThis email is to let you know that a qualification (${qualTitle}) 
+    of user ${userFirstName} ${userLastName} expires today.\n You can visit their page (${HOST}/profile/${userId}) to revoke 
+    approval for this qualification.\n`;
+    const type = "Expired Qualification";
+    const adminCCs: string[] = [];
+    const isArray = Array.isArray(email);
+    // if there is more than one administrator
+    if (isArray && email.length > 1) {
+        // notification doesn't support multiple emails so copying every email after the first into a new array to be used for CCs
+        for (let i = 1; i < email.length; i++) {
+            adminCCs[i - 1] = email[i];
+        }
+        await createNotification(email[0], content, userFirstName, adminCCs, type);
+    } else if (!isArray) await createNotification(email, content, userFirstName, adminCCs, type);
+    return await sendEmail(`${SITE_NAME} - Volunteer qualification expiry notification`, content, email);
+}
+
+export async function sendQualificationApprovalEmail(
+    userFirstName: string,
+    userLastName: string,
+    userEmail: string,
+    qualTitle: string
+): Promise<void> {
+    logger.debug(
+        `Sending qualification approval email for ${userFirstName} ${userLastName} for approved qualification '${qualTitle}'`
+    );
+    const content = `Hey ${userFirstName},\n\nYour qualification (${qualTitle}) on ${SITE_NAME} was approved.\n`;
+    const ccEmails = await getAdminEmails();
+    const type = "Qualification Approved";
+    await createNotification(userEmail, content, userFirstName, ccEmails, type);
+    return await sendEmail(`${SITE_NAME} - Volunteer qualification expiry notification`, content, userEmail, ccEmails);
+}
+
 /** Send an email with the provided parameters.
  * @param subject The subject / title of the email
  * @param content The content / body of the email (can be pure string or HTML as string)
@@ -126,7 +181,7 @@ async function sendEmail(
     };
 
     try {
-        const sentMessageInfo = await transporter.sendMail(options);
+        await transporter.sendMail(options);
     } catch (error: unknown) {
         logger.error(error);
     }
