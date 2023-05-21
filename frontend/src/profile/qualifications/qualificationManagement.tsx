@@ -43,6 +43,7 @@ import { ConfirmDeleteModal, CreateOrEditQualificationModal } from "./createQual
 interface QualificationSectionProps {
     userId?: string;
     isAdmin?: boolean;
+    editingSelf: boolean;
     // onFinishAddingQualification?: () => void;
 }
 
@@ -56,7 +57,7 @@ interface QualificationSectionProps {
 //     showDeleteModal?: boolean;
 // }
 
-export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionProps) => {
+export const QualificationsSection = ({ userId, isAdmin, editingSelf }: QualificationSectionProps) => {
     const {
         data: userQualifications,
         isLoading: isLoadingQualifications,
@@ -83,7 +84,6 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
     };
 
     const handleQualificationDelete = (qual: Qualification) => {
-        console.log(isAdmin);
         setshowDeleteModal(true);
         setselectedQualification(qual);
     };
@@ -94,7 +94,6 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
 
     const onCreateClose = async () => {
         setshowCreateModal(false);
-        console.log("handle close");
         await refetchQualifications();
     };
 
@@ -178,7 +177,12 @@ export const QualificationsSection = ({ userId, isAdmin }: QualificationSectionP
                         })}
                 </tbody>
             </Table>
-            <Button title="Add qualification" variant="success" onClick={() => handleCreateQualification()}>
+            <Button
+                title="Add qualification"
+                variant="success"
+                disabled={!editingSelf}
+                onClick={() => handleCreateQualification()}
+            >
                 Add Qualification {"   "}
                 <i className="bi bi-plus-square" />
             </Button>

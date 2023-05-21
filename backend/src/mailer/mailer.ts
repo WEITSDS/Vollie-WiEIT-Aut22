@@ -1,7 +1,7 @@
 import * as nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/json-transport";
 import { Logger } from "tslog";
-import { EMAIL_USER, SITE_NAME, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USERNAME } from "../constants";
+import { EMAIL_USER, SITE_NAME, HOST, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USERNAME } from "../constants";
 import { generateOTPForUser } from "../otps/otpManager";
 import User from "../User/user.model";
 import { createNotification } from "../Notifications/notifications.controller";
@@ -65,6 +65,49 @@ export async function sendUpdateShiftEmail(userFirstName: string, userEmail: str
     const type = "Updated Shift";
     await createNotification(userEmail, content, userFirstName, ccEmails, type);
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Updated`, content, userEmail, ccEmails);
+}
+
+export async function sendQualificationExpiryEmail(
+    userFirstName: string,
+    userLastName: string,
+    userId: string,
+    email: string | string[],
+    qualTitle: string
+): Promise<void> {
+    logger.debug(
+        `Sending qualification expiry email for ${userFirstName} ${userLastName} for expired qualification '${qualTitle}'`
+    );
+    const content = `Dear ${SITE_NAME} administrator,\n\nThis email is to let you know that a qualification (${qualTitle}) 
+    of user ${userFirstName} ${userLastName} expires today.\n You can visit their page (${HOST}/profile/${userId}) to revoke 
+    approval for this qualification.\n`;
+    const type = "Expired Qualification";
+    const adminCCs: string[] = [];
+    const isArray = Array.isArray(email);
+    // if there is more than one administrator
+    if (isArray && email.length > 1) {
+        // notification doesn't support multiple emails so copying every email after the first into a new array to be used for CCs
+        for (let i = 1; i < email.length; i++) {
+            adminCCs[i - 1] = email[i];
+        }
+        await createNotification(email[0], content, userFirstName, adminCCs, type);
+    } else if (!isArray) await createNotification(email, content, userFirstName, adminCCs, type);
+    return await sendEmail(`${SITE_NAME} - Volunteer qualification expiry notification`, content, email);
+}
+
+export async function sendQualificationApprovalEmail(
+    userFirstName: string,
+    userLastName: string,
+    userEmail: string,
+    qualTitle: string
+): Promise<void> {
+    logger.debug(
+        `Sending qualification approval email for ${userFirstName} ${userLastName} for approved qualification '${qualTitle}'`
+    );
+    const content = `Hey ${userFirstName},\n\nYour qualification (${qualTitle}) on ${SITE_NAME} was approved.\n`;
+    const ccEmails = await getAdminEmails();
+    const type = "Qualification Approved";
+    await createNotification(userEmail, content, userFirstName, ccEmails, type);
+    return await sendEmail(`${SITE_NAME} - Volunteer qualification expiry notification`, content, userEmail, ccEmails);
 }
 
 /** Send an email with the provided parameters.

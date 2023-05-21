@@ -21,6 +21,7 @@ export interface IBasicQualification {
     user: Types.ObjectId;
     qualificationType: Types.ObjectId;
     expiryDate: string;
+    expiredAndNotified: boolean;
     approved: boolean;
 }
 
@@ -33,5 +34,6 @@ export interface QualificationSummary {
     filePath: string;
     qualificationType: IQualificationType;
     expiryDate: string;
+    expiredAndNotified: boolean;
     approved: boolean;
 }
