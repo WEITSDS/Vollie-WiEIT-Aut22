@@ -7,6 +7,7 @@ import * as sessionManager from "../Common/middleware/sessionManagement";
 import { handleError } from "../utility";
 import { isIBasicUser, IUser, IUserVolunteerType, mapUserToUserSummary } from "./user.interface";
 import VolunteerType from "../VolunteerType/volunteerType.model";
+import { sendVolunteerRequestEmail, sendVolunteerApprovalEmail } from "../mailer/mailer";
 import bcrypt from "bcrypt";
 
 const logger = new Logger({ name: "user.controller" });
@@ -442,6 +443,15 @@ export const setApprovalVolunteerTypeForUser = async (req: Request, res: Respons
             data: saveResult,
             success: true,
         });
+
+        if (req.params.status === "approve") {
+            void sendVolunteerApprovalEmail(
+                targetUser.email,
+                targetUser.firstName,
+                targetUser.lastName,
+                volunteerType.name
+            );
+        }
     } catch (err) {
         handleError(logger, res, err, "Update qualification failed");
     }
@@ -456,17 +466,17 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
         }
 
         const sessionUserId = userObj._id;
-        if (sessionUserId.toString() !== req.params.userid) {
+        if (sessionUserId != req.params.userid && !userObj.isAdmin) {
             res.status(401).json({
-                message: "Unauthorised, you can only assign volunteer types to yourself",
+                message: "Unauthorised, you can only assign volunteer types to yourself unless you are an admin",
                 success: false,
             });
             return;
         }
 
         const targetVolType = await VolunteerType.findById(req.params.volunteertypeid);
-        const completeShiftResult = await User.findOneAndUpdate(
-            { _id: sessionUserId },
+        const assignVolTypeResult = await User.findOneAndUpdate(
+            { _id: req.params.userid },
             {
                 $addToSet: {
                     volunteerTypes: { type: req.params.volunteertypeid, approved: !targetVolType?.requiresApproval },
@@ -474,9 +484,67 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
             }
         );
 
-        if (completeShiftResult) {
+        if (assignVolTypeResult && targetVolType) {
             res.status(200).json({
                 message: "User assigned to volunteer type",
+                success: true,
+            });
+            const admins = await getAllAdmins();
+            const adminEmails: Array<string> = [""];
+            if (admins) {
+                for (let i = 0; i < admins.length; i++) {
+                    adminEmails[i] = admins[i].email;
+                }
+            }
+            void sendVolunteerRequestEmail(
+                adminEmails,
+                sessionUserId,
+                userObj.firstName,
+                userObj.lastName,
+                targetVolType.name
+            );
+            return;
+        } else {
+            res.status(404).json({
+                message: "User not found",
+                success: true,
+            });
+            return;
+        }
+    } catch (err) {
+        handleError(logger, res, err, "Volunteer type assignment to user failed");
+    }
+};
+
+export const removeVolunteerType = async (req: Request, res: Response) => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) {
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
+            return;
+        }
+
+        const sessionUserId = userObj._id;
+        if (sessionUserId != req.params.userid && !userObj.isAdmin) {
+            res.status(401).json({
+                message: "Unauthorised, you can only remove volunteer types from yourself unless you are an admin",
+                success: false,
+            });
+            return;
+        }
+
+        const removeVolTypeResult = await User.updateOne(
+            { _id: req.params.userid },
+            {
+                $pull: {
+                    volunteerTypes: { type: req.params.volunteertypeid },
+                },
+            }
+        );
+
+        if (removeVolTypeResult) {
+            res.status(200).json({
+                message: "Volunteer type removed from user",
                 success: true,
             });
             return;
@@ -488,6 +556,6 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
             return;
         }
     } catch (err) {
-        handleError(logger, res, err, "Volunteer type assignment to user failed");
+        handleError(logger, res, err, "Volunteer type removal from user failed");
     }
 };

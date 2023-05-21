@@ -13,13 +13,18 @@ import { Button, Table } from "react-bootstrap";
 import { useUserById } from "../hooks/useUserById";
 import { useOwnUser } from "../hooks/useOwnUser";
 import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
-import { setApprovalUserVolunteerType } from "../api/userApi";
+import { removeVolunteerType, setApprovalUserVolunteerType } from "../api/userApi";
 import { loggedInUserIsAdmin } from "../protectedRoute";
+import { AddRoleModal, ConfirmDeleteModal } from "./volunteer/addRoleModal";
+import { IVolunteerTypeUserWithApproved } from "../api/volTypeAPI";
 
 export const ProfilePage = () => {
     const { id } = useParams();
     const { isLoading, data: userData, refetch: refetchUser, error } = id ? useUserById(id) : useOwnUser();
     const user = userData?.data;
+    const [showAddModal, setshowAddModal] = useState(false);
+    const [showDeleteModal, setshowDeleteModal] = useState(false);
+    const [selectedVolType, setselectedVolType] = useState<IVolunteerTypeUserWithApproved | null>(null);
 
     const isAdmin = loggedInUserIsAdmin();
 
@@ -48,6 +53,33 @@ export const ProfilePage = () => {
                 await setApprovalUserVolunteerType(qualId, user?._id, status);
                 await refetchVolTypeUser();
             }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleAddRole = () => {
+        setshowAddModal(true);
+    };
+
+    const handleDeleteRole = (volType: IVolunteerTypeUserWithApproved) => {
+        setselectedVolType(volType);
+        setshowDeleteModal(true);
+    };
+
+    const onAddRoleClose = async () => {
+        setshowAddModal(false);
+        await refetchVolTypeUser();
+    };
+
+    const onDeleteRoleClose = async (shouldDelete: boolean) => {
+        try {
+            setshowDeleteModal(false);
+            if (user?._id && selectedVolType && shouldDelete) {
+                await removeVolunteerType(user?._id, selectedVolType?._id);
+                console.log("Trying to delete");
+            }
+            await refetchVolTypeUser();
         } catch (error) {
             console.log(error);
         }
@@ -111,6 +143,7 @@ export const ProfilePage = () => {
                                         <th>#</th>
                                         <th>Volunteer Type</th>
                                         <th>Approval Status</th>
+                                        <th>Delete</th>
                                         {isAdmin && <th>Set Approval</th>}
                                     </tr>
                                 </thead>
@@ -123,6 +156,16 @@ export const ProfilePage = () => {
                                                     <td>{index + 1}</td>
                                                     <td>{volType.name}</td>
                                                     <td>{volType.approved ? "Yes" : "No"}</td>
+                                                    <td>
+                                                        <Button
+                                                            onClick={() => handleDeleteRole(volType)}
+                                                            title={`Delete`}
+                                                            variant="danger"
+                                                            disabled={!editingSelf && !isAdmin}
+                                                        >
+                                                            <i className="bi bi-trash" />
+                                                        </Button>
+                                                    </td>
                                                     {isAdmin && (
                                                         <td>
                                                             <Button
@@ -142,7 +185,32 @@ export const ProfilePage = () => {
                                         })}
                                 </tbody>
                             </Table>
+                            <Button
+                                title="Add Volunteer Type"
+                                variant="success"
+                                onClick={() => handleAddRole()}
+                                disabled={!editingSelf && !isAdmin}
+                            >
+                                Add Volunteer Type {"   "}
+                                <i className="bi bi-plus-square" />
+                            </Button>
+                            {showAddModal && user._id && userVolTypesData?.data && (
+                                <AddRoleModal
+                                    userId={user?._id}
+                                    userVolTypes={userVolTypesData?.data}
+                                    onClose={() => {
+                                        void onAddRoleClose();
+                                    }}
+                                />
+                            )}
+                            {showDeleteModal && selectedVolType && (
+                                <ConfirmDeleteModal
+                                    type={selectedVolType}
+                                    onClose={(shouldDelete: boolean) => void onDeleteRoleClose(shouldDelete)}
+                                />
+                            )}
                         </div>
+                        <br></br>
                         {user?._id && (
                             <QualificationsSection userId={user._id} isAdmin={isAdmin} editingSelf={editingSelf} />
                         )}

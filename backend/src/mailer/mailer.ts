@@ -56,6 +56,7 @@ export async function sendCancelledShiftEmail(
     await createNotification(userEmail, content, userFirstName, ccEmails, type);
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail, ccEmails);
 }
+
 export async function sendUpdateShiftEmail(userFirstName: string, userEmail: string, shiftName: string, shiftLocation: string, shiftStartTime: Date, shiftEndTime: Date): Promise<void> {
     logger.debug(`Sending shift update email email for '${userEmail}' for shift ''${shiftName}`);
     const content =
@@ -65,6 +66,48 @@ export async function sendUpdateShiftEmail(userFirstName: string, userEmail: str
     const type = "Updated Shift";
     await createNotification(userEmail, content, userFirstName, ccEmails, type);
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Updated`, content, userEmail, ccEmails);
+}
+
+export async function sendVolunteerRequestEmail(
+    email: string | string[],
+    userID: string,
+    userFirstName: string,
+    userLastName: string,
+    volunteerType: string
+): Promise<void> {
+    logger.debug(`
+        Sending volunteer type approval email to admin email '${email.toString()}' for user ${userFirstName} ${userLastName}
+    `);
+    const content = `Dear ${SITE_NAME} administrator,\n\n${userFirstName} ${userLastName} is requesting approval for volunteer type "${volunteerType}".\n
+    If you approve of this change, head to their page (${HOST}/profile/${userID}) and click "Approve".`;
+    const type = "Volunteer Role Request for Approval";
+    const adminCCs: string[] = [];
+    const isArray = Array.isArray(email);
+    // if there is more than one administrator
+    if (isArray && email.length > 1) {
+        // notification doesn't support multiple emails so copying every email after the first into a new array to be used for CCs
+        for (let i = 1; i < email.length; i++) {
+            adminCCs[i - 1] = email[i];
+        }
+        await createNotification(email[0], content, userFirstName, adminCCs, type);
+    } else if (!isArray) await createNotification(email, content, userFirstName, adminCCs, type);
+    return await sendEmail(`${SITE_NAME} - User Requesting Volunteer Type Approval`, content, email);
+}
+
+export async function sendVolunteerApprovalEmail(
+    userEmail: string,
+    userFirstName: string,
+    userLastName: string,
+    volunteerType: string
+): Promise<void> {
+    logger.debug(`
+        Sending volunteer type approval email to admin email '${userEmail.toString()}' for user ${userFirstName} ${userLastName}
+    `);
+    const content = `Hey ${userFirstName},\n\nYour request for volunteer type '${volunteerType}' was approved. Congratulations!`;
+    const type = "Volunteer Type Request Approved";
+    const ccEmails = await getAdminEmails();
+    await createNotification(userEmail, content, userFirstName, ccEmails, type);
+    return await sendEmail(`Your ${SITE_NAME} Volunteer Type Request was Approved`, content, userEmail, ccEmails);
 }
 
 export async function sendQualificationExpiryEmail(
@@ -138,11 +181,7 @@ async function sendEmail(
     };
 
     try {
-        const sentMessageInfo = await transporter.sendMail(options);
-        // TODO: Re-enable error logging!
-        if (sentMessageInfo.rejected) {
-            // logger.error(`Email to '${toEmails}' was rejected...`);
-        }
+        await transporter.sendMail(options);
     } catch (error: unknown) {
         logger.error(error);
     }
