@@ -136,7 +136,7 @@ export const ProfilePage = () => {
                                 )}
                             </div>
                         </div>
-                        <div className="volunteer-type-table">
+                        <div className="volunteer-type-table" hidden={!isAdmin && !editingSelf}>
                             <Table striped bordered hover>
                                 <thead>
                                     <tr>
