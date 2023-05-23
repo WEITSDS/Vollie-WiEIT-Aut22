@@ -114,7 +114,7 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
     };
 
     return (
-        <div className="qualification-table">
+        <div className="qualification-table" hidden={!isAdmin && !editingSelf}>
             <Table striped bordered hover>
                 <thead>
                     <tr>
