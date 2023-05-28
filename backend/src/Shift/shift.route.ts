@@ -6,6 +6,7 @@ import {
     removeUser,
     deleteShift,
     getUserShifts,
+    generateShiftCalendar,
     getShiftById,
     getShiftAttendanceList,
     updateShift,
@@ -23,6 +24,7 @@ router.post("/get-search-shifts", wrapAsync(getSearchShifts));
 router.post("/admin-export-shifts", wrapAsync(exportAdminShifts));
 router.post("/volunteer-export-shifts", wrapAsync(exportVolunteerShifts));
 router.get("/shift/:shiftid", wrapAsync(getShiftById));
+router.get("/calendar/:userid", wrapAsync(generateShiftCalendar));
 router.get("/attendance-list/:shiftid", wrapAsync(getShiftAttendanceList));
 router.get("/available-roles-for-shift-user/:userid/:shiftid", wrapAsync(getAvailableRolesForShiftUser));
 

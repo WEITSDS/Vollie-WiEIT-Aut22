@@ -1,0 +1,16 @@
+.calInput {
+    height: 40px;
+    width: calc(100% - 65px);
+    left: 401px;
+    top: 335px;
+    border-radius: 10px 0px 0px 10px;
+
+    background: #f9f9f9;
+    border: 1px solid #f0eaea;
+}
+
+.copyButton {
+    border-radius: 0px 10px 10px 0px;
+    margin-bottom: 5px;
+    height: 40px;
+}
