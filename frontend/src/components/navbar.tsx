@@ -5,6 +5,7 @@ import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import HelpModal from "./helpModal";
 import { logoutUser, User } from "../api/userApi";
 import { getLoggedInUser } from "../protectedRoute";
+import CalendarModal from "./calendarModal/calendarModal";
 
 interface NavBarState {
     currentUser: User | undefined;
@@ -55,7 +56,7 @@ export class NavigationBar extends React.Component<Record<string, never>, NavBar
                         </Nav>
                         <Nav>
                             <HelpModal />
-
+                            <CalendarModal accountID={currentUser?._id || ""} />
                             <NavDropdown
                                 align="end"
                                 title={

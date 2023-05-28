@@ -3,6 +3,7 @@ import User from "../User/user.model";
 import Shift from "./shift.model";
 import mongoose from "mongoose";
 import { Logger } from "tslog";
+import ical from "ical-generator";
 import { handleError } from "../utility";
 import {
     IShift,
@@ -100,7 +101,6 @@ export const updateShift = async (req: Request, res: Response) => {
         return;
     }
 
-
     const shiftFields = req.body as IShift;
 
     try {
@@ -115,7 +115,14 @@ export const updateShift = async (req: Request, res: Response) => {
         for (let idx = 0; idx < shiftObj.users.length; idx++) {
             const participant = shiftObj.users[idx];
             const targetUser = await User.findOne({ _id: participant.user });
-            sendUpdateShiftEmail(targetUser?.firstName || "", targetUser?.email || "", shiftObj.name, shiftObj.address, shiftObj.startAt, shiftObj.endAt);
+            sendUpdateShiftEmail(
+                targetUser?.firstName || "",
+                targetUser?.email || "",
+                shiftObj.name,
+                shiftObj.address,
+                shiftObj.startAt,
+                shiftObj.endAt
+            );
         }
 
         res.status(200).json({
@@ -532,6 +539,56 @@ export const removeUser = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({
             message: "error removing unassigning user",
+            error,
+            success: false,
+        });
+        return;
+    }
+};
+
+export const generateShiftCalendar = async (req: Request, res: Response) => {
+    try {
+        const { _id: userID } = req.session.user || {};
+        if (!userID) {
+            res.status(403).json({ message: "Authorization error", success: false });
+            return;
+        }
+
+        const userObj = await User.findOne({ _id: userID });
+        if (!userObj) {
+            res.status(403).json({ message: "Could not find user object", success: false });
+            return;
+        }
+
+        const shifts = await Shift.find({
+            "users.user": userID,
+        }).sort({
+            startAt: 1,
+        });
+
+        const calendar = ical({ name: `${userObj.firstName} ${userObj.lastName} Shift Calendar` });
+
+        for (let i = 0; i < shifts.length; i++) {
+            const shift = shifts[i];
+            const startTime = new Date(shift.startAt);
+            const endTime = new Date(shift.endAt);
+            calendar.createEvent({
+                start: startTime,
+                end: endTime,
+                summary: shift.name,
+                description: shift.description,
+                location: shift.address,
+                url: `http://localhost:3000/shift/${shift._id}`,
+            });
+        }
+
+        calendar.serve(res);
+
+        return;
+    } catch (error) {
+        console.log("error generating calendar", error);
+        res.status(500).json({
+            message: "error generating calendar",
             error,
             success: false,
         });

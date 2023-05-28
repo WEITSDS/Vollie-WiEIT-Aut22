@@ -74,10 +74,6 @@ h1 {
     margin-right: 20px;
 }
 
-body {
-    padding: 2em;
-}
-
 table.table {
     width: 100;
 }
@@ -85,11 +81,11 @@ table.table {
 .table th,
 .table td {
     text-align: left;
-    padding: 0.25em
+    padding: 0.25em;
 }
 
 .table tr {
-    border-bottom: 1px solid #DDD;
+    border-bottom: 1px solid #ddd;
 }
 
 @media screen and (max-width: 800px) {
