@@ -489,20 +489,22 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
                 message: "User assigned to volunteer type",
                 success: true,
             });
-            const admins = await getAllAdmins();
-            const adminEmails: Array<string> = [""];
-            if (admins) {
-                for (let i = 0; i < admins.length; i++) {
-                    adminEmails[i] = admins[i].email;
+            if (!req.session.user?.isAdmin) {
+                const admins = await getAllAdmins();
+                const adminEmails: Array<string> = [""];
+                if (admins) {
+                    for (let i = 0; i < admins.length; i++) {
+                        adminEmails[i] = admins[i].email;
+                    }
                 }
+                void sendVolunteerRequestEmail(
+                    adminEmails,
+                    sessionUserId,
+                    userObj.firstName,
+                    userObj.lastName,
+                    targetVolType.name
+                );
             }
-            void sendVolunteerRequestEmail(
-                adminEmails,
-                sessionUserId,
-                userObj.firstName,
-                userObj.lastName,
-                targetVolType.name
-            );
             return;
         } else {
             res.status(404).json({
