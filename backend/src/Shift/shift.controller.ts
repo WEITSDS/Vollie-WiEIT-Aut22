@@ -754,39 +754,30 @@ export const exportAdminShifts = async (req: Request, res: Response) => {
             startAt: 1,
         });
 
-        let csvOutput = [] as string[][];
+        let csvOutput = [
+            [
+                "Shift ID",
+                "Name",
+                "Venue",
+                "Address",
+                "Start Date/Time",
+                "End Date/Time",
+                "Length (Hours)",
+                "Category",
+                "Description",
+                "Notes",
+                "Volunteer ID",
+                "First Name",
+                "Last Name",
+                "Volunteer Type",
+                "Approval Status",
+                "Completion Status",
+            ],
+        ] as string[][];
 
         for (let i = 0; i < shifts.length; i++) {
             const shift = shifts[i];
-
-            const rows = [
-                [
-                    "Shift ID",
-                    "Name",
-                    "Venue",
-                    "Address",
-                    "Start Date/Time",
-                    "End Date/Time",
-                    "Length (Hours)",
-                    "Category",
-                    "Description",
-                    "Notes",
-                ],
-                [
-                    shift._id,
-                    shift.name,
-                    shift.venue,
-                    shift.address,
-                    shift.startAt,
-                    shift.endAt,
-                    shift.hours,
-                    shift.category,
-                    shift.description,
-                    shift.notes,
-                ],
-                [],
-                ["Volunteer ID", "First Name", "Last Name", "Volunteer Type", "Approval Status", "Completion Status"],
-            ] as string[][];
+            const rows = [] as string[][];
 
             for (let idx = 0; idx < shift?.users?.length; idx++) {
                 const participant = shift?.users[idx];
@@ -796,15 +787,24 @@ export const exportAdminShifts = async (req: Request, res: Response) => {
                     targetUser?.shifts?.find((uShift) => uShift.shift.toString() === shift._id)?.completed || false;
 
                 rows.push([
-                    targetUser?._id.toString() || "",
-                    targetUser?.firstName || "",
-                    targetUser?.lastName || "",
-                    targetVolType?.name || "",
+                    shift._id,
+                    `${shift.name}`,
+                    `${shift.venue}`,
+                    `${shift.address}`,
+                    shift.startAt.toString(),
+                    shift.endAt.toString(),
+                    `${shift.hours}`,
+                    `${shift.category}`,
+                    `${shift.description}`,
+                    `${shift.notes}`,
+                    targetUser?._id.toString(),
+                    targetUser?.firstName,
+                    targetUser?.lastName,
+                    targetVolType?.name,
                     participant.approved ? "Approved" : "Pending Approval",
                     completed ? "Completed" : "Pending Completion",
-                ]);
+                ] as string[]);
             }
-            rows.push([]);
 
             csvOutput = [...csvOutput, ...rows];
         }
@@ -813,7 +813,11 @@ export const exportAdminShifts = async (req: Request, res: Response) => {
             csvOutput.push(["No shifts found within this range"]);
         }
 
-        const csvContent = "data:text/csv;charset=utf-8," + csvOutput.map((e) => e.join(",")).join("\n");
+        const csvContent =
+            "data:text/csv;charset=utf-8," +
+            csvOutput
+                .map((e) => e.map((str) => (typeof str === "string" ? str.replace(/,/g, "") : str)).join(","))
+                .join("\n");
         const encodedUri = encodeURI(csvContent);
 
         res.status(200).json({

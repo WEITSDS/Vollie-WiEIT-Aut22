@@ -113,7 +113,7 @@ export default function AttendanceListModal({
             ],
             [],
             ["Volunteer ID", "First Name", "Last Name", "Volunteer Type", "Approval Status", "Completion Status"],
-        ];
+        ] as string[][];
         attendanceListUsers?.data?.forEach((userShift) =>
             rows.push([
                 userShift._id,
@@ -122,9 +122,13 @@ export default function AttendanceListModal({
                 userShift.volTypeName,
                 userShift.approved ? "Approved" : "Pending Approval",
                 userShift.completed ? "Completed" : "Pending Completion",
-            ])
+            ] as string[])
         );
-        const csvContent = "data:text/csv;charset=utf-8," + rows.map((e) => e.join(",")).join("\n");
+        const csvContent =
+            "data:text/csv;charset=utf-8," +
+            rows
+                .map((e) => e.map((str) => (typeof str === "string" ? str.replace(/,/g, "") : str)).join(","))
+                .join("\n");
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
