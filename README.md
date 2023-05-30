@@ -15,6 +15,10 @@ The Vollie platform is being built for the Women In Engineering & Information Te
 
 Ensure latest LTS of nodeJS is installed.
 
+You can use the following account details to login as an admin:
+Email: admin@uts.edu.au
+Password: admin
+
 ### Note
 
 Run the following in the terminal (any directory) before trying to run the front/back-end.
