@@ -1,0 +1,10 @@
+:5000 {
+  handle /api/* {
+    reverse_proxy localhost:4000
+  }
+  handle /* {
+    root * build
+    file_server
+    try_files {path} /index.html
+  }
+}
