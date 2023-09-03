@@ -156,9 +156,11 @@ table.table {
 
 
 .notif-container{
+    border: 2px solid grey;
+    border-radius: 20px;
     display: grid; 
     grid-template-columns: 6fr 1fr;
-    gap: 0px;
+    gap: 2px;
     transition: 0.25s;
     padding: 6px;
 }
