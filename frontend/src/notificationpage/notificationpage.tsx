@@ -2,7 +2,8 @@ import "./notificationpage.css";
 import { useMyNotifications } from "../hooks/useMyNotifications";
 import { NavigationBar } from "../components/navbar";
 import { useState } from "react";
-// import { Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { INotification } from "../api/notificationAPI";
 
 export const NotificationPage = () => {
     const { data: userNotificationsData, isLoading: isLoadingNotifications } = useMyNotifications();
@@ -10,6 +11,44 @@ export const NotificationPage = () => {
     const [toggleState, setToggleState] = useState(1);
     const toggleTab = (index: number) => {
         setToggleState(index);
+    };
+
+    const DisplayButtonNotif = (notif: INotification) => {
+        return (
+            <div>
+                <Link className="link" to="">
+                    <div key={notif._id} className="notif-container">
+                        <div className="notif-box-content">
+                            <h2 className="notif-name">{notif.userFirstName}</h2>
+                            <h4 className="notif-type">{notif.type}</h4>
+                            <h6 className="notif-content">{notif.content}</h6>
+                            <h6 className="notif-time">{notif.time}</h6>
+                        </div>
+                        <div className="notif-box-buttons">
+                            <button className="notif-button">Approve</button>
+                            <button className="notif-button">Decline</button>
+                        </div>
+                    </div>
+                </Link>
+            </div>
+        );
+    };
+
+    const DisplayNotif = (notif: INotification) => {
+        return (
+            <div>
+                <Link className="link" to="">
+                    <div key={notif._id} className="notif-container">
+                        <div className="notif-box-content">
+                            <h2 className="notif-name">{notif.userFirstName}</h2>
+                            <h4 className="notif-type">{notif.type}</h4>
+                            <h6 className="notif-content">{notif.content}</h6>
+                            <h6 className="notif-time">{notif.time}</h6>
+                        </div>
+                    </div>
+                </Link>
+            </div>
+        );
     };
 
     return (
@@ -42,31 +81,9 @@ export const NotificationPage = () => {
                                     userNotificationsData?.data &&
                                     userNotificationsData.data.map((notif) => {
                                         if (notif.type === "Volunteer Role Request for Approval") {
-                                            return (
-                                                <div key={notif._id} className="notif-container">
-                                                    <div className="notif-box-content">
-                                                        <h2 className="notif-name">{notif.userFirstName}</h2>
-                                                        <h4 className="notif-type">{notif.type}</h4>
-                                                        <h6 className="notif-content">{notif.content}</h6>
-                                                        <h6 className="notif-time">{notif.time}</h6>
-                                                    </div>
-                                                    <div className="notif-box-buttons">
-                                                        <button className="notif-button">Approve</button>
-                                                        <button className="notif-button">Decline</button>
-                                                    </div>
-                                                </div>
-                                            );
+                                            return DisplayButtonNotif(notif);
                                         } else {
-                                            return (
-                                                <div key={notif._id} className="notif-container">
-                                                    <div className="notif-box-content">
-                                                        <h2 className="notif-name">{notif.userFirstName}</h2>
-                                                        <h4 className="notif-type">{notif.type}</h4>
-                                                        <h6 className="notif-content">{notif.content}</h6>
-                                                        <h6 className="notif-time">{notif.time}</h6>
-                                                    </div>
-                                                </div>
-                                            );
+                                            return DisplayNotif(notif);
                                         }
                                     })}
                             </li>
@@ -79,16 +96,7 @@ export const NotificationPage = () => {
                                     userNotificationsData?.data &&
                                     userNotificationsData.data.map((notif) => {
                                         if (notif.type === "Sign Up Shift") {
-                                            return (
-                                                <div key={notif._id} className="notif-container">
-                                                    <div className="notif-box-content">
-                                                        <h2 className="notif-name">{notif.userFirstName}</h2>
-                                                        <h4 className="notif-type">{notif.type}</h4>
-                                                        <h6 className="notif-content">{notif.content}</h6>
-                                                        <h6 className="notif-time">{notif.time}</h6>
-                                                    </div>
-                                                </div>
-                                            );
+                                            return DisplayNotif(notif);
                                         }
                                         return;
                                     })}
@@ -105,16 +113,7 @@ export const NotificationPage = () => {
                                             notif.type === "Qualification Approved" ||
                                             notif.type === "Expired Qualification"
                                         ) {
-                                            return (
-                                                <div key={notif._id} className="notif-container">
-                                                    <div className="notif-box-content">
-                                                        <h2 className="notif-name">{notif.userFirstName}</h2>
-                                                        <h4 className="notif-type">{notif.type}</h4>
-                                                        <h6 className="notif-content">{notif.content}</h6>
-                                                        <h6 className="notif-time">{notif.time}</h6>
-                                                    </div>
-                                                </div>
-                                            );
+                                            return DisplayNotif(notif);
                                         }
                                         return;
                                     })}
@@ -128,32 +127,10 @@ export const NotificationPage = () => {
                                     userNotificationsData?.data &&
                                     userNotificationsData.data.map((notif) => {
                                         if (notif.type === "Volunteer Role Request for Approval") {
-                                            return (
-                                                <div key={notif._id} className="notif-container">
-                                                    <div className="notif-box-content">
-                                                        <h2 className="notif-name">{notif.userFirstName}</h2>
-                                                        <h4 className="notif-type">{notif.type}</h4>
-                                                        <h6 className="notif-content">{notif.content}</h6>
-                                                        <h6 className="notif-time">{notif.time}</h6>
-                                                    </div>
-                                                    <div className="notif-box-buttons">
-                                                        <button className="notif-button">Approve</button>
-                                                        <button className="notif-button">Decline</button>
-                                                    </div>
-                                                </div>
-                                            );
+                                            return DisplayButtonNotif(notif);
                                         }
                                         if (notif.type === "Volunteer Type Request Approved") {
-                                            return (
-                                                <div key={notif._id} className="notif-container">
-                                                    <div className="notif-box-content">
-                                                        <h2 className="notif-name">{notif.userFirstName}</h2>
-                                                        <h4 className="notif-type">{notif.type}</h4>
-                                                        <h6 className="notif-content">{notif.content}</h6>
-                                                        <h6 className="notif-time">{notif.time}</h6>
-                                                    </div>
-                                                </div>
-                                            );
+                                            return DisplayNotif(notif);
                                         }
                                         return;
                                     })}
@@ -167,16 +144,7 @@ export const NotificationPage = () => {
                                     userNotificationsData?.data &&
                                     userNotificationsData.data.map((notif) => {
                                         if (notif.type === "Cancelled Shift" || notif.type === "Updated Shift") {
-                                            return (
-                                                <div key={notif._id} className="notif-container">
-                                                    <div className="notif-box-content">
-                                                        <h2 className="notif-name">{notif.userFirstName}</h2>
-                                                        <h4 className="notif-type">{notif.type}</h4>
-                                                        <h6 className="notif-content">{notif.content}</h6>
-                                                        <h6 className="notif-time">{notif.time}</h6>
-                                                    </div>
-                                                </div>
-                                            );
+                                            return DisplayNotif(notif);
                                         }
                                         return;
                                     })}
