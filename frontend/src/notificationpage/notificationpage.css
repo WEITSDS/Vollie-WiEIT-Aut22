@@ -156,13 +156,13 @@ table.table {
 
 
 .notif-container{
-    border: 2px solid grey;
+    border: 1px solid grey;
     border-radius: 20px;
     display: grid; 
     grid-template-columns: 6fr 1fr;
-    gap: 2px;
     transition: 0.25s;
-    padding: 6px;
+    padding: 10px;
+    margin: 6px;
 }
 
 .notif-container:hover{
@@ -214,4 +214,9 @@ table.table {
     color: rgb(40,100,255);
     border: 1px solid rgb(40,100,255);
 
+}
+
+.link{
+    text-decoration: none;
+    color: black;
 }
