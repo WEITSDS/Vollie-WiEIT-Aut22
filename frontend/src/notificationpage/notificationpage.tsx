@@ -41,20 +41,33 @@ export const NotificationPage = () => {
                                 {!isLoadingNotifications &&
                                     userNotificationsData?.data &&
                                     userNotificationsData.data.map((notif) => {
-                                        return (
-                                            <div key={notif._id} className="notif-container">
-                                                <div className="notif-box-content">
-                                                    <h2 className="notif-name">{notif.userFirstName}</h2>
-                                                    <h4 className="notif-type">{notif.type}</h4>
-                                                    <h6 className="notif-content">{notif.content}</h6>
-                                                    <h6 className="notif-time">{notif.time}</h6>
+                                        if (notif.type === "Volunteer Role Request for Approval") {
+                                            return (
+                                                <div key={notif._id} className="notif-container">
+                                                    <div className="notif-box-content">
+                                                        <h2 className="notif-name">{notif.userFirstName}</h2>
+                                                        <h4 className="notif-type">{notif.type}</h4>
+                                                        <h6 className="notif-content">{notif.content}</h6>
+                                                        <h6 className="notif-time">{notif.time}</h6>
+                                                    </div>
+                                                    <div className="notif-box-buttons">
+                                                        <button className="notif-button">Approve</button>
+                                                        <button className="notif-button">Decline</button>
+                                                    </div>
                                                 </div>
-                                                <div className="notif-box-buttons">
-                                                    <button className="notif-button">Approve</button>
-                                                    <button className="notif-button">Decline</button>
+                                            );
+                                        } else {
+                                            return (
+                                                <div key={notif._id} className="notif-container">
+                                                    <div className="notif-box-content">
+                                                        <h2 className="notif-name">{notif.userFirstName}</h2>
+                                                        <h4 className="notif-type">{notif.type}</h4>
+                                                        <h6 className="notif-content">{notif.content}</h6>
+                                                        <h6 className="notif-time">{notif.time}</h6>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
+                                            );
+                                        }
                                     })}
                             </li>
                         </ul>
@@ -73,10 +86,6 @@ export const NotificationPage = () => {
                                                         <h4 className="notif-type">{notif.type}</h4>
                                                         <h6 className="notif-content">{notif.content}</h6>
                                                         <h6 className="notif-time">{notif.time}</h6>
-                                                    </div>
-                                                    <div className="notif-box-buttons">
-                                                        <button className="notif-button">Approve</button>
-                                                        <button className="notif-button">Decline</button>
                                                     </div>
                                                 </div>
                                             );
@@ -104,10 +113,6 @@ export const NotificationPage = () => {
                                                         <h6 className="notif-content">{notif.content}</h6>
                                                         <h6 className="notif-time">{notif.time}</h6>
                                                     </div>
-                                                    <div className="notif-box-buttons">
-                                                        <button className="notif-button">Approve</button>
-                                                        <button className="notif-button">Decline</button>
-                                                    </div>
                                                 </div>
                                             );
                                         }
@@ -122,10 +127,7 @@ export const NotificationPage = () => {
                                 {!isLoadingNotifications &&
                                     userNotificationsData?.data &&
                                     userNotificationsData.data.map((notif) => {
-                                        if (
-                                            notif.type === "Volunteer Role Request for Approval" ||
-                                            notif.type === "Volunteer Type Request Approved"
-                                        ) {
+                                        if (notif.type === "Volunteer Role Request for Approval") {
                                             return (
                                                 <div key={notif._id} className="notif-container">
                                                     <div className="notif-box-content">
@@ -137,6 +139,18 @@ export const NotificationPage = () => {
                                                     <div className="notif-box-buttons">
                                                         <button className="notif-button">Approve</button>
                                                         <button className="notif-button">Decline</button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                        if (notif.type === "Volunteer Type Request Approved") {
+                                            return (
+                                                <div key={notif._id} className="notif-container">
+                                                    <div className="notif-box-content">
+                                                        <h2 className="notif-name">{notif.userFirstName}</h2>
+                                                        <h4 className="notif-type">{notif.type}</h4>
+                                                        <h6 className="notif-content">{notif.content}</h6>
+                                                        <h6 className="notif-time">{notif.time}</h6>
                                                     </div>
                                                 </div>
                                             );
@@ -161,10 +175,6 @@ export const NotificationPage = () => {
                                                         <h6 className="notif-content">{notif.content}</h6>
                                                         <h6 className="notif-time">{notif.time}</h6>
                                                     </div>
-                                                    <div className="notif-box-buttons">
-                                                        <button className="notif-button">Approve</button>
-                                                        <button className="notif-button">Decline</button>
-                                                    </div>
                                                 </div>
                                             );
                                         }
@@ -175,33 +185,6 @@ export const NotificationPage = () => {
                     </div>
                 </div>
             </div>
-
-            {/* <div className="notification-table">
-                <Table striped bordered hover>
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>User</th>
-                            <th>Type</th>
-                            <th>Content</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {!isLoadingNotifications &&
-                            userNotificationsData?.data &&
-                            userNotificationsData.data.map((notif) => {
-                                return (
-                                    <tr key={notif._id}>
-                                        <td>{notif.time}</td>
-                                        <td>{notif.userFirstName}</td>
-                                        <td>{notif.type}</td>
-                                        <td>{notif.content}</td>
-                                    </tr>
-                                );
-                            })}
-                    </tbody>
-                </Table>
-            </div> */}
         </>
     );
 };
