@@ -80,6 +80,7 @@ export const NotificationPage = () => {
                                 {!isLoadingNotifications &&
                                     userNotificationsData?.data &&
                                     userNotificationsData.data.map((notif) => {
+                                        // Filter notifications that require the approve button
                                         if (notif.type === "Volunteer Role Request for Approval") {
                                             return DisplayButtonNotif(notif);
                                         } else {
