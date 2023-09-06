@@ -9,6 +9,7 @@ const NotificationSchema: Schema = new Schema(
         userFirstName: { type: String, required: true },
         type: { type: String, required: true },
         time: { type: String, required: true },
+        action: { type: String, default: "Pending" },
     },
     {
         timestamps: true,

@@ -13,6 +13,32 @@ export const NotificationPage = () => {
         setToggleState(index);
     };
 
+    const updateNotificationStatus = async (notificationId: string, action: string) => {
+        console.log("updateNotificationStatus function called");
+        try {
+            const res = await fetch("/api/notifications/update-notification-status", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ notificationId, action }),
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const data = await res.json();
+
+            if (res.ok) {
+                // Update state or do whatever you need to update the UI here
+                alert("Notification status updated successfully!");
+            } else {
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+                alert(`Failed to update: ${data.message}`);
+            }
+        } catch (error) {
+            console.error("Could not update notification status:", error);
+        }
+    };
+
     const DisplayButtonNotif = (notif: INotification) => {
         return (
             <div>
@@ -25,8 +51,35 @@ export const NotificationPage = () => {
                             <h6 className="notif-time">{notif.time}</h6>
                         </div>
                         <div className="notif-box-buttons">
-                            <button className="notif-button">Approve</button>
-                            <button className="notif-button">Decline</button>
+                            <span className="notif-current-status">Current Status: {notif.action}</span>
+                            <button
+                                className="notif-button"
+                                onClick={() => {
+                                    updateNotificationStatus(notif._id, "Approved")
+                                        .then(() => {
+                                            //alert("Notification status updated woah successfully!");
+                                        })
+                                        .catch((error) => {
+                                            console.error("Could not update notification status:", error);
+                                        });
+                                }}
+                            >
+                                Approve
+                            </button>
+                            <button
+                                className="notif-button"
+                                onClick={() => {
+                                    updateNotificationStatus(notif._id, "Declined")
+                                        .then(() => {
+                                            // Handle success here, if needed
+                                        })
+                                        .catch((error) => {
+                                            console.error("Could not update notification status:", error);
+                                        });
+                                }}
+                            >
+                                Decline
+                            </button>
                         </div>
                     </div>
                 </Link>
@@ -97,7 +150,7 @@ export const NotificationPage = () => {
                                     userNotificationsData?.data &&
                                     userNotificationsData.data.map((notif) => {
                                         if (notif.type === "Sign Up Shift") {
-                                            return DisplayNotif(notif);
+                                            return DisplayButtonNotif(notif);
                                         }
                                         return;
                                     })}

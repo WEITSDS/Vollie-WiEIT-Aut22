@@ -88,3 +88,24 @@ export const getNotifications = async (req: Request, res: Response) => {
         return;
     }
 };
+
+export const updateNotificationStatus = async (req: Request, res: Response) => {
+    const { action, notificationId } = req.body as { action: string; notificationId: string };
+
+    try {
+        const updatedNotification = await Notification.findByIdAndUpdate(
+            notificationId,
+            { action: action },
+            { new: true }
+        );
+
+        if (updatedNotification === null) {
+            res.status(404).json({ message: "Notification not found", success: false });
+            return;
+        }
+
+        res.status(200).json({ message: "Notification status updated", success: true, data: updatedNotification });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", success: false });
+    }
+};
