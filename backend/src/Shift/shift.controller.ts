@@ -60,6 +60,7 @@ export const createShift = async (req: Request, res: Response) => {
         return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     req.body._id = new mongoose.Types.ObjectId();
 
     const shiftFields = req.body as IShift;
@@ -115,7 +116,7 @@ export const updateShift = async (req: Request, res: Response) => {
         for (let idx = 0; idx < shiftObj.users.length; idx++) {
             const participant = shiftObj.users[idx];
             const targetUser = await User.findOne({ _id: participant.user });
-            sendUpdateShiftEmail(
+            void sendUpdateShiftEmail(
                 targetUser?.firstName || "",
                 targetUser?.email || "",
                 shiftObj.name,
@@ -338,7 +339,7 @@ export const assignUser = async (req: Request, res: Response) => {
 
         const assignShiftResponse = await User.findOneAndUpdate(
             { _id: req.params.userid },
-            { $addToSet: { shifts: { shift: req.params.shiftid, approved: false } } }
+            { $addToSet: { shifts: { shift: req.params.shiftid, approved: true } } }
         );
 
         if (assignShiftResponse) {
@@ -578,6 +579,7 @@ export const generateShiftCalendar = async (req: Request, res: Response) => {
                 summary: shift.name,
                 description: shift.description,
                 location: shift.address,
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 url: `http://localhost:3000/shift/${shift._id}`,
             });
         }

@@ -7,26 +7,16 @@ import "./App.css";
 import ProtectedRoute from "./protectedRoute";
 import { RegisterPage } from "./login/register";
 import { LoginPage } from "./login/login";
-// import { VolunteerLandingPage } from "./profile/volunteer/landingPage";
 import { ResetPaswordForm } from "./forms/resetPassword/resetPasswordForm";
 import { ProfilePage } from "./profile/profile";
 import { VolunteersList } from "./admin/tags/volunteersList";
 import { AdminDashboard } from "./admin/adminDashboard";
-
-//import { ViewAvailableShifts } from "./profile/viewAvailableShifts";
-// import { AdminViewAvailbleShifts } from "./admin/adminViewAvailbleShifts";
-// import { MyShift } from "./profile/myShift";
-
-//  import { AdminViewAllShifts } from "./admin/adminViewAllShifts";
-
 import { Modal } from "./profile/modal";
 import ShiftInformation from "./shiftInformation/shiftInformation";
-// import { VolunteerDetails } from "./admin/tags/volunteerDetails";
-
 import AdminViewAllUsers from "./admin/adminViewAllUsers";
-
 import "./profile/data.json";
 import { ShiftPage } from "./shiftpage/shiftpage";
+import { NotificationPageAdmin } from "./notificationpage/notificationpageadmin";
 import { NotificationPage } from "./notificationpage/notificationpage";
 
 const queryClient = new QueryClient();
@@ -61,10 +51,12 @@ function App(): JSX.Element {
                         path="/myshifts"
                         element={<ProtectedRoute outlet={<ShiftPage shiftType={"myShifts"} />} />}
                     ></Route>
+                    <Route
+                        path="/notificationsadmin"
+                        element={<ProtectedRoute needsAdmin={true} outlet={<NotificationPageAdmin />} />}
+                    ></Route>
                     <Route path="/notifications" element={<ProtectedRoute outlet={<NotificationPage />} />}></Route>
-
                     <Route path="/shift/:shiftId" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
-
                     <Route path="/modal" element={<ProtectedRoute outlet={<Modal />} />}></Route>
                     <Route path="*" element={<Navigate to="/home" replace />} />
                 </Routes>
