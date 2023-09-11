@@ -8,7 +8,7 @@ import qualificationRoutes from "./Qualifications/qualifications.route";
 import qualificationTypeRoutes from "./QualificationType/qualificationType.route";
 import notificationRoutes from "./Notifications/notifications.route";
 import volunteerTypeRoutes from "./VolunteerType/volunteerType.route";
-import notificationTypeRoutes from './NotificationType/notificationType.route';
+import notificationTypeRoutes from "./NotificationType/notificationType.route";
 // import https = require("https");
 
 // Middleware
@@ -80,8 +80,7 @@ app.use("/api/volunteer-types", volunteerTypeRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 //Notification Type routes
-app.use('/api/notificationType', notificationTypeRoutes);
-
+app.use("/api/notificationType", notificationTypeRoutes);
 
 //Sling API Call to retrieve Auth Token
 // app.get("/api/credentials/:email/:password", (request, response) => {

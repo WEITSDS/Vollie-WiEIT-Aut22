@@ -1,4 +1,5 @@
 import { Document, Types } from "mongoose";
+import { IUser } from "../User/user.interface";
 
 export interface INotification extends Document {
     content: string;
@@ -7,4 +8,5 @@ export interface INotification extends Document {
     type: string;
     time: string;
     admins: Array<Types.ObjectId>; //adminID
+    userdata: IUser | null;
 }

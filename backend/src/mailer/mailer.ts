@@ -57,7 +57,14 @@ export async function sendCancelledShiftEmail(
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail, ccEmails);
 }
 
-export async function sendUpdateShiftEmail(userFirstName: string, userEmail: string, shiftName: string, shiftLocation: string, shiftStartTime: Date, shiftEndTime: Date): Promise<void> {
+export async function sendUpdateShiftEmail(
+    userFirstName: string,
+    userEmail: string,
+    shiftName: string,
+    shiftLocation: string,
+    shiftStartTime: Date,
+    shiftEndTime: Date
+): Promise<void> {
     logger.debug(`Sending shift update email email for '${userEmail}' for shift ''${shiftName}`);
     const content =
         `Hey ${userFirstName},\n\n` +
