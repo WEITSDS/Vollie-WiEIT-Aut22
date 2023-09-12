@@ -157,8 +157,8 @@ export const NotificationPageAdmin = () => {
                                         {!isLoadingNotifications &&
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
-                                                if (notif.type === "Sign Up Shift") {
-                                                    return DisplayNotif(notif);
+                                                if (notif.type === "Approve Shift") {
+                                                    return DisplayButtonNotif(notif);
                                                 }
                                                 return;
                                             })}

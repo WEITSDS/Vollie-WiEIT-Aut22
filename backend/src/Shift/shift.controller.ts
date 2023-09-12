@@ -258,6 +258,7 @@ export const assignUser = async (req: Request, res: Response) => {
         }
         // Check if user's selected volunteer type is approved
         const selectedVolunteerTypeID = req.params.selectedVolunteerTypeID;
+
         // -1 if either voltype doesnt exist for the user OR the type is not approved yet
         const userVolTypeIndex = targetUser.volunteerTypes.findIndex(
             (volType) => volType.type.toString() === selectedVolunteerTypeID && volType.approved === true
@@ -339,19 +340,24 @@ export const assignUser = async (req: Request, res: Response) => {
 
         const assignShiftResponse = await User.findOneAndUpdate(
             { _id: req.params.userid },
-            { $addToSet: { shifts: { shift: req.params.shiftid, approved: true } } }
+            { $addToSet: { shifts: { shift: req.params.shiftid, approved: false } } }
         );
 
         if (assignShiftResponse) {
+            console.log("jhel: " + req.params.selectedVolunteerTypeID);
             res.status(200).json({ message: "User assigned to shift", success: true });
             //Send sign up email
+
             void sendSignedUpShiftEmail(
                 targetUser.firstName,
                 targetUser.email,
                 targetShift.name,
                 targetShift.address,
                 targetShift.startAt,
-                targetShift.endAt
+                targetShift.endAt,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                targetShift.id,
+                req.params.selectedVolunteerTypeID
             );
             return;
         } else {

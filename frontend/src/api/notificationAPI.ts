@@ -8,6 +8,8 @@ export interface INotification {
     userFirstName: string;
     time: string;
     action: string;
+    typeId: string;
+    userVolType: string;
 }
 
 export async function getMyNotifications(): Promise<ResponseWithData<INotification[]>> {

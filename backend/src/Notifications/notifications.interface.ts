@@ -8,4 +8,6 @@ export interface INotification extends Document {
     time: string;
     admins: Array<Types.ObjectId>; //adminID
     action: string;
+    typeId: string;
+    userVolType: string;
 }

@@ -31,15 +31,18 @@ export async function sendSignedUpShiftEmail(
     shiftName: string,
     shiftLocation: string,
     shiftStartTime: Date,
-    shiftEndTime: Date
+    shiftEndTime: Date,
+    typeId: string,
+    userVolType: string
 ): Promise<void> {
     logger.debug(`Sending shift signup email for '${userEmail}' for shift ''${shiftName}`);
     const content =
         `Hey ${userFirstName},\n\n` +
         `You've signed up for the shift '${shiftName}' at ${shiftLocation} from ${shiftStartTime} to ${shiftEndTime}. See you there!`;
     const ccEmails = await getAdminEmails();
-    const type = "Sign Up Shift";
-    await createNotification(userEmail, content, userFirstName, ccEmails, type);
+    const type = "Approve Shift";
+    console.log("hi chekcing sendSignedUp mailer: " + userVolType);
+    await createNotification(userEmail, content, userFirstName, ccEmails, type, typeId, userVolType);
     return await sendEmail(`Your ${SITE_NAME} Shift Details`, content, userEmail, ccEmails);
 }
 export async function sendCancelledShiftEmail(

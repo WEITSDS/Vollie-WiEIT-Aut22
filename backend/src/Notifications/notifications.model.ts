@@ -10,6 +10,8 @@ const NotificationSchema: Schema = new Schema(
         type: { type: String, required: true },
         time: { type: String, required: true },
         action: { type: String, default: "Pending" },
+        typeId: { type: String, required: false },
+        userVolType: { type: String, required: false },
     },
     {
         timestamps: true,

@@ -4,6 +4,7 @@ import Notification from "./notifications.model";
 import User from "../User/user.model";
 import mongoose from "mongoose";
 import { getUserByEmail } from "../User/user.controller";
+//import Shift from "../Shift/shift.model";
 
 const logger = new Logger({ name: "notification.controller" });
 
@@ -12,7 +13,9 @@ export const createNotification = async (
     content: string,
     userFirstName: string,
     ccEmails: string | string[],
-    type: string
+    type: string,
+    typeId?: string,
+    userVolType?: string
 ): Promise<void> => {
     try {
         const user = await getUserByEmail(userEmail);
@@ -40,6 +43,8 @@ export const createNotification = async (
             userFirstName: userFirstName,
             type: type,
             time: date.toLocaleString(),
+            typeId: typeId,
+            userVolType: userVolType,
         });
         notif.id = new mongoose.Types.ObjectId();
         await user.update({ $push: { notifications: notif._id as string } });
@@ -88,7 +93,6 @@ export const getNotifications = async (req: Request, res: Response) => {
         return;
     }
 };
-
 export const updateNotificationStatus = async (req: Request, res: Response) => {
     const { action, notificationId } = req.body as { action: string; notificationId: string };
 
@@ -102,6 +106,21 @@ export const updateNotificationStatus = async (req: Request, res: Response) => {
         if (updatedNotification === null) {
             res.status(404).json({ message: "Notification not found", success: false });
             return;
+        }
+
+        if (updatedNotification.typeId && (action === "Approved" || action === "Declined")) {
+            if (updatedNotification.type === "Approve Shift") {
+                await User.findOneAndUpdate(
+                    { _id: updatedNotification.user, "shifts.shift": updatedNotification.typeId },
+                    { $set: { "shifts.$.approved": action === "Approved" } }
+                );
+            } else if (updatedNotification.type === "volunteerType") {
+                // If VolunteerType also uses typeId and similar schema as Shift, use a similar approach
+                await User.findOneAndUpdate(
+                    { _id: updatedNotification.user, "volunteerTypes.type": updatedNotification.typeId },
+                    { $set: { "volunteerTypes.$.approved": action === "Approved" } }
+                );
+            }
         }
 
         res.status(200).json({ message: "Notification status updated", success: true, data: updatedNotification });
