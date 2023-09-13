@@ -181,7 +181,7 @@ const ShiftInformation = () => {
     const startDate = new Date(startAt);
     const endDate = new Date(endAt);
 
-    const targetShiftInUser = userObj?.shifts.find((shift) => shiftId === shift.shift._id); //xiaobing shift.shift
+    const targetShiftInUser = userObj?.shifts.find((shift) => shiftId === shift.shift?._id); //xiaobing shift.shift
 
     const localizer = momentLocalizer(moment);
 

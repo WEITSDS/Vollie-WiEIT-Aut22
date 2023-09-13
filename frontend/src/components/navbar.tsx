@@ -57,7 +57,7 @@ export class NavigationBar extends React.Component<Record<string, never>, NavBar
                         </Nav>
                         <Nav>
                             <HelpModal />
-                            {!currentUser?.isAdmin && <CalendarLink accountID={currentUser?._id || ""} />}
+                            <CalendarLink accountID={currentUser?._id || ""} />
                             <NavDropdown
                                 align="end"
                                 title={

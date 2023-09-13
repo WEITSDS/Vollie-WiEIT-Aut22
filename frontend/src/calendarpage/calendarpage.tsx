@@ -41,12 +41,12 @@ const CalendarPage = () => {
                         onSelectEvent={(event) => {
                             window.location.replace(`/shift/${event.id}`);
                         }}
-                        events={user?.shifts.map((shift) => {
+                        events={user?.shifts?.map((shift) => {
                             return {
-                                startAt: new Date(shift.shift.startAt),
-                                endAt: new Date(shift.shift.endAt),
-                                name: shift.shift.name || "Shift",
-                                id: shift.shift._id,
+                                startAt: new Date(shift?.shift?.startAt),
+                                endAt: new Date(shift?.shift?.endAt),
+                                name: shift?.shift?.name || "Shift",
+                                id: shift?.shift?._id,
                             };
                         })}
                         startAccessor="startAt"
