@@ -6,6 +6,8 @@ import React from "react";
 import { NavigationBar } from "../components/navbar";
 import CalendarModal from "../components/calendarModal/calendarModal";
 import "./calendarpage.css";
+import { WEITBackground } from "../components/background";
+import { ModalBody } from "react-bootstrap";
 
 const CalendarPage = () => {
     const localizer = momentLocalizer(moment);
@@ -21,30 +23,39 @@ const CalendarPage = () => {
     return (
         <>
             <NavigationBar />
-            <div>
-                <div className="link">
-                    <h1>Calendar</h1>
-                    <CalendarModal accountID={user?._id || ""} />
-                </div>
-                <Calendar
-                    localizer={localizer}
-                    onSelectEvent={(event) => {
-                        window.location.replace(`/shift/${event.id}`);
-                    }}
-                    events={user?.shifts.map((shift) => {
-                        return {
-                            startAt: new Date(shift.shift.startAt),
-                            endAt: new Date(shift.shift.endAt),
-                            name: shift.shift.name || "Shift",
-                            id: shift.shift._id,
-                        };
-                    })}
-                    startAccessor="startAt"
-                    endAccessor="endAt"
-                    titleAccessor="name"
-                    style={{ height: 500 }}
-                />
+
+            <div className="background">
+                <WEITBackground>
+                    <></>
+                </WEITBackground>
             </div>
+
+            <ModalBody>
+                <div className="calendar-page">
+                    <div className="title-header">
+                        <h1 className="calendar-header">Calendar</h1>
+                        <CalendarModal accountID={user?._id || ""} />
+                    </div>
+                    <Calendar
+                        localizer={localizer}
+                        onSelectEvent={(event) => {
+                            window.location.replace(`/shift/${event.id}`);
+                        }}
+                        events={user?.shifts.map((shift) => {
+                            return {
+                                startAt: new Date(shift.shift.startAt),
+                                endAt: new Date(shift.shift.endAt),
+                                name: shift.shift.name || "Shift",
+                                id: shift.shift._id,
+                            };
+                        })}
+                        startAccessor="startAt"
+                        endAccessor="endAt"
+                        titleAccessor="name"
+                        style={{ height: 500 }}
+                    />
+                </div>
+            </ModalBody>
         </>
     );
 };
