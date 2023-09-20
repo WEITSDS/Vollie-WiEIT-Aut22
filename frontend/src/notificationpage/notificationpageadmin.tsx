@@ -6,14 +6,20 @@ import { Link } from "react-router-dom";
 import { INotification } from "../api/notificationAPI";
 import { WEITBackground } from "../components/background";
 import { ModalBody } from "react-bootstrap";
+import { setApprovalUserForShift } from "../api/shiftApi";
+//import { useOwnUser } from "../hooks/useOwnUser";
 
 export const NotificationPageAdmin = () => {
     const { data: userNotificationsData, isLoading: isLoadingNotifications } = useMyNotifications();
+    //const userQuery = useOwnUser();
 
     const [toggleState, setToggleState] = useState(1);
     const toggleTab = (index: number) => {
         setToggleState(index);
     };
+
+    //  const { data: userObj } = userQuery?.data || {};
+
     const updateNotificationStatus = async (notificationId: string, action: string) => {
         console.log("updateNotificationStatus function called");
         try {
@@ -42,6 +48,45 @@ export const NotificationPageAdmin = () => {
 
     // TO-DO: Insert relevant Link destinations for DisplayButtonNotif & DisplayNotif
     // TO-DO: Insert relevant Link destinations for Approve/Decline buttons
+    const ShiftApprovalButtonNotif = (notif: INotification, currentUserId: string) => {
+        const handleApproval = (approvalStatus: string) => {
+            setApprovalUserForShift(currentUserId, notif.typeId, approvalStatus)
+                .then((response) => {
+                    if (response.status === 200) {
+                        alert("Shift status updated successfully!");
+                    } else {
+                        alert(`Failed to update shift:`);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Could not update shift approval status:", error);
+                });
+        };
+
+        return (
+            <div>
+                <Link className="link" to="">
+                    <div key={notif._id} className="notif-container-admin">
+                        <div className="notif-box-content">
+                            <h2 className="notif-name">{notif.userFirstName}</h2>
+                            <h4 className="notif-type">{notif.type}</h4>
+                            <h6 className="notif-content">{notif.content}</h6>
+                            <h6 className="notif-time">{notif.time}</h6>
+                        </div>
+                        <div className="notif-box-buttons">
+                            <span className="notif-current-status">Current Status: {notif.action}</span>
+                            <button className="notif-button" onClick={() => handleApproval("approve")}>
+                                Approve
+                            </button>
+                            <button className="notif-button" onClick={() => handleApproval("unapprove")}>
+                                Decline
+                            </button>
+                        </div>
+                    </div>
+                </Link>
+            </div>
+        );
+    };
 
     const DisplayButtonNotif = (notif: INotification) => {
         // Notifications that need to use the approve/decline buttons
@@ -142,7 +187,7 @@ export const NotificationPageAdmin = () => {
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
                                                 // Filter notifications that require the approve button
-                                                if (notif.type === "Volunteer Role Request for Approval") {
+                                                if (notif.type === "Volunteer Role Approval") {
                                                     return DisplayButtonNotif(notif);
                                                 } else {
                                                     return DisplayNotif(notif);
@@ -158,7 +203,9 @@ export const NotificationPageAdmin = () => {
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
                                                 if (notif.type === "Approve Shift") {
-                                                    return DisplayButtonNotif(notif);
+                                                    return notif.user
+                                                        ? ShiftApprovalButtonNotif(notif, notif.user)
+                                                        : null;
                                                 }
                                                 return;
                                             })}
@@ -188,7 +235,7 @@ export const NotificationPageAdmin = () => {
                                         {!isLoadingNotifications &&
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
-                                                if (notif.type === "Volunteer Role Request for Approval") {
+                                                if (notif.type === "Gender Equity" || notif.type === "SPROUT") {
                                                     return DisplayButtonNotif(notif);
                                                 }
                                                 if (notif.type === "Volunteer Type Request Approved") {

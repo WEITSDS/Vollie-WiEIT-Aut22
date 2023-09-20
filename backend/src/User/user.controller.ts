@@ -473,13 +473,18 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
             });
             return;
         }
+        const newVolTypeId = new mongoose.Types.ObjectId().toString();
 
         const targetVolType = await VolunteerType.findById(req.params.volunteertypeid);
         const assignVolTypeResult = await User.findOneAndUpdate(
             { _id: req.params.userid },
             {
                 $addToSet: {
-                    volunteerTypes: { type: req.params.volunteertypeid, approved: !targetVolType?.requiresApproval },
+                    volunteerTypes: {
+                        _id: new mongoose.Types.ObjectId(newVolTypeId),
+                        type: req.params.volunteertypeid,
+                        approved: !targetVolType?.requiresApproval,
+                    },
                 },
             }
         );
@@ -502,8 +507,11 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
                     sessionUserId,
                     userObj.firstName,
                     userObj.lastName,
-                    targetVolType.name
+                    targetVolType.name,
+                    newVolTypeId,
+                    userObj._id
                 );
+                console.log("CHECK CHECK id being passed " + userObj._id);
             }
             return;
         } else {
