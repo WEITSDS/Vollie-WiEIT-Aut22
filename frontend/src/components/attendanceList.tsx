@@ -97,7 +97,7 @@ export default function AttendanceListModal({
                 "Length (Hours)",
                 "Category",
                 "Description",
-                "Notes",
+                // "Notes",
             ],
             [
                 shift._id,
@@ -109,7 +109,7 @@ export default function AttendanceListModal({
                 shift.hours,
                 shift.category,
                 shift.description,
-                shift.notes,
+                // shift.notes,
             ],
             [],
             ["Volunteer ID", "First Name", "Last Name", "Volunteer Type", "Approval Status", "Completion Status"],

@@ -37,7 +37,7 @@ const shiftFormFields = (
         users: fields?.users || [],
         description: fields?.description || "",
         hours: fields?.hours || 0,
-        notes: fields?.notes || "",
+        // notes: fields?.notes || "",
         category: fields?.category || "Other",
         requiredQualifications: fields?.requiredQualifications || [],
         volunteerTypeAllocations: fields?.volunteerTypeAllocations || [],
@@ -217,8 +217,8 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
 
                 <hr className="type-line" />
 
-                <label>Notes</label>
-                <input type="text" defaultValue={formFields.notes} name="notes" onChange={handleChange} />
+                {/* <label>Notes</label>
+                <input type="text" defaultValue={formFields.notes} name="notes" onChange={handleChange} /> */}
 
                 <label>Category</label>
                 <Form.Select

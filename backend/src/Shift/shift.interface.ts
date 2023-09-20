@@ -8,7 +8,7 @@ export interface IShift extends Document {
     address: string;
     description: string;
     hours: number;
-    notes: string;
+    // notes: string;
     users: Array<IShiftUser>;
     category: "School Outreach" | "Event" | "Committee" | "Other";
     requiredQualifications: Array<IShiftRequiredQualification>;
