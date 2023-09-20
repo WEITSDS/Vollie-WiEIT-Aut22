@@ -13,7 +13,7 @@
 
 .left-box-container {
     width: 45%;
-    height: 70%;
+    /* height: 100%; */
     margin-top: 19px;
     background: #ffffff;
     border: 1px solid #bab7b7;
@@ -225,7 +225,7 @@
 
 .description-body-container {
     width: 90%;
-    height: 241px;
+    height: 400px;
 }
 
 .description-title {

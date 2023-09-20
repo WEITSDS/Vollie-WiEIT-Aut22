@@ -327,7 +327,7 @@ const ShiftInformation = () => {
                                     <p>{description}</p>
                                 </div>
                             </div>
-                            <hr className="description-divider" />
+                            {/* <hr className="description-divider" /> */}
                             {/* <div className="notes-container">
                                 <div className="description-body-container">
                                     <h1 className="description-title">Notes</h1>
@@ -335,7 +335,7 @@ const ShiftInformation = () => {
                                 </div>
                             </div> */}
                             {/* <hr className="notes-divider" /> */}
-                            <div className="footer-container">
+                            {/* <div className="footer-container">
                                 {!!userObj && shiftId && targetShiftInUser && !targetShiftInUser.completed && (
                                     <button
                                         className="cancel-shift-btn"
@@ -347,7 +347,7 @@ const ShiftInformation = () => {
                                         Cancel shift
                                     </button>
                                 )}
-                            </div>
+                            </div> */}
                         </div>
                         <div className="right-box-container">
                             <div className="header-right-box-container">
