@@ -57,7 +57,6 @@ const ShiftInformation = () => {
         address,
         description,
         hours,
-        notes,
         category,
         // requiresWWCC,
         // numGeneralVolunteers,
@@ -233,6 +232,17 @@ const ShiftInformation = () => {
                                                     : "Complete Shift"}
                                             </button>
                                         )}
+                                        {!!userObj && shiftId && targetShiftInUser && !targetShiftInUser.completed && (
+                                            <button
+                                                className="cancel-shift-btn"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    void handleCancel();
+                                                }}
+                                            >
+                                                Cancel shift
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -317,15 +327,15 @@ const ShiftInformation = () => {
                                     <p>{description}</p>
                                 </div>
                             </div>
-                            <hr className="description-divider" />
-                            <div className="notes-container">
+                            {/* <hr className="description-divider" /> */}
+                            {/* <div className="notes-container">
                                 <div className="description-body-container">
                                     <h1 className="description-title">Notes</h1>
                                     <p>{notes}</p>
                                 </div>
-                            </div>
-                            <hr className="notes-divider" />
-                            <div className="footer-container">
+                            </div> */}
+                            {/* <hr className="notes-divider" /> */}
+                            {/* <div className="footer-container">
                                 {!!userObj && shiftId && targetShiftInUser && !targetShiftInUser.completed && (
                                     <button
                                         className="cancel-shift-btn"
@@ -337,7 +347,7 @@ const ShiftInformation = () => {
                                         Cancel shift
                                     </button>
                                 )}
-                            </div>
+                            </div> */}
                         </div>
                         <div className="right-box-container">
                             <div className="header-right-box-container">

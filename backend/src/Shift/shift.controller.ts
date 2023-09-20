@@ -765,7 +765,7 @@ export const exportAdminShifts = async (req: Request, res: Response) => {
                 "Length (Hours)",
                 "Category",
                 "Description",
-                "Notes",
+                // "Notes",
                 "Volunteer ID",
                 "First Name",
                 "Last Name",
@@ -872,7 +872,7 @@ export const exportVolunteerShifts = async (req: Request, res: Response) => {
                 "Length (Hours)",
                 "Category",
                 "Description",
-                "Notes",
+                // "Notes",
             ],
         ] as string[][];
 
@@ -890,7 +890,7 @@ export const exportVolunteerShifts = async (req: Request, res: Response) => {
                     shift.hours,
                     shift.category,
                     shift.description,
-                    shift.notes,
+                    // shift.notes,
                 ],
             ] as string[][];
 

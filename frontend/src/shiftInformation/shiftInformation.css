@@ -13,7 +13,7 @@
 
 .left-box-container {
     width: 45%;
-    height: 70%;
+    /* height: 100%; */
     margin-top: 19px;
     background: #ffffff;
     border: 1px solid #bab7b7;
@@ -225,7 +225,7 @@
 
 .description-body-container {
     width: 90%;
-    height: 241px;
+    height: 400px;
 }
 
 .description-title {
@@ -238,10 +238,10 @@
     color: #000000;
 }
 
-.notes-container {
+/* .notes-container {
     display: flex;
     justify-content: center;
-}
+} */
 
 .footer-container {
     display: flex;
@@ -264,6 +264,7 @@
     font-size: 14px;
     line-height: 17px;
     color: #ffffff;
+    margin-left: 25px;
 }
 
 .cancel-shift-btn:hover {

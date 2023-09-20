@@ -11,7 +11,7 @@ const ShiftSchema: Schema = new Schema(
         address: { type: String, required: true },
         description: { type: String, default: "" },
         hours: { type: Number, default: 0 },
-        notes: { type: String, default: "" },
+        // notes: { type: String, default: "" },
         users: [
             {
                 user: { type: mongoose.Types.ObjectId, ref: "User", required: true },
