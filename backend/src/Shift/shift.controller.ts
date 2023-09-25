@@ -804,7 +804,7 @@ export const exportAdminShifts = async (req: Request, res: Response) => {
                     `${shift.hours}`,
                     `${shift.category}`,
                     `${shift.description}`,
-                    `${shift.notes}`,
+                    // `${shift.notes}`, //Property 'notes' does not exist on IShift
                     targetUser?._id.toString(),
                     targetUser?.firstName,
                     targetUser?.lastName,

@@ -75,6 +75,12 @@
     font-size: 24px;
 }
 
+.notif-name:hover {
+    color: blue;
+    text-decoration: underline;
+    transition: 0.25s;
+}
+
 .notif-type{
     color: black;
     font-size: 18px;
@@ -93,9 +99,11 @@
 
 .notif-box-buttons{
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 12px;
-    align-items: end;
+    align-items: center;
+    margin-left: 64px;
+
 }
 
 .notif-button {
@@ -115,6 +123,10 @@
     color: rgb(40,100,255);
     border: 1px solid rgb(40,100,255);
 
+}
+
+.notif-button-hidden{ 
+    display: none;
 }
 
 .link, .link:hover{

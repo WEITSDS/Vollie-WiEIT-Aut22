@@ -18,6 +18,11 @@ export const NotificationPageAdmin = () => {
         setToggleState(index);
     };
 
+    const [isUserID, setIsUserID] = useState("");
+    const hoverIsUserID = (notif: INotification) => {
+        setIsUserID(notif.user);
+    };
+
     //  const { data: userObj } = userQuery?.data || {};
 
     const updateNotificationStatus = async (notificationId: string, action: string) => {
@@ -46,8 +51,6 @@ export const NotificationPageAdmin = () => {
         }
     };
 
-    // TO-DO: Insert relevant Link destinations for DisplayButtonNotif & DisplayNotif
-    // TO-DO: Insert relevant Link destinations for Approve/Decline buttons
     const ShiftApprovalButtonNotif = (notif: INotification, currentUserId: string) => {
         const handleApproval = (approvalStatus: string) => {
             setApprovalUserForShift(currentUserId, notif.typeId, approvalStatus)
@@ -65,25 +68,31 @@ export const NotificationPageAdmin = () => {
 
         return (
             <div>
-                <Link className="link" to="">
-                    <div key={notif._id} className="notif-container-admin">
-                        <div className="notif-box-content">
-                            <h2 className="notif-name">{notif.userFirstName}</h2>
-                            <h4 className="notif-type">{notif.type}</h4>
-                            <h6 className="notif-content">{notif.content}</h6>
-                            <h6 className="notif-time">{notif.time}</h6>
-                        </div>
-                        <div className="notif-box-buttons">
-                            <span className="notif-current-status">Current Status: {notif.action}</span>
-                            <button className="notif-button" onClick={() => handleApproval("approve")}>
-                                Approve
-                            </button>
-                            <button className="notif-button" onClick={() => handleApproval("unapprove")}>
-                                Decline
-                            </button>
-                        </div>
+                <div key={notif._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
+                    <div className="notif-box-content">
+                        <Link className="link" to={`/profile/${isUserID}`}>
+                            <h2 className="notif-name">{notif.userFirstName} </h2>
+                        </Link>
+                        <h4 className="notif-type">{notif.type}</h4>
+                        <h6 className="notif-content">{notif.content}</h6>
+                        <h6 className="notif-time">{notif.time}</h6>
                     </div>
-                </Link>
+                    <div className="notif-box-buttons">
+                        <span className="notif-current-status">Current Status: {notif.action}</span>
+                        <button
+                            className={notif.action === "Approved" ? "notif-button-hidden" : "notif-button"}
+                            onClick={() => handleApproval("approve")}
+                        >
+                            Approve
+                        </button>
+                        <button
+                            className={notif.action === "Declined" ? "notif-button-hidden" : "notif-button"}
+                            onClick={() => handleApproval("unapprove")}
+                        >
+                            Decline
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     };
@@ -92,48 +101,48 @@ export const NotificationPageAdmin = () => {
         // Notifications that need to use the approve/decline buttons
         return (
             <div>
-                <Link className="link" to="">
-                    <div key={notif._id} className="notif-container-admin">
-                        <div className="notif-box-content">
+                <div key={notif._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
+                    <div className="notif-box-content">
+                        <Link className="link" to={`/profile/${isUserID}`}>
                             <h2 className="notif-name">{notif.userFirstName}</h2>
-                            <h4 className="notif-type">{notif.type}</h4>
-                            <h6 className="notif-content">{notif.content}</h6>
-                            <h6 className="notif-time">{notif.time}</h6>
-                        </div>
-                        <div className="notif-box-buttons">
-                            <span className="notif-current-status">Current Status: {notif.action}</span>
-                            <button
-                                className="notif-button"
-                                onClick={() => {
-                                    updateNotificationStatus(notif._id, "Approved")
-                                        .then(() => {
-                                            //alert("Notification status updated woah successfully!");
-                                        })
-                                        .catch((error) => {
-                                            console.error("Could not update notification status:", error);
-                                        });
-                                }}
-                            >
-                                Approve
-                            </button>
-
-                            <button
-                                className="notif-button"
-                                onClick={() => {
-                                    updateNotificationStatus(notif._id, "Declined")
-                                        .then(() => {
-                                            // Handle success here, if needed
-                                        })
-                                        .catch((error) => {
-                                            console.error("Could not update notification status:", error);
-                                        });
-                                }}
-                            >
-                                Decline
-                            </button>
-                        </div>
+                        </Link>
+                        <h4 className="notif-type">{notif.type}</h4>
+                        <h6 className="notif-content">{notif.content}</h6>
+                        <h6 className="notif-time">{notif.time}</h6>
                     </div>
-                </Link>
+                    <div className="notif-box-buttons">
+                        <span className="notif-current-status">Current Status: {notif.action}</span>
+                        <button
+                            className={notif.action === "Approved" ? "notif-button-hidden" : "notif-button"}
+                            onClick={() => {
+                                updateNotificationStatus(notif._id, "Approved")
+                                    .then(() => {
+                                        //alert("Notification status updated woah successfully!");
+                                    })
+                                    .catch((error) => {
+                                        console.error("Could not update notification status:", error);
+                                    });
+                            }}
+                        >
+                            Approve
+                        </button>
+
+                        <button
+                            className={notif.action === "Declined" ? "notif-button-hidden" : "notif-button"}
+                            onClick={() => {
+                                updateNotificationStatus(notif._id, "Declined")
+                                    .then(() => {
+                                        // Handle success here, if needed
+                                    })
+                                    .catch((error) => {
+                                        console.error("Could not update notification status:", error);
+                                    });
+                            }}
+                        >
+                            Decline
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     };
@@ -141,16 +150,16 @@ export const NotificationPageAdmin = () => {
         // Regular notifications w/ no buttons
         return (
             <div>
-                <Link className="link" to="">
-                    <div key={notif._id} className="notif-container-admin">
-                        <div className="notif-box-content">
+                <div key={notif._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
+                    <div className="notif-box-content">
+                        <Link className="link" to={`/profile/${isUserID}`}>
                             <h2 className="notif-name">{notif.userFirstName}</h2>
-                            <h4 className="notif-type">{notif.type}</h4>
-                            <h6 className="notif-content">{notif.content}</h6>
-                            <h6 className="notif-time">{notif.time}</h6>
-                        </div>
+                        </Link>
+                        <h4 className="notif-type">{notif.type}</h4>
+                        <h6 className="notif-content">{notif.content}</h6>
+                        <h6 className="notif-time">{notif.time}</h6>
                     </div>
-                </Link>
+                </div>
             </div>
         );
     };
