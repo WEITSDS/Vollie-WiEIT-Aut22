@@ -60,6 +60,7 @@ export const createShift = async (req: Request, res: Response) => {
         return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     req.body._id = new mongoose.Types.ObjectId();
 
     const shiftFields = req.body as IShift;
@@ -115,7 +116,7 @@ export const updateShift = async (req: Request, res: Response) => {
         for (let idx = 0; idx < shiftObj.users.length; idx++) {
             const participant = shiftObj.users[idx];
             const targetUser = await User.findOne({ _id: participant.user });
-            sendUpdateShiftEmail(
+            void sendUpdateShiftEmail(
                 targetUser?.firstName || "",
                 targetUser?.email || "",
                 shiftObj.name,
@@ -257,6 +258,7 @@ export const assignUser = async (req: Request, res: Response) => {
         }
         // Check if user's selected volunteer type is approved
         const selectedVolunteerTypeID = req.params.selectedVolunteerTypeID;
+
         // -1 if either voltype doesnt exist for the user OR the type is not approved yet
         const userVolTypeIndex = targetUser.volunteerTypes.findIndex(
             (volType) => volType.type.toString() === selectedVolunteerTypeID && volType.approved === true
@@ -342,15 +344,20 @@ export const assignUser = async (req: Request, res: Response) => {
         );
 
         if (assignShiftResponse) {
+            console.log("jhel: " + req.params.selectedVolunteerTypeID);
             res.status(200).json({ message: "User assigned to shift", success: true });
             //Send sign up email
+
             void sendSignedUpShiftEmail(
                 targetUser.firstName,
                 targetUser.email,
                 targetShift.name,
                 targetShift.address,
                 targetShift.startAt,
-                targetShift.endAt
+                targetShift.endAt,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                targetShift.id,
+                req.params.selectedVolunteerTypeID
             );
             return;
         } else {
@@ -578,6 +585,7 @@ export const generateShiftCalendar = async (req: Request, res: Response) => {
                 summary: shift.name,
                 description: shift.description,
                 location: shift.address,
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 url: `http://localhost:3000/shift/${shift._id}`,
             });
         }

@@ -31,15 +31,18 @@ export async function sendSignedUpShiftEmail(
     shiftName: string,
     shiftLocation: string,
     shiftStartTime: Date,
-    shiftEndTime: Date
+    shiftEndTime: Date,
+    typeId: string,
+    userVolType: string
 ): Promise<void> {
     logger.debug(`Sending shift signup email for '${userEmail}' for shift ''${shiftName}`);
     const content =
         `Hey ${userFirstName},\n\n` +
         `You've signed up for the shift '${shiftName}' at ${shiftLocation} from ${shiftStartTime} to ${shiftEndTime}. See you there!`;
     const ccEmails = await getAdminEmails();
-    const type = "Sign Up Shift";
-    await createNotification(userEmail, content, userFirstName, ccEmails, type);
+    const type = "Approve Shift";
+    console.log("hi chekcing sendSignedUp mailer: " + userVolType);
+    await createNotification(userEmail, content, userFirstName, ccEmails, type, typeId, userVolType);
     return await sendEmail(`Your ${SITE_NAME} Shift Details`, content, userEmail, ccEmails);
 }
 export async function sendCancelledShiftEmail(
@@ -57,7 +60,14 @@ export async function sendCancelledShiftEmail(
     return await sendEmail(`Your ${SITE_NAME} Shift Has Been Cancelled`, content, userEmail, ccEmails);
 }
 
-export async function sendUpdateShiftEmail(userFirstName: string, userEmail: string, shiftName: string, shiftLocation: string, shiftStartTime: Date, shiftEndTime: Date): Promise<void> {
+export async function sendUpdateShiftEmail(
+    userFirstName: string,
+    userEmail: string,
+    shiftName: string,
+    shiftLocation: string,
+    shiftStartTime: Date,
+    shiftEndTime: Date
+): Promise<void> {
     logger.debug(`Sending shift update email email for '${userEmail}' for shift ''${shiftName}`);
     const content =
         `Hey ${userFirstName},\n\n` +
@@ -73,14 +83,16 @@ export async function sendVolunteerRequestEmail(
     userID: string,
     userFirstName: string,
     userLastName: string,
-    volunteerType: string
+    volunteerType: string,
+    typeId: string,
+    userVolType: string
 ): Promise<void> {
     logger.debug(`
         Sending volunteer type approval email to admin email '${email.toString()}' for user ${userFirstName} ${userLastName}
     `);
-    const content = `Dear ${SITE_NAME} administrator,\n\n${userFirstName} ${userLastName} is requesting approval for volunteer type "${volunteerType}".\n
-    If you approve of this change, head to their page (${HOST}/profile/${userID}) and click "Approve".`;
-    const type = "Volunteer Role Request for Approval";
+    const content = `Dear ${SITE_NAME} woah administrator,\n\n${userFirstName} ${userLastName} is requesting approval for volunteer type "${volunteerType}".\n
+    If you approve of this change, head to their page (${HOST}/profile/${userID}) and click ${typeId} "Approve".`;
+    const type = typeId;
     const adminCCs: string[] = [];
     const isArray = Array.isArray(email);
     // if there is more than one administrator
@@ -89,8 +101,8 @@ export async function sendVolunteerRequestEmail(
         for (let i = 1; i < email.length; i++) {
             adminCCs[i - 1] = email[i];
         }
-        await createNotification(email[0], content, userFirstName, adminCCs, type);
-    } else if (!isArray) await createNotification(email, content, userFirstName, adminCCs, type);
+        await createNotification(email[0], content, userFirstName, adminCCs, volunteerType, typeId, userVolType);
+    } else if (!isArray) await createNotification(email, content, userFirstName, adminCCs, type, typeId, userVolType);
     return await sendEmail(`${SITE_NAME} - User Requesting Volunteer Type Approval`, content, email);
 }
 

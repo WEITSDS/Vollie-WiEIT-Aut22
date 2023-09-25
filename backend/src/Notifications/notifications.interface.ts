@@ -7,4 +7,7 @@ export interface INotification extends Document {
     type: string;
     time: string;
     admins: Array<Types.ObjectId>; //adminID
+    action: string;
+    typeId: string;
+    userVolType: string;
 }

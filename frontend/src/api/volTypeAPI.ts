@@ -15,6 +15,7 @@ export interface IVolunteerType {
     name: string;
     description: string;
     requiresApproval: boolean;
+    typeId: string;
 }
 
 export interface IVolunteerTypeUser {
