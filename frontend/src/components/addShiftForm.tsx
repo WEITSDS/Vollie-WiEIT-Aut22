@@ -168,22 +168,15 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
         setrepeats(input.currentTarget.value);
     };
 
-    const handleTemp = () => {
+    const handleAddShift = () => {
         let interval = 0;
-        const recurrances: number = +repeats; //Converting string to number
+        const recurrances: number = +repeats;
 
-        //Interval multiplier
         if (repeatInterval === "daily" || repeatInterval === "monthly") {
             interval = 1;
         } else if (repeatInterval === "weekly") {
             interval = 7;
         }
-
-        console.log("------------------------------------------------------");
-        console.log("recurrances:");
-        console.log(recurrances);
-        console.log("interval:");
-        console.log(repeatInterval);
 
         //Create Initial Shift
         handleSubmit().catch((err) => console.log(err));
@@ -191,36 +184,24 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
         //Create Recurring Shifts
         if (repeatInterval === "daily" || repeatInterval === "weekly") {
             for (let i = 0; i < recurrances; i++) {
-                console.log("loop no#:");
-                console.log(i);
                 setrecurDays(interval);
             }
         } else if (repeatInterval === "monthly") {
             for (let i = 0; i < recurrances; i++) {
-                console.log("loop no#:");
-                console.log(i);
                 setrecurMonths(interval);
             }
         }
     };
 
     const setrecurDays = (interval: number) => {
-        console.log("startAt:");
         formFields.startAt.setDate(formFields.startAt.getDate() + interval);
-        console.log(formFields.startAt);
-        console.log("endAt:");
         formFields.endAt.setDate(formFields.endAt.getDate() + interval);
-        console.log(formFields.endAt);
         handleSubmit().catch((err) => console.log(err));
     };
 
     const setrecurMonths = (interval: number) => {
-        console.log("startAt:");
         formFields.startAt.setMonth(formFields.startAt.getMonth() + interval);
-        console.log(formFields.startAt);
-        console.log("endAt:");
         formFields.endAt.setMonth(formFields.endAt.getMonth() + interval);
-        console.log(formFields.endAt);
         handleSubmit().catch((err) => console.log(err));
     };
     /*---------------------------------------------------------------------*/
@@ -370,7 +351,6 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
 
                 <h1 className="type-header">Recurring Options</h1>
                 <div className="type-container">
-                    <span>'repeatInterval': {repeatInterval}</span>
                     <div>
                         {recurOps.map(({ view: title, value: interval }) => {
                             return (
@@ -389,7 +369,6 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                     </div>
                 </div>
                 <label>Number of Recurrances</label>
-                <span>'repeats': {repeats}</span>
                 <input
                     className="work-hours add-shift-form-number-input"
                     type="number"
@@ -401,6 +380,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                 />
 
                 <hr className="type-line" />
+
                 <div className="error-message" hidden={responseMsg === ""}>
                     {responseMsg !== "" && <p>{responseMsg}</p>}
                 </div>
@@ -420,7 +400,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                             type="submit"
                             onClick={(e) => {
                                 e.preventDefault();
-                                handleTemp();
+                                handleAddShift();
                             }}
                         >
                             {previousShiftFields ? "Update" : "Add"}
