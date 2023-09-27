@@ -796,7 +796,6 @@ export const exportAdminShifts = async (req: Request, res: Response) => {
                     `${shift.hours}`,
                     `${shift.category}`,
                     `${shift.description}`,
-                    `${shift.notes}`,
                     targetUser?._id.toString(),
                     targetUser?.firstName,
                     targetUser?.lastName,
