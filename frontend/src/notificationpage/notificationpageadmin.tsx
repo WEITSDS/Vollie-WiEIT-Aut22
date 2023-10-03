@@ -68,14 +68,14 @@ export const NotificationPageAdmin = () => {
 
         return (
             <div>
-                <div key={notif._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
+                <div key={notif?._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
                     <div className="notif-box-content">
                         <Link className="link" to={`/profile/${isUserID}`}>
-                            <h2 className="notif-name">{notif.userFirstName} </h2>
+                            <h2 className="notif-name">{notif?.userFirstName} </h2>
                         </Link>
-                        <h4 className="notif-type">{notif.type}</h4>
-                        <h6 className="notif-content">{notif.content}</h6>
-                        <h6 className="notif-time">{notif.time}</h6>
+                        <h4 className="notif-type">{notif?.type}</h4>
+                        <h6 className="notif-content">{notif?.content}</h6>
+                        <h6 className="notif-time">{notif?.time}</h6>
                     </div>
                     <div className="notif-box-buttons">
                         <span className="notif-current-status">Current Status: {notif.action}</span>
@@ -101,14 +101,14 @@ export const NotificationPageAdmin = () => {
         // Notifications that need to use the approve/decline buttons
         return (
             <div>
-                <div key={notif._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
+                <div key={notif?._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
                     <div className="notif-box-content">
                         <Link className="link" to={`/profile/${isUserID}`}>
-                            <h2 className="notif-name">{notif.userFirstName}</h2>
+                            <h2 className="notif-name">{notif?.userFirstName}</h2>
                         </Link>
-                        <h4 className="notif-type">{notif.type}</h4>
-                        <h6 className="notif-content">{notif.content}</h6>
-                        <h6 className="notif-time">{notif.time}</h6>
+                        <h4 className="notif-type">{notif?.type}</h4>
+                        <h6 className="notif-content">{notif?.content}</h6>
+                        <h6 className="notif-time">{notif?.time}</h6>
                     </div>
                     <div className="notif-box-buttons">
                         <span className="notif-current-status">Current Status: {notif.action}</span>
@@ -150,14 +150,14 @@ export const NotificationPageAdmin = () => {
         // Regular notifications w/ no buttons
         return (
             <div>
-                <div key={notif._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
+                <div key={notif?._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
                     <div className="notif-box-content">
                         <Link className="link" to={`/profile/${isUserID}`}>
-                            <h2 className="notif-name">{notif.userFirstName}</h2>
+                            <h2 className="notif-name">{notif?.userFirstName}</h2>
                         </Link>
-                        <h4 className="notif-type">{notif.type}</h4>
-                        <h6 className="notif-content">{notif.content}</h6>
-                        <h6 className="notif-time">{notif.time}</h6>
+                        <h4 className="notif-type">{notif?.type}</h4>
+                        <h6 className="notif-content">{notif?.content}</h6>
+                        <h6 className="notif-time">{notif?.time}</h6>
                     </div>
                 </div>
             </div>
@@ -194,9 +194,9 @@ export const NotificationPageAdmin = () => {
                                     <li className="list-group-item">
                                         {!isLoadingNotifications &&
                                             userNotificationsData?.data &&
-                                            userNotificationsData.data.map((notif) => {
+                                            userNotificationsData.data.map((notif?) => {
                                                 // Filter notifications that require the approve button
-                                                if (notif.type === "Volunteer Role Approval") {
+                                                if (notif?.type === "Volunteer Role Approval") {
                                                     return DisplayButtonNotif(notif);
                                                 } else {
                                                     return DisplayNotif(notif);
@@ -211,7 +211,7 @@ export const NotificationPageAdmin = () => {
                                         {!isLoadingNotifications &&
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
-                                                if (notif.type === "Approve Shift") {
+                                                if (notif?.type === "Approve Shift") {
                                                     return notif.user
                                                         ? ShiftApprovalButtonNotif(notif, notif.user)
                                                         : null;
@@ -228,8 +228,8 @@ export const NotificationPageAdmin = () => {
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
                                                 if (
-                                                    notif.type === "Qualification Approved" ||
-                                                    notif.type === "Expired Qualification"
+                                                    notif?.type === "Qualification Approved" ||
+                                                    notif?.type === "Expired Qualification"
                                                 ) {
                                                     return DisplayNotif(notif);
                                                 }
@@ -244,10 +244,10 @@ export const NotificationPageAdmin = () => {
                                         {!isLoadingNotifications &&
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
-                                                if (notif.type === "Gender Equity" || notif.type === "SPROUT") {
+                                                if (notif?.type === "Gender Equity" || notif?.type === "SPROUT") {
                                                     return DisplayButtonNotif(notif);
                                                 }
-                                                if (notif.type === "Volunteer Type Request Approved") {
+                                                if (notif?.type === "Volunteer Type Request Approved") {
                                                     return DisplayNotif(notif);
                                                 }
                                                 return;
@@ -262,8 +262,8 @@ export const NotificationPageAdmin = () => {
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
                                                 if (
-                                                    notif.type === "Cancelled Shift" ||
-                                                    notif.type === "Updated Shift"
+                                                    notif?.type === "Cancelled Shift" ||
+                                                    notif?.type === "Updated Shift"
                                                 ) {
                                                     return DisplayNotif(notif);
                                                 }
