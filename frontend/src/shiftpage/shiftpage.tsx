@@ -93,6 +93,46 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         setselectedShifts([]);
     };
 
+    /*---------------------------------------------------------------------*/
+    //Work in progress - Duplicate Shift Feature
+
+    const [show2, setShow2] = useState<boolean>(false);
+    const [shiftdata, setshiftData] = useState("");
+
+    // Upon hovering duplicate shift button, sets shiftdata to shiftID of selected shift
+    const checkDupeID = () => {
+        if (selectedShifts.length === 1) {
+            selectedShifts.forEach((shiftId) => {
+                setshiftData(shiftId);
+            });
+        } else {
+            setshiftData("");
+        }
+    };
+
+    // Opens addShiftForm that has copied fields from selected shift
+    const openDupeShift = () => {
+        if (selectedShifts.length === 1) {
+            setShow2(true);
+        } else {
+            alert("Please select only ONE shift to duplicate.");
+        }
+    };
+
+    const closeDupeShift = () => {
+        setshiftData("");
+        setShow2(false);
+    };
+
+    // Upon clicking Filter button, resets the selectedshifts list
+    // Shows filter panel
+    const handleFilterPanel = () => {
+        setFilterPanelVisible(true);
+        setselectedShifts([]);
+    };
+
+    /*---------------------------------------------------------------------*/
+
     return (
         <>
             <NavigationBar />
@@ -107,6 +147,15 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                         <button id="whiteButton" className={"admin-btn"} onClick={openAddShift}>
                                             <img className="btn-icon" src={addShiftIcon} />
                                             {"Add Shift"}
+                                        </button>
+                                        <button
+                                            id="whiteButton"
+                                            className={"admin-btn"}
+                                            onClick={openDupeShift}
+                                            onMouseEnter={checkDupeID}
+                                        >
+                                            <img className="btn-icon" src={addShiftIcon} />
+                                            {"Duplicate Shift"}
                                         </button>
                                         <button
                                             id="whiteButton"
@@ -132,11 +181,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                 )}
 
                                 {shiftType === "searchShifts" && (
-                                    <button
-                                        id="whiteButton"
-                                        className={"admin-btn"}
-                                        onClick={() => setFilterPanelVisible(true)}
-                                    >
+                                    <button id="whiteButton" className={"admin-btn"} onClick={handleFilterPanel}>
                                         <img className="btn-icon" src={filterIcon} />
                                         {"Filters"}
                                     </button>
@@ -172,7 +217,10 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                         isAdmin={userData?.data?.isAdmin || false}
                     />
                     <Modal show={show}>
-                        <AddShiftForm handleClose={closeAddShift} />
+                        <AddShiftForm handleClose={closeAddShift} shiftdata={""} />
+                    </Modal>
+                    <Modal show={show2}>
+                        <AddShiftForm handleClose={closeDupeShift} shiftdata={shiftdata} />
                     </Modal>
                     {!loadingAllVolTypes && resultFilters && (
                         <FilterResultsModal
