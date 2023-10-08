@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createShift, updateShift, IShift } from "../api/shiftApi";
 import LoadingSpinner from "../components/loadingSpinner";
 import { useNavigate } from "react-router-dom";
@@ -215,11 +215,11 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
     const { data } = useShiftById(shiftdata || "");
 
     // Check if there is a selected shift to duplicate
-    const checkifDupe = () => {
+    const checkifDupe = useCallback(() => {
         if (shiftdata) {
             copyshiftFields();
         }
-    };
+    }, []);
 
     // Copy selected shift's fields
     const copyshiftFields = () => {
@@ -232,13 +232,15 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
         formFields.requiredQualifications = data?.data?.requiredQualifications || [];
         formFields.volunteerTypeAllocations = data?.data?.volunteerTypeAllocations || [];
     };
-
+    console.log("formFields: ", formFields);
     /*---------------------------------------------------------------------*/
+    useEffect(() => {
+        checkifDupe();
+    }, [checkifDupe]);
 
     return (
         <div>
             <form className="add-shift-form">
-                {checkifDupe()}
                 <div className="form-header">
                     <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
                 </div>
