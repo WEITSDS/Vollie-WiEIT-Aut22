@@ -18,6 +18,7 @@ import "./profile/data.json";
 import { ShiftPage } from "./shiftpage/shiftpage";
 import { NotificationPageAdmin } from "./notificationpage/notificationpageadmin";
 import { NotificationPage } from "./notificationpage/notificationpage";
+import { CalendarPage } from "./calendarpage/calendarpage";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ function App(): JSX.Element {
                     <Route path="/notifications" element={<ProtectedRoute outlet={<NotificationPage />} />}></Route>
                     <Route path="/shift/:shiftId" element={<ProtectedRoute outlet={<ShiftInformation />} />}></Route>
                     <Route path="/modal" element={<ProtectedRoute outlet={<Modal />} />}></Route>
+                    <Route path="/calendar" element={<ProtectedRoute outlet={<CalendarPage />} />}></Route>
                     <Route path="*" element={<Navigate to="/home" replace />} />
                 </Routes>
             </BrowserRouter>
