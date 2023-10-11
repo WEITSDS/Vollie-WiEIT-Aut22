@@ -216,27 +216,30 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
 
     // Check if there is a selected shift to duplicate
     const checkifDupe = useCallback(() => {
-        if (shiftdata) {
-            copyshiftFields();
-        }
-    }, []);
+        setFormFields((prevFormFields) => {
+            return {
+                ...prevFormFields,
+                ["name"]: data?.data?.name || "",
+                ["venue"]: data?.data?.venue || "",
+                ["address"]: data?.data?.address || "",
+                ["description"]: data?.data?.description || "",
+                ["hours"]: data?.data?.hours || 0,
+                ["category"]: data?.data?.category || "Other",
+                ["requiredQualifications"]: data?.data?.requiredQualifications || [],
+                ["volunteerTypeAllocations"]: data?.data?.volunteerTypeAllocations || [],
+            };
+        });
+    }, [data]);
 
     // Copy selected shift's fields
-    const copyshiftFields = () => {
-        formFields.name = data?.data?.name || "";
-        formFields.venue = data?.data?.venue || "";
-        formFields.address = data?.data?.address || "";
-        formFields.description = data?.data?.description || "";
-        formFields.hours = data?.data?.hours || 0;
-        formFields.category = data?.data?.category || "Other";
-        formFields.requiredQualifications = data?.data?.requiredQualifications || [];
-        formFields.volunteerTypeAllocations = data?.data?.volunteerTypeAllocations || [];
-    };
-    console.log("formFields: ", formFields);
+    // const copyshiftFields = useCallback(() => {
+    // }, [data]);
+    // console.log("form`Fields: ", formFields);
     /*---------------------------------------------------------------------*/
     useEffect(() => {
         checkifDupe();
-    }, [checkifDupe]);
+        // setFormFields(formFields);
+    }, [checkifDupe, data]);
 
     return (
         <div>

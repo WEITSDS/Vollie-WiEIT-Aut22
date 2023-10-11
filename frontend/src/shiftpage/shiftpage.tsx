@@ -12,7 +12,7 @@ import addShiftIcon from "../assets/addShiftIcon.svg";
 import deleteIcon from "../assets/deleteIcon.svg";
 import filterIcon from "../assets/filterIcon.svg";
 import Modal from "react-bootstrap/Modal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import LoadingSpinner from "../components/loadingSpinner";
 import { deleteShift } from "../api/shiftApi";
 import { ResponseWithStatus } from "../api/utility";
@@ -98,30 +98,44 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
 
     const [show2, setShow2] = useState<boolean>(false);
     const [shiftdata, setshiftData] = useState("");
+    const [openDupe, setOpenDupe] = useState(false);
 
     // Upon hovering duplicate shift button, sets shiftdata to shiftID of selected shift
-    const checkDupeID = () => {
-        if (selectedShifts.length === 1) {
-            selectedShifts.forEach((shiftId) => {
-                setshiftData(shiftId);
-            });
-        } else {
-            setshiftData("");
-        }
-    };
+    // const checkDupeID = () => {
+    //     console.log("selectedShifts: ", selectedShifts);
+
+    //     if (selectedShifts.length === 1) {
+    //         selectedShifts.forEach((shiftId) => {
+    //             console.log("shiftData: ", shiftdata);
+    //             setshiftData(shiftId);
+    //         });
+    //     } else {
+    //         setshiftData("");
+    //     }
+    // };
 
     // Opens addShiftForm that has copied fields from selected shift
-    const openDupeShift = () => {
+    const openDupeShift = useCallback(() => {
         if (selectedShifts.length === 1) {
+            setshiftData(selectedShifts[0]);
             setShow2(true);
         } else {
+            setshiftData("");
+            setShow2(false);
             alert("Please select only ONE shift to duplicate.");
         }
-    };
+    }, [selectedShifts]);
+
+    useEffect(() => {
+        if (openDupe) {
+            openDupeShift();
+        }
+    }, [openDupe, openDupeShift]);
 
     const closeDupeShift = () => {
         setshiftData("");
         setShow2(false);
+        setOpenDupe(false);
     };
 
     // Upon clicking Filter button, resets the selectedshifts list
@@ -151,8 +165,8 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                         <button
                                             id="whiteButton"
                                             className={"admin-btn"}
-                                            onClick={openDupeShift}
-                                            onMouseEnter={checkDupeID}
+                                            onClick={() => setOpenDupe(true)}
+                                            // onMouseEnter={checkDupeID}
                                         >
                                             <img className="btn-icon" src={addShiftIcon} />
                                             {"Duplicate Shift"}
