@@ -489,6 +489,7 @@ const ShiftInformation = () => {
                                     handleClose={() => {
                                         void handleEditClose();
                                     }}
+                                    shiftdata={""}
                                 />
                             </Modal>
                         </>

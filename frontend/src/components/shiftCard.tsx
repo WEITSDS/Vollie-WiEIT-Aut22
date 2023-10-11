@@ -110,7 +110,7 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftC
                 </Card.Body>
             </Card>
             <Modal show={showEditModal}>
-                <AddShiftForm previousShiftFields={shiftData} handleClose={handleCloseModal} />
+                <AddShiftForm previousShiftFields={shiftData} handleClose={handleCloseModal} shiftdata={""} />
             </Modal>
         </>
     );
