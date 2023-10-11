@@ -70,7 +70,13 @@ export const getNotifications = async (req: Request, res: Response) => {
         const respNotifications = [];
         for (let idx = 0; idx < userObj.notifications.length; idx++) {
             const notificationID = userObj.notifications[idx];
-            respNotifications.unshift(await Notification.findOne({ _id: notificationID }));
+            const notification = await Notification.findOne({ _id: notificationID });
+            if (!notification) {
+                res.status(403).json({ message: "Could not find notification object", success: false });
+                return;
+            }
+            notification.userdata = await User.findOne({ _id: notification?.user });
+            respNotifications.unshift(notification);
         }
 
         res.status(200).json({
