@@ -93,3 +93,47 @@ export const getNotifications = async (req: Request, res: Response) => {
         return;
     }
 };
+
+export const updateNotificationStatus = async (req: Request, res: Response) => {
+    const { action, notificationId } = req.body as { action: string; notificationId: string };
+
+    try {
+        const updatedNotification = await Notification.findByIdAndUpdate(
+            notificationId,
+            { action: action },
+            { new: true }
+        );
+
+        if (updatedNotification === null) {
+            res.status(404).json({ message: "Notification not found", success: false });
+            return;
+        }
+        //const validTypes = ["SPROUT", "Gender Equity"];
+        console.log("PRINTING WHAT TYPE IS: " + updatedNotification.type);
+        if (updatedNotification.typeId && (action === "Approved" || action === "Declined")) {
+            if (updatedNotification.type === "Approve Shift") {
+                console.log("CHECK IF ITS working with what" + updatedNotification.user.toString());
+                console.log("CHEKCKLING IF ITS WOKRING" + updatedNotification.userVolType.toString());
+
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                await User.findOneAndUpdate(
+                    { _id: updatedNotification.user, "shifts.shift": updatedNotification.typeId },
+                    { $set: { "shifts.$.approved": action === "Approved" } }
+                );
+            } else if (updatedNotification.type === "SPROUT" || updatedNotification.type === "Gender Equity") {
+                console.log("CHEKCKLING IF ITS WOKRING" + updatedNotification.userVolType.toString());
+                // If VolunteerType also uses typeId and similar schema as Shift, use a similar approach
+                const updatedUser = await User.findOneAndUpdate(
+                    { _id: updatedNotification.userVolType, "volunteerTypes.type": updatedNotification.typeId },
+                    { $set: { "volunteerTypes.$.approved": action === "Approved" } },
+                    { new: true }
+                );
+                console.log(updatedUser);
+            }
+        }
+
+        res.status(200).json({ message: "Notification status updated", success: true, data: updatedNotification });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", success: false });
+    }
+};
