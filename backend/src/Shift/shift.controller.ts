@@ -1068,3 +1068,24 @@ export const getAvailableRolesForShiftUser = async (req: Request, res: Response)
         return;
     }
 };
+export const getAllShifts = async (req: Request, res: Response) => {
+    try {
+        // Get user obj to check if admin
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+
+        if (!userObj || !userObj?.isAdmin) {
+            handleError(logger, res, null, "Unauthorized", 401);
+            return;
+        }
+
+        const allShifts = await Shift.find({}).sort({ startAt: 1 });
+
+        res.status(200).json({
+            message: "All shifts retrieved",
+            data: allShifts,
+            success: true,
+        });
+    } catch (error) {
+        handleError(logger, res, error, "Error retrieving all shifts");
+    }
+};
