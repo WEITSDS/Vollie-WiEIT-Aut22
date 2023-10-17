@@ -15,6 +15,7 @@ import {
     getSearchShifts,
     exportAdminShifts,
     exportVolunteerShifts,
+    getAllShifts,
 } from "./shift.controller";
 
 const router = express.Router();
