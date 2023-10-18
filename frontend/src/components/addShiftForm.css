@@ -235,4 +235,23 @@
     margin-left: 68px;
     margin-right: 68px;
     margin-bottom: 10px;
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+    justify-content: end;
+}
+
+.recur-text {
+    font-weight: 500;
+    text-align: start;
+    align-self: end;
+    margin: 4px;
+    margin-left: 8px;
+}
+
+.recur-interval-input, .recur-repeats-input {
+    text-align: start;
+    align-self: center;
+    border-radius: 5px;
+    border: 0px;
 }
