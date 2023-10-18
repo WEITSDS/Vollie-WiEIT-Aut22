@@ -7,11 +7,9 @@ import { INotification } from "../api/notificationAPI";
 import { WEITBackground } from "../components/background";
 import { ModalBody } from "react-bootstrap";
 import { setApprovalUserForShift } from "../api/shiftApi";
-//import { useOwnUser } from "../hooks/useOwnUser";
 
 export const NotificationPageAdmin = () => {
     const { data: userNotificationsData, isLoading: isLoadingNotifications } = useMyNotifications();
-    //const userQuery = useOwnUser();
 
     const [toggleState, setToggleState] = useState(1);
     const toggleTab = (index: number) => {
@@ -22,8 +20,6 @@ export const NotificationPageAdmin = () => {
     const hoverIsUserID = (notif: INotification) => {
         setIsUserID(notif.user);
     };
-
-    //  const { data: userObj } = userQuery?.data || {};
 
     const updateNotificationStatus = async (notificationId: string, action: string) => {
         console.log("updateNotificationStatus function called");
@@ -146,6 +142,7 @@ export const NotificationPageAdmin = () => {
             </div>
         );
     };
+
     const DisplayNotif = (notif: INotification) => {
         // Regular notifications w/ no buttons
         return (
@@ -192,12 +189,16 @@ export const NotificationPageAdmin = () => {
                             <div className={toggleState === 1 ? "content-active" : "content"}>
                                 <ul className="list-group">
                                     <li className="list-group-item">
-                                        {!isLoadingNotifications &&
+                                        {toggleState === 1 &&
+                                            !isLoadingNotifications &&
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif?) => {
-                                                // Filter notifications that require the approve button
                                                 if (notif?.type === "Volunteer Role Approval") {
                                                     return DisplayButtonNotif(notif);
+                                                } else if (notif?.type === "Approve Shift") {
+                                                    return notif.user
+                                                        ? ShiftApprovalButtonNotif(notif, notif.user)
+                                                        : null;
                                                 } else {
                                                     return DisplayNotif(notif);
                                                 }
@@ -208,7 +209,8 @@ export const NotificationPageAdmin = () => {
                             <div className={toggleState === 2 ? "content-active" : "content"}>
                                 <ul className="list-group">
                                     <li className="list-group-item">
-                                        {!isLoadingNotifications &&
+                                        {toggleState === 2 &&
+                                            !isLoadingNotifications &&
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
                                                 if (notif?.type === "Approve Shift") {
@@ -224,7 +226,8 @@ export const NotificationPageAdmin = () => {
                             <div className={toggleState === 3 ? "content-active" : "content"}>
                                 <ul className="list-group">
                                     <li className="list-group-item">
-                                        {!isLoadingNotifications &&
+                                        {toggleState === 3 &&
+                                            !isLoadingNotifications &&
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
                                                 if (
@@ -241,7 +244,8 @@ export const NotificationPageAdmin = () => {
                             <div className={toggleState === 4 ? "content-active" : "content"}>
                                 <ul className="list-group">
                                     <li className="list-group-item">
-                                        {!isLoadingNotifications &&
+                                        {toggleState === 4 &&
+                                            !isLoadingNotifications &&
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
                                                 if (notif?.type === "Gender Equity" || notif?.type === "SPROUT") {
@@ -258,7 +262,8 @@ export const NotificationPageAdmin = () => {
                             <div className={toggleState === 5 ? "content-active" : "content"}>
                                 <ul className="list-group">
                                     <li className="list-group-item">
-                                        {!isLoadingNotifications &&
+                                        {toggleState === 5 &&
+                                            !isLoadingNotifications &&
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
                                                 if (
