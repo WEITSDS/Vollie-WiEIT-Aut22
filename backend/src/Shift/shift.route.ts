@@ -15,6 +15,7 @@ import {
     getSearchShifts,
     exportAdminShifts,
     exportVolunteerShifts,
+    getAllShifts,
 } from "./shift.controller";
 
 const router = express.Router();
@@ -36,5 +37,6 @@ router.patch("/:shiftid/unassign-user/:userid", wrapAsync(removeUser));
 router.patch("/:shiftid/approve-user/:userid/:approvalstatus", wrapAsync(setUserApproval));
 
 router.delete("/:shiftid", wrapAsync(deleteShift));
+router.get("/get-all-shifts", wrapAsync(getAllShifts));
 
 export = router;
