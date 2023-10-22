@@ -3,9 +3,10 @@ import { useMyNotifications } from "../hooks/useMyNotifications";
 import { NavigationBar } from "../components/navbar";
 import { Link } from "react-router-dom";
 import { INotification } from "../api/notificationAPI";
-
+// import { useAllNotifications } from "../hooks/useAllNotifications";
 export const NotificationPage = () => {
     const { data: userNotificationsData, isLoading: isLoadingNotifications } = useMyNotifications();
+    // const { data: userNotificationsData, isLoading: isLoadingNotifications } = useAllNotifications();
 
     // TO-DO: Insert relevant Link destinations for DisplayNotif
     // TO-DO: Filter to only show user-relevant notifications

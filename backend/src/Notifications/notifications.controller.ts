@@ -149,8 +149,9 @@ export const getBatchNotifications = async (req: Request, res: Response) => {
         }
 
         // Get all notifications in a single query
-        const notifications = await Notification.find({ _id: { $in: userObj.notifications } });
+        const notifications = (await Notification.find({ _id: { $in: userObj.notifications } })).reverse();
 
+        // console.log("Notifications: ", notifications);
         res.status(200).json({
             message: "success",
             data: notifications,
