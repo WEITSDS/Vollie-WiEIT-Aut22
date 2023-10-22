@@ -137,3 +137,32 @@ export const updateNotificationStatus = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal server error", success: false });
     }
 };
+
+export const getBatchNotifications = async (req: Request, res: Response) => {
+    try {
+        const { _id: userID } = req.session.user || {};
+
+        const userObj = await User.findOne({ _id: userID });
+        if (!userObj) {
+            res.status(403).json({ message: "Could not find user object", success: false });
+            return;
+        }
+
+        // Get all notifications in a single query
+        const notifications = await Notification.find({ _id: { $in: userObj.notifications } });
+
+        res.status(200).json({
+            message: "success",
+            data: notifications,
+            success: true,
+        });
+    } catch (error) {
+        console.log("Get user notifications error", error);
+        res.status(500).json({
+            message: "Get user notifications error",
+            error,
+            success: false,
+        });
+        return;
+    }
+};
