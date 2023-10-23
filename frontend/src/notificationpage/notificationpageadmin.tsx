@@ -8,6 +8,7 @@ import { WEITBackground } from "../components/background";
 import { ModalBody } from "react-bootstrap";
 import { setApprovalUserForShift } from "../api/shiftApi";
 import { useAllNotifications } from "../hooks/useAllNotifications";
+import { setApprovalUserVolunteerType } from "../api/userApi";
 
 export const NotificationPageAdmin = () => {
     // const { data: userNotificationsData, isLoading: isLoadingNotifications } = useMyNotifications();
@@ -23,31 +24,31 @@ export const NotificationPageAdmin = () => {
         setIsUserID(notif.user);
     };
 
-    const updateNotificationStatus = async (notificationId: string, action: string) => {
-        console.log("updateNotificationStatus function called");
-        try {
-            const res = await fetch("/api/notifications/update-notification-status", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ notificationId, action }),
-            });
+    // const updateNotificationStatus = async (notificationId: string, action: string) => {
+    //     console.log("updateNotificationStatus function called");
+    //     try {
+    //         const res = await fetch("/api/notifications/update-notification-status", {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({ notificationId, action }),
+    //         });
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const data = await res.json();
+    //         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    //         const data = await res.json();
 
-            if (res.ok) {
-                // Update state or do whatever you need to update the UI here
-                alert("Notification status updated successfully!");
-            } else {
-                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-                alert(`Failed to update: ${data.message}`);
-            }
-        } catch (error) {
-            console.error("Could not update notification status:", error);
-        }
-    };
+    //         if (res.ok) {
+    //             // Update state or do whatever you need to update the UI here
+    //             alert("Notification status updated successfully!");
+    //         } else {
+    //             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+    //             alert(`Failed to update: ${data.message}`);
+    //         }
+    //     } catch (error) {
+    //         console.error("Could not update notification status:", error);
+    //     }
+    // };
 
     const ShiftApprovalButtonNotif = (notif: INotification, currentUserId: string) => {
         const handleApproval = (approvalStatus: string) => {
@@ -95,14 +96,28 @@ export const NotificationPageAdmin = () => {
         );
     };
 
-    const DisplayButtonNotif = (notif: INotification) => {
-        // Notifications that need to use the approve/decline buttons
+    const RoleApprovalButtonNotif = (notif: INotification) => {
+        console.log(notif);
+        const handleApproval = (approvalStatus: string) => {
+            setApprovalUserVolunteerType(notif.typeId, notif.userVolType, approvalStatus)
+                .then((response) => {
+                    if (response.status === 200) {
+                        alert("Role status updated successfully!");
+                    } else {
+                        alert(`Failed to update Role:`);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Could not update Role approval status:", error);
+                });
+        };
+
         return (
             <div>
                 <div key={notif?._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
                     <div className="notif-box-content">
-                        <Link className="link" to={`/profile/${isUserID}`}>
-                            <h2 className="notif-name">{notif?.userFirstName}</h2>
+                        <Link className="link" to={`/profile/${notif.userVolType}`}>
+                            <h2 className="notif-name">{notif?.userFirstName} </h2>
                         </Link>
                         <h4 className="notif-type">{notif?.type}</h4>
                         <h6 className="notif-content">{notif?.content}</h6>
@@ -112,30 +127,13 @@ export const NotificationPageAdmin = () => {
                         <span className="notif-current-status">Current Status: {notif.action}</span>
                         <button
                             className={notif.action === "Approved" ? "notif-button-hidden" : "notif-button"}
-                            onClick={() => {
-                                updateNotificationStatus(notif._id, "Approved")
-                                    .then(() => {
-                                        //alert("Notification status updated woah successfully!");
-                                    })
-                                    .catch((error) => {
-                                        console.error("Could not update notification status:", error);
-                                    });
-                            }}
+                            onClick={() => handleApproval("approve")}
                         >
                             Approve
                         </button>
-
                         <button
                             className={notif.action === "Declined" ? "notif-button-hidden" : "notif-button"}
-                            onClick={() => {
-                                updateNotificationStatus(notif._id, "Declined")
-                                    .then(() => {
-                                        // Handle success here, if needed
-                                    })
-                                    .catch((error) => {
-                                        console.error("Could not update notification status:", error);
-                                    });
-                            }}
+                            onClick={() => handleApproval("unapprove")}
                         >
                             Decline
                         </button>
@@ -144,6 +142,56 @@ export const NotificationPageAdmin = () => {
             </div>
         );
     };
+
+    // const DisplayButtonNotif = (notif: INotification) => {
+    //     // Notifications that need to use the approve/decline buttons
+    //     return (
+    //         <div>
+    //             <div key={notif?._id} className="notif-container-admin" onMouseEnter={() => hoverIsUserID(notif)}>
+    //                 <div className="notif-box-content">
+    //                     <Link className="link" to={`/profile/${isUserID}`}>
+    //                         <h2 className="notif-name">{notif?.userFirstName}</h2>
+    //                     </Link>
+    //                     <h4 className="notif-type">{notif?.type}</h4>
+    //                     <h6 className="notif-content">{notif?.content}</h6>
+    //                     <h6 className="notif-time">{notif?.time}</h6>
+    //                 </div>
+    //                 <div className="notif-box-buttons">
+    //                     <span className="notif-current-status">Current Status: {notif.action}</span>
+    //                     <button
+    //                         className={notif.action === "Approved" ? "notif-button-hidden" : "notif-button"}
+    //                         onClick={() => {
+    //                             updateNotificationStatus(notif._id, "Approved")
+    //                                 .then(() => {
+    //                                     //alert("Notification status updated woah successfully!");
+    //                                 })
+    //                                 .catch((error) => {
+    //                                     console.error("Could not update notification status:", error);
+    //                                 });
+    //                         }}
+    //                     >
+    //                         Approve
+    //                     </button>
+
+    //                     <button
+    //                         className={notif.action === "Declined" ? "notif-button-hidden" : "notif-button"}
+    //                         onClick={() => {
+    //                             updateNotificationStatus(notif._id, "Declined")
+    //                                 .then(() => {
+    //                                     // Handle success here, if needed
+    //                                 })
+    //                                 .catch((error) => {
+    //                                     console.error("Could not update notification status:", error);
+    //                                 });
+    //                         }}
+    //                     >
+    //                         Decline
+    //                     </button>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     );
+    // };
 
     const DisplayNotif = (notif: INotification) => {
         // Regular notifications w/ no buttons
@@ -196,7 +244,7 @@ export const NotificationPageAdmin = () => {
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif?) => {
                                                 if (notif?.type === "Volunteer Role Approval") {
-                                                    return DisplayButtonNotif(notif);
+                                                    return RoleApprovalButtonNotif(notif);
                                                 } else if (notif?.type === "Approve Shift") {
                                                     return notif.user
                                                         ? ShiftApprovalButtonNotif(notif, notif.user)
@@ -251,10 +299,7 @@ export const NotificationPageAdmin = () => {
                                             userNotificationsData?.data &&
                                             userNotificationsData.data.map((notif) => {
                                                 if (notif?.type === "Gender Equity" || notif?.type === "SPROUT") {
-                                                    return DisplayButtonNotif(notif);
-                                                }
-                                                if (notif?.type === "Volunteer Type Request Approved") {
-                                                    return DisplayNotif(notif);
+                                                    return notif ? RoleApprovalButtonNotif(notif) : null;
                                                 }
                                                 return;
                                             })}
