@@ -176,6 +176,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                         value.setSeconds(0);
                         value.setMilliseconds(0);
                         handleDateChange(value, "startAt");
+                        //Set disabled to true for endDate field
                     }}
                 />
                 {/* <input
@@ -195,7 +196,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                     disableClock={true}
                     minDate={formFields.startAt}
                     //disable end date until start date is selected
-                    // disabled={}
+                    disabled={true}
                     onChange={(value: Date) => {
                         value.setSeconds(0);
                         value.setMilliseconds(0);
