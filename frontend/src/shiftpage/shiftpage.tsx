@@ -36,6 +36,25 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         loadingUserVolTypes ? undefined : getDefaultFilters(userVolTypesData?.data || [])
     );
 
+    //Local Storage
+    // useEffect(() => {
+    //     const localFilters: Record<string, Unknown> = JSON.parse(localStorage.getItem("shiftResultFilters"));
+    //     const something = {
+    //         to: localFilters.to,
+    //         from: localFilters.from,
+    //         //volTypes: VolType[];
+    //         category: localFilters.category,
+    //         hours: localFilters.hours,
+    //         hideUnavailable: localFilters.hideUnavailable,
+    //     };
+    // }, []);
+
+    // setResultFilters(something);
+
+    // const updateFiltersInLocalStorage = (filters) => {
+    //     localStorage.setItem("shiftResultFilters", JSON.stringify(filters));
+    // };
+
     const {
         isLoading = true,
         isError,
@@ -178,7 +197,10 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                         <FilterResultsModal
                             visible={filterPanelVisible}
                             filters={resultFilters}
-                            updateFilters={(filters) => setResultFilters(filters)}
+                            updateFilters={(filters) => {
+                                setResultFilters(filters);
+                                // updateFiltersInLocalStorage(filters);
+                            }}
                             onClose={() => setFilterPanelVisible(false)}
                             allVolTypes={allVolTypes?.data || []}
                             userVolTypes={userVolTypesData?.data || []}
