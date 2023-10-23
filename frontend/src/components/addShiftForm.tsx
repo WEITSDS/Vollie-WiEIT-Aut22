@@ -122,6 +122,8 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
         return (startDate.getTime() - endDate.getTime()) / 1000 / 60 / 60;
     };
 
+    formFields.hours = shiftDuration(formFields.endAt, formFields.startAt);
+
     // const handleCheckbox = (event: React.FormEvent<HTMLInputElement>): void => {
     //     // event.preventDefault();
     //     const target = event.target as HTMLInputElement;
@@ -224,7 +226,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                 <label>Description</label>
                 <textarea name="description" defaultValue={formFields.description} onChange={handleChange} />
 
-                <label>Work Hours: {shiftDuration(formFields.endAt, formFields.startAt)}</label>
+                <label>Work Hours: {formFields.hours}</label>
 
                 <hr className="type-line" />
 
