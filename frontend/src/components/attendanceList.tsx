@@ -216,7 +216,7 @@ export default function AttendanceListModal({
             </Nav.Link> */}
             {!hideButton && (
                 <Button size="sm" onClick={handleShow} variant="light" style={{ borderRadius: "50%" }}>
-                    <img src={participantsIcon} alt="participants icon" />
+                    <img src={participantsIcon} alt="participants icon" title="Participants List" />
                 </Button>
             )}
 
