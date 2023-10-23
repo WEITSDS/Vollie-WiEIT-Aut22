@@ -180,7 +180,7 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
             <Button
                 title="Add qualification"
                 variant="success"
-                disabled={!editingSelf}
+                hidden={!editingSelf}
                 onClick={() => handleCreateQualification()}
             >
                 Add Qualification {"   "}

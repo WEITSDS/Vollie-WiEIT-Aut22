@@ -79,7 +79,7 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftC
                                         variant="light"
                                         style={{ borderRadius: "50%", margin: "10px" }}
                                     >
-                                        <img src={editIcon} alt="edit shift icon" />
+                                        <img src={editIcon} alt="edit shift icon" title="Edit Shift" />
                                     </Button>
                                     <Form.Check
                                         style={{
