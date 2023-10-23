@@ -49,6 +49,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
 
     const [isLoading, setIsLoading] = useState(false);
     const [responseMsg, setresponseMsg] = useState("");
+    const [endDateDisabled, setEndDateDisabled] = useState(true);
 
     const { data: allVolTypesData, isLoading: loadingAllVolTypes } = useAllVolTypes();
     const { data: allQualTypesData, isLoading: loadingAllQualTypes } = useAllQualTypes();
@@ -176,6 +177,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                         value.setSeconds(0);
                         value.setMilliseconds(0);
                         handleDateChange(value, "startAt");
+                        setEndDateDisabled(value === undefined);
                         //Set disabled to true for endDate field
                     }}
                 />
@@ -196,7 +198,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                     disableClock={true}
                     minDate={formFields.startAt}
                     //disable end date until start date is selected
-                    disabled={true}
+                    disabled={endDateDisabled}
                     onChange={(value: Date) => {
                         value.setSeconds(0);
                         value.setMilliseconds(0);
