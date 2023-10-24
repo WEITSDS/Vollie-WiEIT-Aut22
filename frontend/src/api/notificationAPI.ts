@@ -17,6 +17,10 @@ export async function getMyNotifications(): Promise<ResponseWithData<INotificati
     return await getDataResponse(`${ROOT_URL}/api/notifications/my-notifications`);
 }
 
+export async function getAllNotifications(): Promise<ResponseWithData<INotification[]>> {
+    return await getDataResponse(`${ROOT_URL}/api/notifications/get-batch-notifications`);
+}
+
 export async function updateNotificationStatus(
     notificationId: string,
     action: string
