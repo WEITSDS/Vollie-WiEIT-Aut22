@@ -3,7 +3,7 @@ import "./notificationpageadmin.css";
 import { NavigationBar } from "../components/navbar";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { INotification } from "../api/notificationAPI";
+import { INotification, updateNotificationStatus } from "../api/notificationAPI";
 import { WEITBackground } from "../components/background";
 import { ModalBody } from "react-bootstrap";
 import { setApprovalUserForShift } from "../api/shiftApi";
@@ -55,6 +55,7 @@ export const NotificationPageAdmin = () => {
             setApprovalUserForShift(currentUserId, notif.typeId, approvalStatus)
                 .then((response) => {
                     if (response.status === 200) {
+                        void updateNotificationStatus(notif._id, approvalStatus);
                         alert("Shift status updated successfully!");
                     } else {
                         alert(`Failed to update shift:`);
@@ -79,13 +80,13 @@ export const NotificationPageAdmin = () => {
                     <div className="notif-box-buttons">
                         <span className="notif-current-status">Current Status: {notif.action}</span>
                         <button
-                            className={notif.action === "Approved" ? "notif-button-hidden" : "notif-button"}
-                            onClick={() => handleApproval("approve")}
+                            className={notif.action === "approved" ? "notif-button-hidden" : "notif-button"}
+                            onClick={() => handleApproval("approved")}
                         >
                             Approve
                         </button>
                         <button
-                            className={notif.action === "Declined" ? "notif-button-hidden" : "notif-button"}
+                            className={notif.action === "unapprove" ? "notif-button-hidden" : "notif-button"}
                             onClick={() => handleApproval("unapprove")}
                         >
                             Decline
@@ -102,6 +103,7 @@ export const NotificationPageAdmin = () => {
             setApprovalUserVolunteerType(notif.typeId, notif.userVolType, approvalStatus)
                 .then((response) => {
                     if (response.status === 200) {
+                        void updateNotificationStatus(notif._id, approvalStatus);
                         alert("Role status updated successfully!");
                     } else {
                         alert(`Failed to update Role:`);
@@ -127,13 +129,13 @@ export const NotificationPageAdmin = () => {
                         <span className="notif-current-status">Current Status: {notif.action}</span>
                         <button
                             className={notif.action === "Approved" ? "notif-button-hidden" : "notif-button"}
-                            onClick={() => handleApproval("approve")}
+                            onClick={() => handleApproval("Approved")}
                         >
                             Approve
                         </button>
                         <button
                             className={notif.action === "Declined" ? "notif-button-hidden" : "notif-button"}
-                            onClick={() => handleApproval("unapprove")}
+                            onClick={() => handleApproval("Declined")}
                         >
                             Decline
                         </button>

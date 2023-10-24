@@ -44,7 +44,7 @@ export default function AttendanceListModal({
 
     const onApproveUser = async (targetUserId: string) => {
         try {
-            await setApprovalUserForShift(targetUserId, shift._id, "approve");
+            await setApprovalUserForShift(targetUserId, shift._id, "approved");
             await refetch();
         } catch (error) {
             console.log(error);
