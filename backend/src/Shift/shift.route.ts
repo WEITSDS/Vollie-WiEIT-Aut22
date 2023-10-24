@@ -16,6 +16,8 @@ import {
     exportAdminShifts,
     exportVolunteerShifts,
     getAllShifts,
+    getVolunteerReport,
+    exportVolunteerReportAsExcel,
 } from "./shift.controller";
 
 const router = express.Router();
@@ -38,5 +40,7 @@ router.patch("/:shiftid/approve-user/:userid/:approvalstatus", wrapAsync(setUser
 
 router.delete("/:shiftid", wrapAsync(deleteShift));
 router.get("/get-all-shifts", wrapAsync(getAllShifts));
+router.post("/get-volunteer-report", wrapAsync(getVolunteerReport));
+router.post("/export-report-excel", wrapAsync(exportVolunteerReportAsExcel));
 
 export = router;
