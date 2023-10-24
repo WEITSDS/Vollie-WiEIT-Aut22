@@ -73,8 +73,12 @@ export const NotificationPageAdmin = () => {
                         <Link className="link" to={`/profile/${isUserID}`}>
                             <h2 className="notif-name">{notif?.userFirstName} </h2>
                         </Link>
+
                         <h4 className="notif-type">{notif?.type}</h4>
-                        <h6 className="notif-content">{notif?.content}</h6>
+
+                        <Link className="link" to={`/shift/${notif.typeId}`}>
+                            <h6 className="notif-content">{notif?.content}</h6>
+                        </Link>
                         <h6 className="notif-time">{notif?.time}</h6>
                     </div>
                     <div className="notif-box-buttons">
