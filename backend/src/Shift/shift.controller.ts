@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import { Logger } from "tslog";
 import ical from "ical-generator";
 import { handleError } from "../utility";
+import * as ExcelJS from "exceljs";
+
 import {
     IShift,
     IShiftRequiredQualification,
@@ -1087,5 +1089,119 @@ export const getAllShifts = async (req: Request, res: Response) => {
         });
     } catch (error) {
         handleError(logger, res, error, "Error retrieving all shifts");
+    }
+};
+export const getVolunteerReport = async (req: Request, res: Response) => {
+    try {
+        // Extract desired volunteer positions from the request
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const { volunteerPositions } = req.body;
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (!volunteerPositions || volunteerPositions.length === 0) {
+            res.status(400).json({ message: "Please specify volunteer positions.", success: false });
+            return;
+        }
+
+        // Use the generateReportData function to get the report data
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const reportData = await generateReportData(volunteerPositions);
+
+        res.status(200).json({
+            message: "Report generated successfully.",
+            data: reportData,
+            success: true,
+        });
+    } catch (error) {
+        console.log("Error generating volunteer report:", error);
+        res.status(500).json({
+            message: "Error generating volunteer report.",
+            error,
+            success: false,
+        });
+    }
+};
+
+async function generateReportData(volunteerPositions: string[]) {
+    const reportData: {
+        firstName: string;
+        lastName: string;
+        position: string;
+        total: number;
+    }[] = [];
+
+    for (const position of volunteerPositions) {
+        const shifts = await Shift.find({ "volunteerTypeAllocations.type": new mongoose.Types.ObjectId(position) });
+
+        const userHoursMap: Map<string, number> = new Map();
+
+        for (const shift of shifts) {
+            for (const userShiftInfo of shift.users) {
+                if (userShiftInfo.chosenVolunteerType.toString() === position) {
+                    const currentHours = userHoursMap.get(userShiftInfo.user.toString()) || 0;
+                    userHoursMap.set(userShiftInfo.user.toString(), currentHours + shift.hours);
+                }
+            }
+        }
+
+        for (const [userId, hours] of userHoursMap) {
+            const user = await User.findById(userId);
+            if (user) {
+                const volunteerType = await VolunteerType.findById(position);
+                reportData.push({
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    position: volunteerType?.name || "Unknown",
+                    total: hours,
+                });
+            }
+        }
+    }
+
+    return reportData;
+}
+
+export const exportVolunteerReportAsExcel = async (req: Request, res: Response) => {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        const reportData = await generateReportData(req.body.volunteerPositions); // assuming you abstract the report generation into its own function
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        const workbook = new ExcelJS.Workbook();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        const worksheet = workbook.addWorksheet("Volunteer Report");
+
+        // Define columns
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        worksheet.columns = [
+            { header: "First Name", key: "firstName", width: 15 },
+            { header: "Last Name", key: "lastName", width: 15 },
+            { header: "Position", key: "position", width: 20 },
+            { header: "Total Hours", key: "total", width: 12 },
+        ];
+
+        // Add data
+        reportData.forEach((data) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            worksheet.addRow(data);
+        });
+
+        // Set header styles (optional)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        worksheet.getRow(1).font = { bold: true };
+
+        // Send Excel workbook as response
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", "attachment; filename=volunteer-report.xlsx");
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        return await workbook.xlsx.write(res);
+    } catch (error) {
+        console.log("Error generating volunteer Excel report:", error);
+        res.status(500).json({
+            message: "Error generating volunteer Excel report.",
+            error,
+            success: false,
+        });
     }
 };
