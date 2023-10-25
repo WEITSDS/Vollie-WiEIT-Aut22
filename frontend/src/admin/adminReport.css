@@ -1,0 +1,37 @@
+.report-page-container {
+    background-color: rgba(255,255,255,0.6);
+    padding: 75px;
+}
+
+.setting-title {
+
+}
+
+.page-divider {
+    height: 1px;
+    width: 1200px;
+    margin: auto;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    border: 1px solid #7d7d7d;
+}
+
+.checkbox-container, .date-container {   
+    margin: 8px;
+    display: flex;
+    flex-wrap: wrap;  
+}
+
+.checkbox-input {
+    flex-basis: 5%;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border: none;
+    outline: none;
+}
+
+.checkbox-name {
+    flex-basis: 95%;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}

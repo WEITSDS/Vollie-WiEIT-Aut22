@@ -19,6 +19,7 @@ import { ShiftPage } from "./shiftpage/shiftpage";
 import { NotificationPageAdmin } from "./notificationpage/notificationpageadmin";
 import { NotificationPage } from "./notificationpage/notificationpage";
 import { CalendarPage } from "./calendarpage/calendarpage";
+import AdminReport from "./admin/adminReport";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ function App(): JSX.Element {
                         path="/dashboard"
                         element={<ProtectedRoute needsAdmin={true} outlet={<AdminDashboard />} />}
                     ></Route>
+                    <Route path="/reports" element={<ProtectedRoute outlet={<AdminReport />} />}></Route>
                     <Route
                         path="/myshifts"
                         element={<ProtectedRoute outlet={<ShiftPage shiftType={"myShifts"} />} />}

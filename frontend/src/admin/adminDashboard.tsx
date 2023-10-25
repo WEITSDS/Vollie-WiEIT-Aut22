@@ -77,7 +77,7 @@ export class AdminDashboard extends React.Component<Record<string, never>, Admin
                                         <i className="bi bi-person"></i> Volunteers
                                     </button>
                                 </Link>
-                                <Link to="/">
+                                <Link to="/reports">
                                     <button>
                                         <i className="bi bi-clipboard-data"></i> Reports
                                     </button>

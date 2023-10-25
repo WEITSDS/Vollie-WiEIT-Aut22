@@ -1,5 +1,5 @@
 import "./notificationpageadmin.css";
-// import { useMyNotifications } from "../hooks/useMyNotifications";
+import { useMyNotifications } from "../hooks/useMyNotifications";
 import { NavigationBar } from "../components/navbar";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -7,11 +7,11 @@ import { INotification } from "../api/notificationAPI";
 import { WEITBackground } from "../components/background";
 import { ModalBody } from "react-bootstrap";
 import { setApprovalUserForShift } from "../api/shiftApi";
-import { useAllNotifications } from "../hooks/useAllNotifications";
+// import { useAllNotifications } from "../hooks/useAllNotifications";
 
 export const NotificationPageAdmin = () => {
     // const { data: userNotificationsData, isLoading: isLoadingNotifications } = useMyNotifications();
-    const { data: userNotificationsData, isLoading: isLoadingNotifications } = useAllNotifications();
+    const { data: userNotificationsData, isLoading: isLoadingNotifications } = useMyNotifications();
 
     const [toggleState, setToggleState] = useState(1);
     const toggleTab = (index: number) => {
