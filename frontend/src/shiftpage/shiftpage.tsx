@@ -32,28 +32,58 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const { isLoading: loadingAllVolTypes, data: allVolTypes } = useAllVolTypes();
     const { data: userVolTypesData, isLoading: loadingUserVolTypes } = useVoltypesForUser(userData?.data?._id);
 
+    const getFilterInLocalStorage = (): Filters => {
+        const localFiltersString: string | null = localStorage.getItem("shiftResultFilters");
+        // CONSOLE
+        console.log(localFiltersString);
+        if (!localFiltersString) {
+            console.log("Default");
+            return getDefaultFilters(userVolTypesData?.data || []);
+        }
+        const localFilters = JSON.parse(localFiltersString) as Filters;
+        const something = {
+            from: new Date(localFilters.from),
+            to: new Date(localFilters.to),
+            volTypes: localFilters.volTypes,
+            category: localFilters.category,
+            hours: localFilters.hours,
+            hideUnavailable: localFilters.hideUnavailable,
+        };
+        // CONSOLE localFilters
+        console.log(localFilters);
+        return something;
+    };
+
     const [resultFilters, setResultFilters] = useState<Filters | undefined>(
         loadingUserVolTypes ? undefined : getDefaultFilters(userVolTypesData?.data || [])
     );
 
+    // useEffect(() => {
+    //     setResultFilters(getFilterInLocalStorage());
+    // }, [loadingUserVolTypes]);
+
     //Local Storage
     // useEffect(() => {
     //     const localFilters: Record<string, Unknown> = JSON.parse(localStorage.getItem("shiftResultFilters"));
-    //     const something = {
-    //         to: localFilters.to,
-    //         from: localFilters.from,
-    //         //volTypes: VolType[];
-    //         category: localFilters.category,
-    //         hours: localFilters.hours,
-    //         hideUnavailable: localFilters.hideUnavailable,
-    //     };
-    // }, []);
+    // const something = {
+    //     to: localFilters.to,
+    //     from: localFilters.from,
+    //     //volTypes: VolType[];
+    //     category: localFilters.category,
+    //     hours: localFilters.hours,
+    //     hideUnavailable: localFilters.hideUnavailable,
+    // };
+    // }, [resultFilters]);
 
     // setResultFilters(something);
 
-    // const updateFiltersInLocalStorage = (filters) => {
-    //     localStorage.setItem("shiftResultFilters", JSON.stringify(filters));
-    // };
+    //Saves most recent filter into the local storage
+    const updateFiltersInLocalStorage = (filters: Filters) => {
+        localStorage.setItem("shiftResultFilters", JSON.stringify(filters));
+        console.log("Updated");
+        console.log(filters);
+        console.log(JSON.stringify(filters));
+    };
 
     const {
         isLoading = true,
@@ -70,8 +100,10 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const [selectedShifts, setselectedShifts] = useState<string[]>([]);
 
     useEffect(() => {
+        console.log("useEffect");
         if (userVolTypesData) {
-            setResultFilters(getDefaultFilters(userVolTypesData?.data || []));
+            // setResultFilters(getDefaultFilters(userVolTypesData?.data || []));
+            setResultFilters(getFilterInLocalStorage());
         }
     }, [userVolTypesData]);
 
@@ -199,7 +231,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                             filters={resultFilters}
                             updateFilters={(filters) => {
                                 setResultFilters(filters);
-                                // updateFiltersInLocalStorage(filters);
+                                updateFiltersInLocalStorage(filters);
                             }}
                             onClose={() => setFilterPanelVisible(false)}
                             allVolTypes={allVolTypes?.data || []}
