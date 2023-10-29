@@ -25,6 +25,7 @@ export default function AttendanceListVolModal({
     const handleShow = () => setModalBox(true);
 
     const { data: attendanceListUsers, isLoading, isError, refetch } = useAttendanceList(shift._id);
+    console.log(attendanceListUsers);
 
     useEffect(() => {
         void refetch();
@@ -72,7 +73,9 @@ export default function AttendanceListVolModal({
         return attendanceList?.map((userShift, index) => (
             <tr key={userShift._id}>
                 <th scope="row">{index + 1}</th>
-                <td>{userShift.volTypeName}</td>
+                <td>
+                    {userShift.firstName} {userShift.lastName}
+                </td>
             </tr>
         ));
     };
@@ -91,7 +94,7 @@ export default function AttendanceListVolModal({
 
             {/* Table template for attendance list */}
             <Modal
-                size="lg"
+                size="sm"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={showModal || modalBox}
@@ -109,13 +112,9 @@ export default function AttendanceListVolModal({
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Chosen Volunteer Type</th>
-                                    <th scope="col">Approval Status</th>
-                                    <th scope="col">Completion Status</th>
-                                    <th scope="col">Approve</th>
-                                    <th scope="col">Mark Completed</th>
-                                    <th scope="col">Remove User</th>
+                                    <th scope="col" align="center">
+                                        Name
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>{displayAttendanceList(attendanceListUsers?.data || [])}</tbody>

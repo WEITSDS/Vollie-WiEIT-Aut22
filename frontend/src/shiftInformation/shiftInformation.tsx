@@ -25,6 +25,7 @@ import AttendanceListModal from "../components/attendanceList";
 import { useVoltypesForUserShift } from "../hooks/useVolTypesForUserShift";
 import { VolTypeAllocation } from "./volTypeAllocation";
 import { QualTypeAllocation } from "./qualTypeAllocation";
+import AttendanceListVolModal from "../components/attendanceListVol";
 
 const ShiftInformation = () => {
     const { shiftId } = useParams();
@@ -353,11 +354,9 @@ const ShiftInformation = () => {
                             <div className="header-right-box-container">
                                 <div className="header-flex">
                                     <h1 className="right-box-title">Volunteer Allocations</h1>
-                                    {userObj?.isAdmin && (
-                                        <button className="participants-btn" onClick={handleParticipants}>
-                                            Participants
-                                        </button>
-                                    )}
+                                    <button className="participants-btn" onClick={handleParticipants}>
+                                        Participants
+                                    </button>
                                 </div>
                             </div>
 
@@ -462,7 +461,15 @@ const ShiftInformation = () => {
                             </form>
                         )}
                     </Modal>
-
+                    <AttendanceListVolModal
+                        showModal={showParticipantsModal}
+                        hideButton={true}
+                        shift={data?.data || {}}
+                        setShowModal={handleParticipants}
+                        onCloseModal={() => {
+                            void onCloseParticipantModal();
+                        }}
+                    />
                     {userObj?.isAdmin && (
                         <>
                             <AttendanceListModal
