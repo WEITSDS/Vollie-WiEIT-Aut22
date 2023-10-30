@@ -22,6 +22,7 @@ import { getDefaultFilters } from "../components/filterResultsModal/util";
 import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
 import { ExportModal } from "../components/exportModal/exportModal";
+import { Button } from "react-bootstrap";
 
 type ShiftPageProps = {
     shiftType: string;
@@ -98,6 +99,8 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const [exportModalVisible, setExportModalVisible] = useState<boolean>(false);
     const [isDeleteLoading, setisDeleteLoading] = useState<boolean>(false);
     const [selectedShifts, setselectedShifts] = useState<string[]>([]);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showDeleteButton, setShowDeleteButton] = useState(false);
 
     useEffect(() => {
         console.log("useEffect");
@@ -106,6 +109,12 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
             setResultFilters(getFilterInLocalStorage());
         }
     }, [userVolTypesData]);
+
+    //Runs everytime number of selected shift changes
+    useEffect(() => {
+        setShowDeleteButton(isShiftSelected());
+        console.log(isShiftSelected());
+    }, [selectedShifts]);
 
     const handleSelected = (id: string, checkStatus: boolean) => {
         setselectedShifts((prevSelectedShifts) => {
@@ -117,6 +126,14 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                 return prevSelectedShifts;
             }
         });
+    };
+
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false);
+    };
+
+    const openDeleteModal = () => {
+        setShowDeleteModal(true);
     };
 
     const openAddShift = () => {
@@ -144,6 +161,15 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         setselectedShifts([]);
     };
 
+    //Enable button if any shift is selected
+    const isShiftSelected = () => {
+        if (selectedShifts.length > 0) {
+            console.log(selectedShifts.length);
+            return true;
+        }
+        return false;
+    };
+
     return (
         <>
             <NavigationBar />
@@ -163,9 +189,11 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                             id="whiteButton"
                                             className={"admin-btn"}
                                             onClick={() => {
-                                                void deleteSelected();
+                                                void openDeleteModal();
+                                                // void deleteSelected();
                                             }}
-                                            disabled={isDeleteLoading}
+                                            //Disable button if showDeleteButton is false
+                                            disabled={!showDeleteButton}
                                         >
                                             {isDeleteLoading ? (
                                                 <>
@@ -239,6 +267,26 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                         />
                     )}
                 </ModalBody>
+                <Modal show={showDeleteModal} onHide={closeDeleteModal} animation={false}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Modal heading</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>You have selected {selectedShifts.length} shift/s to delete. Are you sure?</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={closeDeleteModal}>
+                            No
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={() => {
+                                closeDeleteModal;
+                                void deleteSelected();
+                            }}
+                        >
+                            Yes
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </WEITBackground>
         </>
     );
