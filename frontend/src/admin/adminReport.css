@@ -1,5 +1,5 @@
 .report-page-container {
-    background-color: rgba(255,255,255,0.6);
+    background-color: rgba(255,255,255,0.5);
     padding: 75px;
 }
 
@@ -16,7 +16,7 @@
     border: 1px solid #7d7d7d;
 }
 
-.checkbox-container, .date-container {   
+.checkbox-container, .date-container, .button-container {   
     margin: 8px;
     display: flex;
     flex-wrap: wrap;  
@@ -34,4 +34,17 @@
     flex-basis: 95%;
     margin-top: 2px;
     margin-bottom: 2px;
+}
+
+.btn {
+    background:linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+	background-color:#007dc1;
+	border-radius:20px;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-size:16px;
+	padding:12px 32px;
+    margin-top: 8px;
+    margin-right:16px;
 }

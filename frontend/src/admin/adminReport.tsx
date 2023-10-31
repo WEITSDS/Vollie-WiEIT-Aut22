@@ -3,8 +3,8 @@ import { ModalBody } from "react-bootstrap";
 import { WEITBackground } from "../components/background";
 import { NavigationBar } from "../components/navbar";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
-import DateTimePicker from "react-datetime-picker";
 import { useState } from "react";
+import { DateRangePicker, Range } from "react-date-range";
 
 interface rUser {
     firstname?: string | undefined;
@@ -12,24 +12,22 @@ interface rUser {
     hours?: number | undefined;
 }
 
-interface IDate {
-    startAt: Date;
-    endAt: Date;
-}
-
-const reportUsers: rUser[] = [];
-const dateformFields = (startDate?: Date | undefined, endDate?: Date | undefined): IDate => {
-    return {
-        startAt: startDate ? new Date(startDate) : new Date(),
-        endAt: endDate ? new Date(endDate) : new Date(),
-    };
-};
-
 const AdminReport = () => {
     const consolelogbutton = () => {
-        console.log(dateFields);
+        console.log(dateRange);
     };
 
+    const reportUsers: rUser[] = [];
+
+    const { data: allVolTypesData } = useAllVolTypes();
+    const volTypes = allVolTypesData?.data;
+    const [selectedVolTypes, setSelectedVolTypes] = useState<string[]>([]);
+
+    const [dateRange, setDateRange] = useState<Range>({
+        startDate: new Date(),
+        endDate: new Date(),
+        key: "selection",
+    });
     /*----------------------------------------------------------------*/
     // Test Data
     const testdata = {} as rUser;
@@ -38,11 +36,6 @@ const AdminReport = () => {
     testdata.hours = 2;
     reportUsers.push(testdata);
     /*----------------------------------------------------------------*/
-
-    const { data: allVolTypesData } = useAllVolTypes();
-    const volTypes = allVolTypesData?.data;
-    const [selectedVolTypes, setSelectedVolTypes] = useState<string[]>([]);
-    const [dateFields, setDateFields] = useState<IDate>(dateformFields());
 
     const handleVolChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let exists = false;
@@ -71,21 +64,16 @@ const AdminReport = () => {
         setSelectedVolTypes(selectedVolTypes.filter((n) => n));
     };
 
-    const handleDateChange = (newDate: Date, name: string) => {
-        setDateFields((prev) => {
-            return { ...prev, [`${name}`]: newDate };
-        });
+    const generateReport = () => {
+        console.log("This button does nothing at the moment");
     };
-
     return (
         <>
             <NavigationBar />
             <WEITBackground>
                 <ModalBody>
-                    <button onClick={consolelogbutton}>Temp Console Log Button</button>
                     <div className="report-page-container">
                         <h1>Reports Page</h1>
-                        <button>Generate Report (placeholder)</button>
 
                         <hr className="page-divider" />
 
@@ -109,31 +97,30 @@ const AdminReport = () => {
 
                         <hr className="page-divider" />
 
-                        <h5 className="setting-title">Select Dates</h5>
+                        <h5 className="setting-title">Select Date Range</h5>
                         <div className="date-container">
-                            <label>Start Date:</label>
-                            <DateTimePicker
-                                format="dd-MM-y h:mm a"
-                                className="date-input"
-                                value={dateFields?.startAt}
-                                name="startAt"
-                                onChange={(value: Date) => {
-                                    handleDateChange(value, "startAt");
-                                }}
-                            />
-                            <label>End Date:</label>
-                            <DateTimePicker
-                                format="dd-MM-y h:mm a"
-                                className="date-input"
-                                value={dateFields?.endAt}
-                                name="startAt"
-                                onChange={(value: Date) => {
-                                    handleDateChange(value, "endAt");
+                            <DateRangePicker
+                                className="range-date-picker"
+                                ranges={[dateRange]}
+                                onChange={(newRange) => {
+                                    if (newRange["selection"]) {
+                                        setDateRange(newRange["selection"]);
+                                    }
                                 }}
                             />
                         </div>
 
                         <hr className="page-divider" />
+
+                        <div className="button-container">
+                            <button className="btn" onClick={generateReport}>
+                                Generate Report
+                            </button>
+
+                            <button className="btn" onClick={consolelogbutton}>
+                                Temp Console Log Button
+                            </button>
+                        </div>
                     </div>
                 </ModalBody>
             </WEITBackground>
