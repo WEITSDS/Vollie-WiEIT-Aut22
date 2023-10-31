@@ -113,7 +113,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     //Runs everytime number of selected shift changes
     useEffect(() => {
         setShowDeleteButton(isShiftSelected());
-        console.log(isShiftSelected());
     }, [selectedShifts]);
 
     const handleSelected = (id: string, checkStatus: boolean) => {
@@ -269,9 +268,11 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                 </ModalBody>
                 <Modal show={showDeleteModal} onHide={closeDeleteModal} animation={false}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Modal heading</Modal.Title>
+                        <Modal.Title>Shift Deletion</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>You have selected {selectedShifts.length} shift/s to delete. Are you sure?</Modal.Body>
+                    <Modal.Body>
+                        You have selected {selectedShifts.length} shift/s to delete. Do you want to proceed?
+                    </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={closeDeleteModal}>
                             No
