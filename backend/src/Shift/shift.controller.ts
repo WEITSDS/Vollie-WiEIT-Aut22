@@ -1095,7 +1095,7 @@ export const getVolunteerReport = async (req: Request, res: Response) => {
     try {
         // Extract desired volunteer positions from the request
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { volunteerPositions } = req.body;
+        const { volunteerPositions, startDate, endDate } = req.body;
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (!volunteerPositions || volunteerPositions.length === 0) {
@@ -1105,7 +1105,7 @@ export const getVolunteerReport = async (req: Request, res: Response) => {
 
         // Use the generateReportData function to get the report data
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        const reportData = await generateReportData(volunteerPositions);
+        const reportData = await generateReportData(volunteerPositions, startDate, endDate);
 
         res.status(200).json({
             message: "Report generated successfully.",
@@ -1122,7 +1122,7 @@ export const getVolunteerReport = async (req: Request, res: Response) => {
     }
 };
 
-async function generateReportData(volunteerPositions: string[]) {
+async function generateReportData(volunteerPositions: string[], startDate: string, endDate: string) {
     const reportData: {
         firstName: string;
         lastName: string;
@@ -1131,7 +1131,16 @@ async function generateReportData(volunteerPositions: string[]) {
     }[] = [];
 
     for (const position of volunteerPositions) {
-        const shifts = await Shift.find({ "volunteerTypeAllocations.type": new mongoose.Types.ObjectId(position) });
+        if (!mongoose.Types.ObjectId.isValid(position)) {
+            throw new Error(`Invalid ObjectId: ${position}`);
+        }
+        const shifts = await Shift.find({
+            "volunteerTypeAllocations.type": new mongoose.Types.ObjectId(position),
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            startAt: { $gte: new Date(startDate) }, // starts on or after the startDate
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            endAt: { $lte: new Date(endDate) }, // ends on or before the endDate
+        });
 
         const userHoursMap: Map<string, number> = new Map();
 
@@ -1163,10 +1172,11 @@ async function generateReportData(volunteerPositions: string[]) {
 
 export const exportVolunteerReportAsExcel = async (req: Request, res: Response) => {
     try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-        const reportData = await generateReportData(req.body.volunteerPositions); // assuming you abstract the report generation into its own function
-
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        const { volunteerPositions, startDate, endDate } = req.body;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const reportData = await generateReportData(volunteerPositions, startDate, endDate);
+
         const workbook = new ExcelJS.Workbook();
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         const worksheet = workbook.addWorksheet("Volunteer Report");
