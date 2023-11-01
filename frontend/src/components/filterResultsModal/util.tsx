@@ -15,6 +15,6 @@ export const getDefaultFilters = (defaultVolTypes?: IVolunteerTypeUserWithApprov
                     value: type._id,
                 };
             }) || ([] as VolType[]),
-        hideUnavailable: true,
+        hideUnavailable: false,
     } as Filters;
 };
