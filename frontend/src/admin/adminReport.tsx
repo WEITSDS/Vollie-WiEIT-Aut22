@@ -5,6 +5,7 @@ import { NavigationBar } from "../components/navbar";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
 import { useState } from "react";
 import { DateRangePicker, Range } from "react-date-range";
+import { Table } from "react-bootstrap";
 
 const AdminReport = () => {
     const { data: allVolTypesData } = useAllVolTypes();
@@ -42,7 +43,7 @@ const AdminReport = () => {
             endDate: endDate?.toISOString(),
         };
 
-        console.log(dateRange);
+        console.log(reportData);
 
         try {
             const response = await fetch("http://localhost:3001/api/shifts/get-volunteer-report", {
@@ -139,17 +140,39 @@ const AdminReport = () => {
                                 }}
                             />
                         </div>
-                        <div className="report-result-container">
+
+                        <hr className="page-divider" />
+
+                        <h5 className="setting-title">Spreadsheet Preview</h5>
+                        <div className="preview-container">
                             {reportData ? (
-                                <>
-                                    <h5>Report Data:</h5>
-                                    <ul>
-                                        {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */}
-                                        {reportData?.map((item: any, index: number) => (
-                                            <li key={index}>{JSON.stringify(item)}</li>
-                                        ))}
-                                    </ul>
-                                </>
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Position</th>
+                                            <th>Total Hours</th>
+                                        </tr>
+                                    </thead>
+                                    {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */}
+                                    {reportData.map((item: any, index: number) => {
+                                        return (
+                                            <tbody>
+                                                <tr key={index}>
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */}
+                                                    <td>{item.firstName}</td>
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */}
+                                                    <td>{item.lastName}</td>
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */}
+                                                    <td>{item.position}</td>
+                                                    {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */}
+                                                    <td>{item.total.toFixed(1)}</td>
+                                                </tr>
+                                            </tbody>
+                                        );
+                                    })}
+                                </Table>
                             ) : (
                                 <p>No report data available.</p>
                             )}
@@ -159,7 +182,7 @@ const AdminReport = () => {
 
                         <div className="button-container">
                             <button
-                                className="button"
+                                className="report-page-button"
                                 onClick={() => {
                                     generateReport().catch((err) => console.error("Error generating report:", err));
                                 }}
@@ -169,7 +192,7 @@ const AdminReport = () => {
 
                             {reportData && (
                                 <button
-                                    className="button"
+                                    className="report-page-button"
                                     onClick={() => {
                                         exportReportAsExcel().catch((err) =>
                                             console.error("Error exporting report as Excel:", err)
