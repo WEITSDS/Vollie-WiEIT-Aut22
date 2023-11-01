@@ -42,8 +42,10 @@ const AdminReport = () => {
             endDate: endDate?.toISOString(),
         };
 
+        console.log(dateRange);
+
         try {
-            const response = await fetch("http://localhost:3000/api/shifts/get-volunteer-report", {
+            const response = await fetch("http://localhost:3001/api/shifts/get-volunteer-report", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestBody),
@@ -71,7 +73,7 @@ const AdminReport = () => {
         };
 
         try {
-            const response = await fetch("http://localhost:3000/api/shifts/export-report-excel", {
+            const response = await fetch("http://localhost:3001/api/shifts/export-report-excel", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestBody),
@@ -157,7 +159,7 @@ const AdminReport = () => {
 
                         <div className="button-container">
                             <button
-                                className="btn"
+                                className="button"
                                 onClick={() => {
                                     generateReport().catch((err) => console.error("Error generating report:", err));
                                 }}
@@ -167,7 +169,7 @@ const AdminReport = () => {
 
                             {reportData && (
                                 <button
-                                    className="btn"
+                                    className="button"
                                     onClick={() => {
                                         exportReportAsExcel().catch((err) =>
                                             console.error("Error exporting report as Excel:", err)

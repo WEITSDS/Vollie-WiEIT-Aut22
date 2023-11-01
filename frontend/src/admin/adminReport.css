@@ -36,15 +36,20 @@
     margin-bottom: 2px;
 }
 
-.btn {
-    background:linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+.button {
 	background-color:#007dc1;
 	border-radius:20px;
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff;
 	font-size:16px;
-	padding:12px 32px;
+	padding:8px 28px;
     margin-top: 8px;
     margin-right:16px;
+    transition: 0.3s;
+}
+
+.button:hover {
+    background-color: #ffffff;
+    color: #007dc1;
 }
