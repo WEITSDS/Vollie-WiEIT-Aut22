@@ -22,6 +22,7 @@ import { getDefaultFilters } from "../components/filterResultsModal/util";
 import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
 import { ExportModal } from "../components/exportModal/exportModal";
+import { Button } from "react-bootstrap";
 
 type ShiftPageProps = {
     shiftType: string;
@@ -32,9 +33,58 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const { isLoading: loadingAllVolTypes, data: allVolTypes } = useAllVolTypes();
     const { data: userVolTypesData, isLoading: loadingUserVolTypes } = useVoltypesForUser(userData?.data?._id);
 
+    const getFilterInLocalStorage = (): Filters => {
+        const localFiltersString: string | null = localStorage.getItem("shiftResultFilters");
+        // CONSOLE
+        console.log(localFiltersString);
+        if (!localFiltersString) {
+            console.log("Default");
+            return getDefaultFilters(userVolTypesData?.data || []);
+        }
+        const localFilters = JSON.parse(localFiltersString) as Filters;
+        const something = {
+            from: new Date(localFilters.from),
+            to: new Date(localFilters.to),
+            volTypes: localFilters.volTypes,
+            category: localFilters.category,
+            hours: localFilters.hours,
+            hideUnavailable: localFilters.hideUnavailable,
+        };
+        // CONSOLE localFilters
+        console.log(localFilters);
+        return something;
+    };
+
     const [resultFilters, setResultFilters] = useState<Filters | undefined>(
         loadingUserVolTypes ? undefined : getDefaultFilters(userVolTypesData?.data || [])
     );
+
+    // useEffect(() => {
+    //     setResultFilters(getFilterInLocalStorage());
+    // }, [loadingUserVolTypes]);
+
+    //Local Storage
+    // useEffect(() => {
+    //     const localFilters: Record<string, Unknown> = JSON.parse(localStorage.getItem("shiftResultFilters"));
+    // const something = {
+    //     to: localFilters.to,
+    //     from: localFilters.from,
+    //     //volTypes: VolType[];
+    //     category: localFilters.category,
+    //     hours: localFilters.hours,
+    //     hideUnavailable: localFilters.hideUnavailable,
+    // };
+    // }, [resultFilters]);
+
+    // setResultFilters(something);
+
+    //Saves most recent filter into the local storage
+    const updateFiltersInLocalStorage = (filters: Filters) => {
+        localStorage.setItem("shiftResultFilters", JSON.stringify(filters));
+        console.log("Updated");
+        console.log(filters);
+        console.log(JSON.stringify(filters));
+    };
 
     const {
         isLoading = true,
@@ -49,12 +99,24 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const [exportModalVisible, setExportModalVisible] = useState<boolean>(false);
     const [isDeleteLoading, setisDeleteLoading] = useState<boolean>(false);
     const [selectedShifts, setselectedShifts] = useState<string[]>([]);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showDeleteButton, setShowDeleteButton] = useState(false);
+    const [show2, setShow2] = useState<boolean>(false);
+    const [shiftdata, setshiftData] = useState("");
+    const [openDupe, setOpenDupe] = useState(false);
 
     useEffect(() => {
+        console.log("useEffect");
         if (userVolTypesData) {
-            setResultFilters(getDefaultFilters(userVolTypesData?.data || []));
+            // setResultFilters(getDefaultFilters(userVolTypesData?.data || []));
+            setResultFilters(getFilterInLocalStorage());
         }
     }, [userVolTypesData]);
+
+    //Runs everytime number of selected shift changes
+    useEffect(() => {
+        setShowDeleteButton(isShiftSelected());
+    }, [selectedShifts]);
 
     const handleSelected = (id: string, checkStatus: boolean) => {
         setselectedShifts((prevSelectedShifts) => {
@@ -66,6 +128,14 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                 return prevSelectedShifts;
             }
         });
+    };
+
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false);
+    };
+
+    const openDeleteModal = () => {
+        setShowDeleteModal(true);
     };
 
     const openAddShift = () => {
@@ -92,27 +162,14 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         setisDeleteLoading(false);
         setselectedShifts([]);
     };
-
-    /*---------------------------------------------------------------------*/
-    //Work in progress - Duplicate Shift Feature
-
-    const [show2, setShow2] = useState<boolean>(false);
-    const [shiftdata, setshiftData] = useState("");
-    const [openDupe, setOpenDupe] = useState(false);
-
-    // Upon hovering duplicate shift button, sets shiftdata to shiftID of selected shift
-    // const checkDupeID = () => {
-    //     console.log("selectedShifts: ", selectedShifts);
-
-    //     if (selectedShifts.length === 1) {
-    //         selectedShifts.forEach((shiftId) => {
-    //             console.log("shiftData: ", shiftdata);
-    //             setshiftData(shiftId);
-    //         });
-    //     } else {
-    //         setshiftData("");
-    //     }
-    // };
+    //Enable button if any shift is selected
+    const isShiftSelected = () => {
+        if (selectedShifts.length > 0) {
+            console.log(selectedShifts.length);
+            return true;
+        }
+        return false;
+    };
 
     // Opens addShiftForm that has copied fields from selected shift
     const openDupeShift = useCallback(() => {
@@ -145,8 +202,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         setselectedShifts([]);
     };
 
-    /*---------------------------------------------------------------------*/
-
     return (
         <>
             <NavigationBar />
@@ -175,9 +230,11 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                             id="whiteButton"
                                             className={"admin-btn"}
                                             onClick={() => {
-                                                void deleteSelected();
+                                                void openDeleteModal();
+                                                // void deleteSelected();
                                             }}
-                                            disabled={isDeleteLoading}
+                                            //Disable button if showDeleteButton is false
+                                            disabled={!showDeleteButton}
                                         >
                                             {isDeleteLoading ? (
                                                 <>
@@ -240,13 +297,38 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                         <FilterResultsModal
                             visible={filterPanelVisible}
                             filters={resultFilters}
-                            updateFilters={(filters) => setResultFilters(filters)}
+                            updateFilters={(filters) => {
+                                setResultFilters(filters);
+                                updateFiltersInLocalStorage(filters);
+                            }}
                             onClose={() => setFilterPanelVisible(false)}
                             allVolTypes={allVolTypes?.data || []}
                             userVolTypes={userVolTypesData?.data || []}
                         />
                     )}
                 </ModalBody>
+                <Modal show={showDeleteModal} onHide={closeDeleteModal} animation={false}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Shift Deletion</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        You have selected {selectedShifts.length} shift/s to delete. Do you want to proceed?
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={closeDeleteModal}>
+                            No
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={() => {
+                                closeDeleteModal;
+                                void deleteSelected();
+                            }}
+                        >
+                            Yes
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </WEITBackground>
         </>
     );

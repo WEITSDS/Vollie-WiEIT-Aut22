@@ -51,6 +51,7 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
 
     const [isLoading, setIsLoading] = useState(false);
     const [responseMsg, setresponseMsg] = useState("");
+    const [endDateDisabled, setEndDateDisabled] = useState(true);
 
     const { data: allVolTypesData, isLoading: loadingAllVolTypes } = useAllVolTypes();
     const { data: allQualTypesData, isLoading: loadingAllQualTypes } = useAllQualTypes();
@@ -117,6 +118,13 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
             return { ...prevFormFields, [`${name}`]: newDate };
         });
     };
+
+    const shiftDuration = (startDate: Date, endDate: Date) => {
+        //Converting millseconds to hours
+        return (startDate.getTime() - endDate.getTime()) / 1000 / 60 / 60;
+    };
+
+    formFields.hours = shiftDuration(formFields.endAt, formFields.startAt);
 
     // const handleCheckbox = (event: React.FormEvent<HTMLInputElement>): void => {
     //     // event.preventDefault();
@@ -252,8 +260,15 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
                     className="date-input"
                     value={formFields.startAt}
                     name="startAt"
+                    disableClock={true}
+                    minDate={new Date()}
                     onChange={(value: Date) => {
+                        //Set seconds and milliseconds to zero
+                        value.setSeconds(0);
+                        value.setMilliseconds(0);
                         handleDateChange(value, "startAt");
+                        setEndDateDisabled(value === undefined);
+                        //Set disabled to true for endDate field
                     }}
                 />
                 {/* <input
@@ -269,7 +284,13 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
                     className={"date-input"}
                     value={formFields.endAt}
                     name="endAt"
+                    disableClock={true}
+                    minDate={formFields.startAt}
+                    //disable end date until start date is selected
+                    disabled={endDateDisabled}
                     onChange={(value: Date) => {
+                        value.setSeconds(0);
+                        value.setMilliseconds(0);
                         handleDateChange(value, "endAt");
                     }}
                 />
@@ -287,18 +308,11 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
                 <input type="text" defaultValue={formFields.address} name="address" onChange={handleChange} />
                 <label>Description</label>
                 <textarea name="description" defaultValue={formFields.description} onChange={handleChange} />
-                <label>Work Hours</label>
-                <input
-                    className="work-hours add-shift-form-number-input"
-                    type="number"
-                    min={0}
-                    defaultValue={formFields.hours}
-                    name="hours"
-                    onChange={handleChange}
-                />
+
+                <label>Work Hours: {formFields.hours}</label>
+
                 <hr className="type-line" />
-                {/* <label>Notes</label>
-                <input type="text" defaultValue={formFields.notes} name="notes" onChange={handleChange} /> */}
+
                 <label>Category</label>
                 <Form.Select
                     className="drop-down"

@@ -77,11 +77,15 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftC
                                         }}
                                         size="sm"
                                         variant="light"
-                                        style={{ borderRadius: "50%" }}
+                                        style={{ borderRadius: "50%", margin: "10px" }}
                                     >
-                                        <img src={editIcon} alt="edit shift icon" />
+                                        <img src={editIcon} alt="edit shift icon" title="Edit Shift" />
                                     </Button>
                                     <Form.Check
+                                        style={{
+                                            top: ".8rem",
+                                            scale: "1.4",
+                                        }}
                                         onChange={(e) => {
                                             handleSelected(_id, e.target.checked);
                                         }}
