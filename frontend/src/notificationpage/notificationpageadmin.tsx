@@ -34,7 +34,6 @@ export const NotificationPageAdmin = () => {
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const data = await res.json();
-
             if (res.ok) {
                 // Update state or do whatever you need to update the UI here
                 alert("Notification status updated successfully!");
@@ -48,11 +47,20 @@ export const NotificationPageAdmin = () => {
     };
 
     const ShiftApprovalButtonNotif = (notif: INotification, currentUserId: string) => {
-        const handleApproval = (approvalStatus: string) => {
+        const handleApproval = (approvalStatus: string, updateNotifStatus: string) => {
             setApprovalUserForShift(currentUserId, notif.typeId, approvalStatus)
                 .then((response) => {
                     if (response.status === 200) {
-                        alert("Shift status updated successfully!");
+                        // alert("Shift status updated successfully!");
+                        updateNotificationStatus(notif._id, updateNotifStatus)
+                            .then(() => {
+                                // alert("Shift status updated successfully!");
+                                // alert("Shift status updated successfully!");
+                            })
+                            .catch((error) => {
+                                console.log("Could not update shift approval status:", error);
+                                // alert(`Failed to update shift:`);
+                            });
                     } else {
                         alert(`Failed to update shift:`);
                     }
@@ -77,13 +85,32 @@ export const NotificationPageAdmin = () => {
                         <span className="notif-current-status">Current Status: {notif.action}</span>
                         <button
                             className={notif.action === "Approved" ? "notif-button-hidden" : "notif-button"}
-                            onClick={() => handleApproval("approve")}
+                            onClick={() => handleApproval("approve", "approved")}
+                            // onClick={() => {
+                            //     console.log("Clicked");
+                            //     updateNotificationStatus(notif._id, "Approved")
+                            //         .then(() => {
+                            //             //alert("Notification status updated woah successfully!");
+                            //         })
+                            //         .catch((error) => {
+                            //             console.error("Could not update notification status:", error);
+                            //         });
+                            // }}
                         >
                             Approve
                         </button>
                         <button
                             className={notif.action === "Declined" ? "notif-button-hidden" : "notif-button"}
-                            onClick={() => handleApproval("unapprove")}
+                            onClick={() => handleApproval("unapprove", "unapproved")}
+                            // onClick={() => {
+                            //     updateNotificationStatus(notif._id, "Declined")
+                            //         .then(() => {
+                            //             // Handle success here, if needed
+                            //         })
+                            //         .catch((error) => {
+                            //             console.error("Could not update notification status:", error);
+                            //         });
+                            // }}
                         >
                             Decline
                         </button>
@@ -111,6 +138,7 @@ export const NotificationPageAdmin = () => {
                         <button
                             className={notif.action === "Approved" ? "notif-button-hidden" : "notif-button"}
                             onClick={() => {
+                                console.log("Clicked");
                                 updateNotificationStatus(notif._id, "Approved")
                                     .then(() => {
                                         //alert("Notification status updated woah successfully!");
