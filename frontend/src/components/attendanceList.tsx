@@ -185,7 +185,7 @@ export default function AttendanceListModal({
                     {!userShift.approved ? (
                         <Button onClick={() => void onApproveUser(userShift._id)}>Approve</Button>
                     ) : (
-                        <Button onClick={() => void onUnApproveUser(userShift._id)}>UnApprove</Button>
+                        <Button onClick={() => void onUnApproveUser(userShift._id)}>Unapprove</Button>
                     )}
                 </td>
                 <td>
@@ -216,7 +216,7 @@ export default function AttendanceListModal({
             </Nav.Link> */}
             {!hideButton && (
                 <Button size="sm" onClick={handleShow} variant="light" style={{ borderRadius: "50%" }}>
-                    <img src={participantsIcon} alt="participants icon" />
+                    <img src={participantsIcon} alt="participants icon" title="Participants List" />
                 </Button>
             )}
 

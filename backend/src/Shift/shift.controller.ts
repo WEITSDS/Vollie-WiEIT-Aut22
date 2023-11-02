@@ -969,10 +969,10 @@ export const getShiftAttendanceList = async (req: Request, res: Response) => {
         }
 
         // only admin can view participants
-        if (!userObj.isAdmin) {
-            res.status(403).json({ message: "Authorization error", success: false });
-            return;
-        }
+        // if (!userObj.isAdmin) {
+        //     res.status(403).json({ message: "Authorization error", success: false });
+        //     return;
+        // }
 
         const { shiftid } = req.params;
         if (!shiftid) {

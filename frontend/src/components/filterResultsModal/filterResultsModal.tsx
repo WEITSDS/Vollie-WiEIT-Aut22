@@ -24,7 +24,7 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
             className="filter-modal"
             size="lg"
         >
-            <Modal.Header>
+            <Modal.Header closeButton>
                 <Modal.Title>Filters</Modal.Title>
             </Modal.Header>
             <Modal.Body>
