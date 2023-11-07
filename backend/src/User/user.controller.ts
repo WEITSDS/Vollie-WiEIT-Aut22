@@ -514,7 +514,7 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
                     userObj.firstName,
                     userObj.lastName,
                     targetVolType.name,
-                    newVolTypeId,
+                    req.params.volunteertypeid,
                     userObj._id
                 );
                 console.log("CHECK CHECK id being passed " + userObj._id);

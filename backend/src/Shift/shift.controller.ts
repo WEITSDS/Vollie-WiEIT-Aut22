@@ -383,7 +383,7 @@ export const setUserApproval = async (req: Request, res: Response) => {
 
         const targetShift = await Shift.findOne({ _id: req.params.shiftid });
 
-        const approvalStatus = req.params.approvalstatus === "approve";
+        const approvalStatus = req.params.approvalstatus === "approved";
 
         if (!targetShift) {
             res.status(404).json({
