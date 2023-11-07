@@ -7,6 +7,7 @@ import { useState } from "react";
 import { DateRangePicker, Range } from "react-date-range";
 import { Table } from "react-bootstrap";
 
+const ROOT_URL = window.location.origin;
 const AdminReport = () => {
     const { data: allVolTypesData } = useAllVolTypes();
     const volTypes = allVolTypesData?.data;
@@ -46,7 +47,7 @@ const AdminReport = () => {
         console.log(reportData);
 
         try {
-            const response = await fetch("http://localhost:3001/api/shifts/get-volunteer-report", {
+            const response = await fetch(`${ROOT_URL}/api/shifts/get-volunteer-report`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestBody),
@@ -74,7 +75,7 @@ const AdminReport = () => {
         };
 
         try {
-            const response = await fetch("http://localhost:3001/api/shifts/export-report-excel", {
+            const response = await fetch(`${ROOT_URL}/api/shifts/export-report-excel`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestBody),
