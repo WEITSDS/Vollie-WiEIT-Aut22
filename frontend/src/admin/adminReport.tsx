@@ -68,6 +68,11 @@ const AdminReport = () => {
 
     const exportReportAsExcel = async () => {
         const { startDate, endDate } = dateRange;
+        const formattedStartDate = startDate?.toISOString().split("T")[0]; // Get only the date part
+        const formattedEndDate = endDate?.toISOString().split("T")[0]; // Get only the date part
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        const filename = `${formattedStartDate}_${formattedEndDate}_volunteer-report.xlsx`;
+
         const requestBody = {
             volunteerPositions: selectedVolTypes,
             startDate: startDate?.toISOString(),
@@ -86,9 +91,10 @@ const AdminReport = () => {
                 const url = window.URL.createObjectURL(blob);
                 const link = document.createElement("a");
                 link.href = url;
-                link.setAttribute("download", "volunteer-report.xlsx");
+                link.setAttribute("download", filename);
                 document.body.appendChild(link);
                 link.click();
+                document.body.removeChild(link); // Remove the link after clicking
             } else {
                 console.error("Error exporting report as Excel:", await response.text());
             }

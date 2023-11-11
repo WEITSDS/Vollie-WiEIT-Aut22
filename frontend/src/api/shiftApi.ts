@@ -294,7 +294,7 @@ export async function exportVolunteerReportAsExcel(
     endDate: string
 ): Promise<Blob | null> {
     try {
-        const response = await fetch(`${ROOT_URL}/api/shift/export-report-excel`, {
+        const response = await fetch(`${ROOT_URL}/api/shift.export-report-excel`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -1070,6 +1070,7 @@ export const getAvailableRolesForShiftUser = async (req: Request, res: Response)
         return;
     }
 };
+
 export const getAllShifts = async (req: Request, res: Response) => {
     try {
         // Get user obj to check if admin
@@ -1172,17 +1173,16 @@ async function generateReportData(volunteerPositions: string[], startDate: strin
 
 export const exportVolunteerReportAsExcel = async (req: Request, res: Response) => {
     try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { volunteerPositions, startDate, endDate } = req.body;
+        console.log("Received dates and positions:", startDate, endDate, volunteerPositions); // Debug log
+
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const reportData = await generateReportData(volunteerPositions, startDate, endDate);
 
         const workbook = new ExcelJS.Workbook();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         const worksheet = workbook.addWorksheet("Volunteer Report");
 
-        // Define columns
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         worksheet.columns = [
             { header: "First Name", key: "firstName", width: 15 },
             { header: "Last Name", key: "lastName", width: 15 },
@@ -1190,21 +1190,27 @@ export const exportVolunteerReportAsExcel = async (req: Request, res: Response) 
             { header: "Total Hours", key: "total", width: 12 },
         ];
 
-        // Add data
         reportData.forEach((data) => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             worksheet.addRow(data);
         });
 
-        // Set header styles (optional)
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         worksheet.getRow(1).font = { bold: true };
 
-        // Send Excel workbook as response
-        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        res.setHeader("Content-Disposition", "attachment; filename=volunteer-report.xlsx");
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        let fileName = `${startDate}_${endDate}_`;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (volunteerPositions.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            fileName += volunteerPositions.join("_");
+        }
+        fileName += "_volunteer_report.xlsx";
+        fileName = fileName.replace(/[^a-zA-Z0-9-_]/g, "_");
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        console.log("Generated file name:", fileName); // Debug log
+
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+
         return await workbook.xlsx.write(res);
     } catch (error) {
         console.log("Error generating volunteer Excel report:", error);
