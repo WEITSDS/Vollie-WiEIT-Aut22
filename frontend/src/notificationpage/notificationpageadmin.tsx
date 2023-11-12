@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import "./notificationpageadmin.css";
 import { NavigationBar } from "../components/navbar";
 import { useState } from "react";
