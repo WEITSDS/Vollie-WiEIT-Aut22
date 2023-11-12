@@ -6,9 +6,12 @@ const NotificationSchema: Schema = new Schema(
     {
         content: { type: String, required: true },
         user: { type: mongoose.Types.ObjectId, ref: "User" },
-        userFirstName: {type: String, required: true },
+        userFirstName: { type: String, required: true },
         type: { type: String, required: true },
         time: { type: String, required: true },
+        action: { type: String, default: "Pending" },
+        typeId: { type: String, required: false },
+        userVolType: { type: String, required: false },
     },
     {
         timestamps: true,

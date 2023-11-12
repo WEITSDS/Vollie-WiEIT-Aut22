@@ -19,6 +19,8 @@ const logger = new Logger({ name: "user.controller" });
  */
 export const getAllUsers = (_req: Request, res: Response, _next: NextFunction) => {
     User.find()
+        //xiaobing added
+        .populate("shifts.shift")
         .exec()
         .then((results) => {
             return res.status(200).json({
@@ -49,6 +51,8 @@ export const getAllAdmins = () => {
  */
 export const getUserById = (req: Request, res: Response, _next: NextFunction) => {
     User.findById(req.params.id)
+        //xiaobing added
+        .populate("shifts.shift")
         .exec()
         .then((foundUser) => {
             if (!foundUser) {
@@ -341,7 +345,9 @@ export const getOwnUser = async (req: Request, res: Response): Promise<void> => 
             return;
         }
 
-        const user = await User.findOne({ email: requestingUser.email }).populate("qualifications");
+        const user = await User.findOne({ email: requestingUser.email })
+            .populate("qualifications")
+            .populate("shifts.shift");
         if (!user) {
             res.status(404).json({ message: "Could not find user", success: false });
             return;
@@ -473,13 +479,18 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
             });
             return;
         }
+        const newVolTypeId = new mongoose.Types.ObjectId().toString();
 
         const targetVolType = await VolunteerType.findById(req.params.volunteertypeid);
         const assignVolTypeResult = await User.findOneAndUpdate(
             { _id: req.params.userid },
             {
                 $addToSet: {
-                    volunteerTypes: { type: req.params.volunteertypeid, approved: !targetVolType?.requiresApproval },
+                    volunteerTypes: {
+                        _id: new mongoose.Types.ObjectId(newVolTypeId),
+                        type: req.params.volunteertypeid,
+                        approved: !targetVolType?.requiresApproval,
+                    },
                 },
             }
         );
@@ -502,8 +513,11 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
                     sessionUserId,
                     userObj.firstName,
                     userObj.lastName,
-                    targetVolType.name
+                    targetVolType.name,
+                    req.params.volunteertypeid,
+                    userObj._id
                 );
+                console.log("CHECK CHECK id being passed " + userObj._id);
             }
             return;
         } else {

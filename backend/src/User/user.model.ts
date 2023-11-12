@@ -27,7 +27,7 @@ const UserSchema: Schema = new Schema(
                 approved: { type: Boolean, default: false },
             },
         ],
-        notifications: [{type: mongoose.Types.ObjectId, ref: "Notification"}],
+        notifications: [{ type: mongoose.Types.ObjectId, ref: "Notification" }],
     },
     {
         timestamps: true,

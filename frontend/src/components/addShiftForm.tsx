@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createShift, updateShift, IShift } from "../api/shiftApi";
 import LoadingSpinner from "../components/loadingSpinner";
 import { useNavigate } from "react-router-dom";
@@ -9,11 +9,13 @@ import { useAllQualTypes } from "../hooks/useAllQualTypes";
 import DateTimePicker from "react-datetime-picker";
 
 import cloneDeep from "lodash/cloneDeep";
+import { useShiftById } from "../hooks/useShiftById";
 
 type HandleClose = () => void;
 type formProps = {
     handleClose: HandleClose;
     previousShiftFields?: IShift | undefined;
+    shiftdata: string;
 };
 
 // const dateStringToHTML = (date: string) => {
@@ -44,7 +46,7 @@ const shiftFormFields = (
     };
 };
 
-const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields }) => {
+const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShiftFields }) => {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -157,6 +159,93 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
         }
     };
 
+    /*---------------------------------------------------------------------*/
+    // Work in progress - Recurring Options Feature
+    const [repeats, setrepeats] = useState("0");
+    const [repeatInterval, setrepeatInterval] = useState("never");
+
+    const onIntervalChange = (option: React.ChangeEvent<HTMLSelectElement>) => {
+        setrepeatInterval(option.currentTarget.value);
+    };
+
+    const onRepeatsChange = (input: React.ChangeEvent<HTMLInputElement>) => {
+        setrepeats(input.currentTarget.value);
+    };
+
+    // const recurOps = [
+    //     { view: "None", value: "none" },
+    //     { view: "Daily", value: "daily" },
+    //     { view: "Weekly", value: "weekly" },
+    //     { view: "Monthly", value: "monthly" },
+    // ];
+
+    const handleAddShift = () => {
+        let interval = 0;
+        const recurrances: number = +repeats;
+
+        // Interval multiplier
+        if (repeatInterval === "day" || repeatInterval === "month") {
+            interval = 1;
+        } else if (repeatInterval === "week") {
+            interval = 7;
+        }
+
+        // Create Initial Shift
+        handleSubmit().catch((err) => console.log(err));
+
+        // Create Recurring Shifts
+        if (repeatInterval === "day" || repeatInterval === "week") {
+            for (let i = 0; i < recurrances; i++) {
+                setrecurDays(interval);
+            }
+        } else if (repeatInterval === "month") {
+            for (let i = 0; i < recurrances; i++) {
+                setrecurMonths(interval);
+            }
+        }
+    };
+
+    const setrecurDays = (interval: number) => {
+        formFields.startAt.setDate(formFields.startAt.getDate() + interval);
+        formFields.endAt.setDate(formFields.endAt.getDate() + interval);
+        handleSubmit().catch((err) => console.log(err));
+    };
+
+    const setrecurMonths = (interval: number) => {
+        formFields.startAt.setMonth(formFields.startAt.getMonth() + interval);
+        formFields.endAt.setMonth(formFields.endAt.getMonth() + interval);
+        handleSubmit().catch((err) => console.log(err));
+    };
+    /*---------------------------------------------------------------------*/
+    /*---------------------------------------------------------------------*/
+    // Work in progress: Dupe Shift Feature
+
+    const { data } = useShiftById(shiftdata || "");
+
+    // Check if there is a selected shift to duplicate
+    const checkifDupe = useCallback(() => {
+        if (data) {
+            setFormFields((prevFormFields) => {
+                return {
+                    ...prevFormFields,
+                    ["name"]: ["Copy of ", data?.data?.name].join("") || "",
+                    ["venue"]: data?.data?.venue || "",
+                    ["address"]: data?.data?.address || "",
+                    ["description"]: data?.data?.description || "",
+                    ["hours"]: data?.data?.hours || 0,
+                    ["category"]: data?.data?.category || "Other",
+                    ["requiredQualifications"]: data?.data?.requiredQualifications || [],
+                    ["volunteerTypeAllocations"]: data?.data?.volunteerTypeAllocations || [],
+                };
+            });
+        }
+    }, [data]);
+
+    useEffect(() => {
+        checkifDupe();
+    }, [checkifDupe, data]);
+    /*---------------------------------------------------------------------*/
+
     return (
         <div>
             <form className="add-shift-form">
@@ -165,7 +254,6 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                 </div>
                 <label className="title">Title</label>
                 <input type="text" defaultValue={formFields.name} name="name" onChange={handleChange} />
-
                 <label>Start Date</label>
                 <DateTimePicker
                     format="dd-MM-y h:mm a"
@@ -190,7 +278,6 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                     name="startAt"
                     onChange={handleChange}
                 /> */}
-
                 <label>End Date</label>
                 <DateTimePicker
                     format="dd-MM-y h:mm a"
@@ -214,15 +301,11 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                     name="endAt"
                     onChange={handleChange}
                 /> */}
-
                 <hr className="type-line" />
-
                 <label>Venue</label>
                 <input type="text" defaultValue={formFields.venue} name="venue" onChange={handleChange} />
-
                 <label>Address</label>
                 <input type="text" defaultValue={formFields.address} name="address" onChange={handleChange} />
-
                 <label>Description</label>
                 <textarea name="description" defaultValue={formFields.description} onChange={handleChange} />
 
@@ -243,7 +326,6 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                     <option value="Event">Event</option>
                     <option value="Committee">Committee</option>
                 </Form.Select>
-
                 {/* <hr className="type-line" />
 
                 <div>
@@ -284,8 +366,9 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                         })}
                 </div>
 
-                <h1 className="type-header">Qualification Allocations</h1>
                 <hr className="type-line" />
+
+                <h1 className="type-header">Qualification Allocations</h1>
                 <div className="type-container">
                     {!loadingAllQualTypes &&
                         qualTypes &&
@@ -312,6 +395,55 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
 
                 <hr className="type-line" />
 
+                <h1 className="type-header">Recurring Options</h1>
+                <div className="type-container">
+                    <div className="recur-op">
+                        {/* {recurOps.map(({ view: title, value: interval }) => {
+                            return (
+                                <div>
+                                    <input
+                                        type="radio"
+                                        value={interval}
+                                        name={interval}
+                                        checked={interval === repeatInterval}
+                                        onChange={(option) => onIntervalChange(option)}
+                                    />
+                                    {title}
+                                </div>
+                            );
+                        })} */}
+
+                        <h6 className="recur-text">Repeats every</h6>
+
+                        <select
+                            className="recur-interval-input"
+                            value={repeatInterval}
+                            onChange={(e) => onIntervalChange(e)}
+                        >
+                            <option value="never">Never</option>
+                            <option value="day">Day</option>
+                            <option value="week">Week</option>
+                            <option value="month">Month</option>
+                        </select>
+                        <h6 className="recur-text"></h6>
+                        <h6 className="recur-text">for the next</h6>
+
+                        <input
+                            className="recur-repeats-input"
+                            type="number"
+                            min={0}
+                            max={10} // Limiting for now to not clog up database
+                            defaultValue={repeats}
+                            name="repeats"
+                            onChange={(repeats) => onRepeatsChange(repeats)}
+                        />
+
+                        <h6 className="recur-text"> {repeatInterval}(s)</h6>
+                    </div>
+                </div>
+
+                <hr className="type-line" />
+
                 <div className="error-message" hidden={responseMsg === ""}>
                     {responseMsg !== "" && <p>{responseMsg}</p>}
                 </div>
@@ -331,7 +463,7 @@ const AddShiftForm: React.FC<formProps> = ({ handleClose, previousShiftFields })
                             type="submit"
                             onClick={(e) => {
                                 e.preventDefault();
-                                handleSubmit().catch((err) => console.log(err));
+                                handleAddShift();
                             }}
                         >
                             {previousShiftFields ? "Update" : "Add"}

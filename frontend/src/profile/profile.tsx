@@ -48,6 +48,7 @@ export const ProfilePage = () => {
     };
 
     const handleSetVolunteerTypeApproval = async (qualId: string, status: string) => {
+        console.log(qualId);
         try {
             if (user) {
                 await setApprovalUserVolunteerType(qualId, user?._id, status);

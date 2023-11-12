@@ -9,6 +9,7 @@ import {
     ResponseWithData,
     postAndGetDataResponse,
 } from "./utility";
+
 const ROOT_URL = window.location.origin;
 
 async function patchBasicResponse(url: string): Promise<ResponseWithStatus> {
@@ -109,6 +110,13 @@ export interface IShift {
     category: "School Outreach" | "Event" | "Committee" | "Other";
     requiredQualifications: Array<IShiftRequiredQualification>;
     volunteerTypeAllocations: Array<IShiftVolunteerAllocations>;
+}
+
+export interface IReport {
+    firstName: string;
+    lastName: string;
+    position: string;
+    total: number;
 }
 
 export interface IExportData {
@@ -243,4 +251,68 @@ export async function setApprovalUserForShift(
     approvalStatus: string
 ): Promise<ResponseWithStatus> {
     return await patchBasicResponse(`${ROOT_URL}/api/shifts/${shiftId}/approve-user/${userId}/${approvalStatus}`);
+}
+// Utility function to POST data and get the response
+async function postDataResponse<T>(url: string, body: any): Promise<ResponseWithData<T>> {
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        });
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return await response.json();
+    } catch (error) {
+        return {
+            success: false,
+            data: null,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            message: (error as Error).message,
+        };
+    }
+}
+
+// Fetch volunteer report
+export async function getVolunteerReport(
+    volunteerPositions: string[],
+    startDate: string,
+    endDate: string
+): Promise<ResponseWithData<IReport[]>> {
+    return await postDataResponse(`${ROOT_URL}/api/shifts/get-volunteer-report`, {
+        volunteerPositions,
+        startDate,
+        endDate,
+    });
+}
+
+// Export volunteer report as Excel
+export async function exportVolunteerReportAsExcel(
+    volunteerPositions: string[],
+    startDate: string,
+    endDate: string
+): Promise<Blob | null> {
+    try {
+        const response = await fetch(`${ROOT_URL}/api/shift.export-report-excel`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                volunteerPositions,
+                startDate,
+                endDate,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to generate Excel report");
+        }
+
+        return await response.blob();
+    } catch (error) {
+        console.error("Error exporting report:", error);
+        return null;
+    }
 }

@@ -1,0 +1,140 @@
+.tabs-container-admin {
+    display: grid; 
+    grid-template-columns: 1fr 6fr;
+    gap: 0px;
+    height: 100vw;
+}
+.tabs-container{
+    display: grid; 
+    grid-template-columns: 1fr;
+    gap: 0px;
+    height: 100vw;
+}
+
+.tabs-block{   
+    background: rgba(255,255,255,0.5);
+    font-size: 18px;
+}
+
+.tabs, .tabs-active{
+    background: rgba(220,220,220,0.8);
+    display: block;
+    color: black;
+    font-weight: 500;
+    padding: 24px 12px;
+    border: none;
+    border-radius: 24px;
+    outline: none;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 6px;
+}
+.tabs-active{
+
+    background-color: rgb(245,172,183);
+
+}
+.tabs:hover{
+    background-color: rgb(250, 222, 215);
+    transition: 0.25s;
+}
+
+.content-tabs{
+    background: rgba(255,255,255,0.5);
+}
+
+.content{
+    display: none;
+}
+
+.notif-container, .notif-container-admin {
+    border: 1px solid grey;
+    background: rgba(255,255,255,0.8);
+    border-radius: 20px;
+    display: grid; 
+    transition: 0.25s;
+    padding: 10px;
+    margin: 6px;
+}
+
+.notif-container{
+    grid-template-columns: 1fr;
+}
+
+.notif-container-admin{
+    grid-template-columns: 6fr 1fr;
+}
+
+.notif-container:hover, .notif-container-admin:hover{
+    background-color: rgb(229,234,246);
+}
+
+.notif-name{
+    color: black;
+    font-weight: 700;
+    font-size: 24px;
+}
+
+.notif-name:hover {
+    color: blue;
+    text-decoration: underline;
+    transition: 0.25s;
+}
+
+.notif-type{
+    color: black;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.notif-content, .notif-time{
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.notif-time{
+    color: black;
+    font-weight: 500;
+}
+
+.notif-box-buttons{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-left: 64px;
+
+}
+
+.notif-button {
+    background-color: rgb(40,100, 255);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    width: 80px;
+    height: 32px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.25s;
+}   
+
+.notif-button:hover {
+    background-color: white;
+    color: rgb(40,100,255);
+    border: 1px solid rgb(40,100,255);
+
+}
+
+.notif-button-hidden{ 
+    display: none;
+}
+
+.link, .link:hover{
+    text-decoration: none;
+    color: black;
+}
+
+.list-group-item{
+        background: rgba(255,255,255,0);
+        border:none;
+}

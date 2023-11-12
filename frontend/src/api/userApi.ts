@@ -93,9 +93,20 @@ export interface User {
     volunteerTypes: IVolunteerTypeUser[];
 }
 export interface IUserShift {
-    shift: string;
+    //xiaobing shift: string;
+    shift: UserShift;
     approved: boolean;
     completed: boolean;
+    startAt: Date;
+    endAt: Date;
+    name: string;
+}
+//xiaobing added
+export interface UserShift {
+    _id: string;
+    startAt: Date;
+    endAt: Date;
+    name: string;
 }
 
 const PATH = `${ROOT_URL}/api/users`;

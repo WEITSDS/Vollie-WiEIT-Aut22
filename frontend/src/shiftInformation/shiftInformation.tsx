@@ -18,6 +18,7 @@ import { assignUserToShift, unassignUserFromShift } from "../api/shiftApi";
 import { setCompleteShift } from "../api/userApi";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+import { Link } from "react-router-dom";
 
 // import AttendanceListModal from "./attendanceList";
 import AddShiftForm from "../components/addShiftForm";
@@ -180,7 +181,7 @@ const ShiftInformation = () => {
     const startDate = new Date(startAt);
     const endDate = new Date(endAt);
 
-    const targetShiftInUser = userObj?.shifts.find((shift) => shiftId === shift.shift);
+    const targetShiftInUser = userObj?.shifts.find((shift) => shiftId === shift.shift?._id); //xiaobing shift.shift
 
     const localizer = momentLocalizer(moment);
 
@@ -196,8 +197,16 @@ const ShiftInformation = () => {
                                     <div className="left-btns">
                                         <button className="back-btn" onClick={handleBack}>
                                             <img src={backIcon} />
-                                            Back to shifts
+                                            Back to Shifts
                                         </button>
+                                    </div>
+                                    <div className="left-btns">
+                                        <Link to="/calendar" style={{ textDecoration: "none" }}>
+                                            <button className="back-btn">
+                                                <img src={backIcon} />
+                                                Back to Calendar
+                                            </button>
+                                        </Link>
                                     </div>
                                     <div className="right-btns">
                                         {userObj?.isAdmin && (
@@ -487,6 +496,7 @@ const ShiftInformation = () => {
                                     handleClose={() => {
                                         void handleEditClose();
                                     }}
+                                    shiftdata={""}
                                 />
                             </Modal>
                         </>

@@ -4,6 +4,7 @@ import Notification from "./notifications.model";
 import User from "../User/user.model";
 import mongoose from "mongoose";
 import { getUserByEmail } from "../User/user.controller";
+//import Shift from "../Shift/shift.model";
 
 const logger = new Logger({ name: "notification.controller" });
 
@@ -12,7 +13,9 @@ export const createNotification = async (
     content: string,
     userFirstName: string,
     ccEmails: string | string[],
-    type: string
+    type: string,
+    typeId?: string,
+    userVolType?: string
 ): Promise<void> => {
     try {
         const user = await getUserByEmail(userEmail);
@@ -40,6 +43,8 @@ export const createNotification = async (
             userFirstName: userFirstName,
             type: type,
             time: date.toLocaleString(),
+            typeId: typeId,
+            userVolType: userVolType,
         });
         notif.id = new mongoose.Types.ObjectId();
         await user.update({ $push: { notifications: notif._id as string } });
@@ -76,6 +81,80 @@ export const getNotifications = async (req: Request, res: Response) => {
         res.status(200).json({
             message: "success",
             data: respNotifications,
+            success: true,
+        });
+    } catch (error) {
+        console.log("Get user notifications error", error);
+        res.status(500).json({
+            message: "Get user notifications error",
+            error,
+            success: false,
+        });
+        return;
+    }
+};
+
+export const updateNotificationStatus = async (req: Request, res: Response) => {
+    const { action, notificationId } = req.body as { action: string; notificationId: string };
+
+    try {
+        const updatedNotification = await Notification.findByIdAndUpdate(
+            notificationId,
+            { action: action },
+            { new: true }
+        );
+
+        if (updatedNotification === null) {
+            res.status(404).json({ message: "Notification not found", success: false });
+            return;
+        }
+        //const validTypes = ["SPROUT", "Gender Equity"];
+        console.log("PRINTING WHAT TYPE IS: " + updatedNotification.type);
+        if (updatedNotification.typeId && (action === "Approved" || action === "Declined")) {
+            if (updatedNotification.type === "Approve Shift") {
+                console.log("CHECK IF ITS working with what" + updatedNotification.user.toString());
+                console.log("CHEKCKLING IF ITS WOKRING" + updatedNotification.userVolType.toString());
+
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                await User.findOneAndUpdate(
+                    { _id: updatedNotification.user, "shifts.shift": updatedNotification.typeId },
+                    { $set: { "shifts.$.approved": action === "Approved" } }
+                );
+            } else if (updatedNotification.type === "SPROUT" || updatedNotification.type === "Gender Equity") {
+                console.log("CHEKCKLING IF ITS WOKRING" + updatedNotification.userVolType.toString());
+                // If VolunteerType also uses typeId and similar schema as Shift, use a similar approach
+                const updatedUser = await User.findOneAndUpdate(
+                    { _id: updatedNotification.userVolType, "volunteerTypes.type": updatedNotification.typeId },
+                    { $set: { "volunteerTypes.$.approved": action === "Approved" } },
+                    { new: true }
+                );
+                console.log(updatedUser);
+            }
+        }
+
+        res.status(200).json({ message: "Notification status updated", success: true, data: updatedNotification });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", success: false });
+    }
+};
+
+export const getBatchNotifications = async (req: Request, res: Response) => {
+    try {
+        const { _id: userID } = req.session.user || {};
+
+        const userObj = await User.findOne({ _id: userID });
+        if (!userObj) {
+            res.status(403).json({ message: "Could not find user object", success: false });
+            return;
+        }
+
+        // Get all notifications in a single query
+        const notifications = (await Notification.find({ _id: { $in: userObj.notifications } })).reverse();
+
+        // console.log("Notifications: ", notifications);
+        res.status(200).json({
+            message: "success",
+            data: notifications,
             success: true,
         });
     } catch (error) {

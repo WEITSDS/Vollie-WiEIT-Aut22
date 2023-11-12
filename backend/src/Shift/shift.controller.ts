@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import { Logger } from "tslog";
 import ical from "ical-generator";
 import { handleError } from "../utility";
+import * as ExcelJS from "exceljs";
+
 import {
     IShift,
     IShiftRequiredQualification,
@@ -60,6 +62,7 @@ export const createShift = async (req: Request, res: Response) => {
         return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     req.body._id = new mongoose.Types.ObjectId();
 
     const shiftFields = req.body as IShift;
@@ -115,7 +118,7 @@ export const updateShift = async (req: Request, res: Response) => {
         for (let idx = 0; idx < shiftObj.users.length; idx++) {
             const participant = shiftObj.users[idx];
             const targetUser = await User.findOne({ _id: participant.user });
-            sendUpdateShiftEmail(
+            void sendUpdateShiftEmail(
                 targetUser?.firstName || "",
                 targetUser?.email || "",
                 shiftObj.name,
@@ -257,6 +260,7 @@ export const assignUser = async (req: Request, res: Response) => {
         }
         // Check if user's selected volunteer type is approved
         const selectedVolunteerTypeID = req.params.selectedVolunteerTypeID;
+
         // -1 if either voltype doesnt exist for the user OR the type is not approved yet
         const userVolTypeIndex = targetUser.volunteerTypes.findIndex(
             (volType) => volType.type.toString() === selectedVolunteerTypeID && volType.approved === true
@@ -342,15 +346,20 @@ export const assignUser = async (req: Request, res: Response) => {
         );
 
         if (assignShiftResponse) {
+            console.log("jhel: " + req.params.selectedVolunteerTypeID);
             res.status(200).json({ message: "User assigned to shift", success: true });
             //Send sign up email
+
             void sendSignedUpShiftEmail(
                 targetUser.firstName,
                 targetUser.email,
                 targetShift.name,
                 targetShift.address,
                 targetShift.startAt,
-                targetShift.endAt
+                targetShift.endAt,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                targetShift.id,
+                req.params.selectedVolunteerTypeID
             );
             return;
         } else {
@@ -374,7 +383,7 @@ export const setUserApproval = async (req: Request, res: Response) => {
 
         const targetShift = await Shift.findOne({ _id: req.params.shiftid });
 
-        const approvalStatus = req.params.approvalstatus === "approve";
+        const approvalStatus = req.params.approvalstatus === "approved";
 
         if (!targetShift) {
             res.status(404).json({
@@ -578,6 +587,7 @@ export const generateShiftCalendar = async (req: Request, res: Response) => {
                 summary: shift.name,
                 description: shift.description,
                 location: shift.address,
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 url: `http://localhost:3000/shift/${shift._id}`,
             });
         }
@@ -1058,5 +1068,156 @@ export const getAvailableRolesForShiftUser = async (req: Request, res: Response)
             success: false,
         });
         return;
+    }
+};
+
+export const getAllShifts = async (req: Request, res: Response) => {
+    try {
+        // Get user obj to check if admin
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+
+        if (!userObj || !userObj?.isAdmin) {
+            handleError(logger, res, null, "Unauthorized", 401);
+            return;
+        }
+
+        const allShifts = await Shift.find({}).sort({ startAt: 1 });
+
+        res.status(200).json({
+            message: "All shifts retrieved",
+            data: allShifts,
+            success: true,
+        });
+    } catch (error) {
+        handleError(logger, res, error, "Error retrieving all shifts");
+    }
+};
+export const getVolunteerReport = async (req: Request, res: Response) => {
+    try {
+        // Extract desired volunteer positions from the request
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const { volunteerPositions, startDate, endDate } = req.body;
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (!volunteerPositions || volunteerPositions.length === 0) {
+            res.status(400).json({ message: "Please specify volunteer positions.", success: false });
+            return;
+        }
+
+        // Use the generateReportData function to get the report data
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const reportData = await generateReportData(volunteerPositions, startDate, endDate);
+
+        res.status(200).json({
+            message: "Report generated successfully.",
+            data: reportData,
+            success: true,
+        });
+    } catch (error) {
+        console.log("Error generating volunteer report:", error);
+        res.status(500).json({
+            message: "Error generating volunteer report.",
+            error,
+            success: false,
+        });
+    }
+};
+
+async function generateReportData(volunteerPositions: string[], startDate: string, endDate: string) {
+    const reportData: {
+        firstName: string;
+        lastName: string;
+        position: string;
+        total: number;
+    }[] = [];
+
+    for (const position of volunteerPositions) {
+        if (!mongoose.Types.ObjectId.isValid(position)) {
+            throw new Error(`Invalid ObjectId: ${position}`);
+        }
+        const shifts = await Shift.find({
+            "volunteerTypeAllocations.type": new mongoose.Types.ObjectId(position),
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            startAt: { $gte: new Date(startDate) }, // starts on or after the startDate
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            endAt: { $lte: new Date(endDate) }, // ends on or before the endDate
+        });
+
+        const userHoursMap: Map<string, number> = new Map();
+
+        for (const shift of shifts) {
+            for (const userShiftInfo of shift.users) {
+                if (userShiftInfo.chosenVolunteerType.toString() === position) {
+                    const currentHours = userHoursMap.get(userShiftInfo.user.toString()) || 0;
+                    userHoursMap.set(userShiftInfo.user.toString(), currentHours + shift.hours);
+                }
+            }
+        }
+
+        for (const [userId, hours] of userHoursMap) {
+            const user = await User.findById(userId);
+            if (user) {
+                const volunteerType = await VolunteerType.findById(position);
+                reportData.push({
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    position: volunteerType?.name || "Unknown",
+                    total: hours,
+                });
+            }
+        }
+    }
+
+    return reportData;
+}
+
+export const exportVolunteerReportAsExcel = async (req: Request, res: Response) => {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const { volunteerPositions, startDate, endDate } = req.body;
+        console.log("Received dates and positions:", startDate, endDate, volunteerPositions); // Debug log
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const reportData = await generateReportData(volunteerPositions, startDate, endDate);
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Volunteer Report");
+
+        worksheet.columns = [
+            { header: "First Name", key: "firstName", width: 15 },
+            { header: "Last Name", key: "lastName", width: 15 },
+            { header: "Position", key: "position", width: 20 },
+            { header: "Total Hours", key: "total", width: 12 },
+        ];
+
+        reportData.forEach((data) => {
+            worksheet.addRow(data);
+        });
+
+        worksheet.getRow(1).font = { bold: true };
+
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        let fileName = `${startDate}_${endDate}_`;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (volunteerPositions.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            fileName += volunteerPositions.join("_");
+        }
+        fileName += "_volunteer_report.xlsx";
+        fileName = fileName.replace(/[^a-zA-Z0-9-_]/g, "_");
+
+        console.log("Generated file name:", fileName); // Debug log
+
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+
+        return await workbook.xlsx.write(res);
+    } catch (error) {
+        console.log("Error generating volunteer Excel report:", error);
+        res.status(500).json({
+            message: "Error generating volunteer Excel report.",
+            error,
+            success: false,
+        });
     }
 };
