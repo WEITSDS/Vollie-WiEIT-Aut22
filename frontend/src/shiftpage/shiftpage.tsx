@@ -12,7 +12,7 @@ import addShiftIcon from "../assets/addShiftIcon.svg";
 import deleteIcon from "../assets/deleteIcon.svg";
 import filterIcon from "../assets/filterIcon.svg";
 import Modal from "react-bootstrap/Modal";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import LoadingSpinner from "../components/loadingSpinner";
 import { deleteShift } from "../api/shiftApi";
 import { ResponseWithStatus } from "../api/utility";
@@ -23,11 +23,6 @@ import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
 import { ExportModal } from "../components/exportModal/exportModal";
 import { Button } from "react-bootstrap";
-
-//adding address
-import AddAddressForm from "../components/addAddressForm";
-//adding calendar
-
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 
@@ -109,8 +104,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const [showDeleteButton, setShowDeleteButton] = useState(false);
     const [show2, setShow2] = useState<boolean>(false);
     const [shiftdata, setshiftData] = useState("");
-    const [openDupe, setOpenDupe] = useState(false);
-    const [showAddAddressModal, setShowAddAddressModal] = useState(false);
 
     const localizer = momentLocalizer(moment);
 
@@ -187,27 +180,14 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     };
 
     // Opens addShiftForm that has copied fields from selected shift
-    const openDupeShift = useCallback(() => {
-        if (selectedShifts.length === 1) {
-            setshiftData(selectedShifts[0]);
-            setShow2(true);
-        } else {
-            setshiftData("");
-            setShow2(false);
-            alert("Please select only ONE shift to duplicate.");
-        }
-    }, [selectedShifts]);
-
-    useEffect(() => {
-        if (openDupe) {
-            openDupeShift();
-        }
-    }, [openDupe, openDupeShift]);
+    const openDupeShift = (shiftId: string) => {
+        setshiftData(shiftId);
+        setShow2(true);
+    };
 
     const closeDupeShift = () => {
         setshiftData("");
         setShow2(false);
-        setOpenDupe(false);
     };
 
     // Upon clicking Filter button, resets the selectedshifts list
@@ -215,14 +195,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const handleFilterPanel = () => {
         setFilterPanelVisible(true);
         setselectedShifts([]);
-    };
-
-    const openAddAddress = () => {
-        setShowAddAddressModal(true);
-    };
-
-    const closeAddAddress = () => {
-        setShowAddAddressModal(false);
     };
 
     return (
@@ -240,15 +212,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                             <img className="btn-icon" src={addShiftIcon} />
                                             {"Add Shift"}
                                         </button>
-                                        <button
-                                            id="whiteButton"
-                                            className={"admin-btn"}
-                                            onClick={() => setOpenDupe(true)}
-                                            // onMouseEnter={checkDupeID}
-                                        >
-                                            <img className="btn-icon" src={addShiftIcon} />
-                                            {"Duplicate Shift"}
-                                        </button>
+
                                         <button
                                             id="whiteButton"
                                             className={"admin-btn"}
@@ -301,6 +265,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                                   shiftData={shiftData}
                                                   isAdmin={userData?.data?.isAdmin}
                                                   handleSelected={handleSelected}
+                                                  handleDuplicate={openDupeShift}
                                               />
                                           );
                                       })
@@ -326,26 +291,12 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                     </div>
 
                     <div className="export-parent">
-                        {/* Add Address Button shown only for admins */}
-                        {userData?.data?.isAdmin && (
-                            <button
-                                className="btn-primary add-address-button"
-                                onClick={openAddAddress}
-                                style={{ marginBottom: "10px" }} // Ensures spacing if the button below is rendered
-                            >
-                                Add Address
-                            </button>
-                        )}
-
                         {/* Export Button visible to all users */}
                         <button className="btn-primary export-button" onClick={() => setExportModalVisible(true)}>
                             Export
                         </button>
                     </div>
 
-                    <Modal show={showAddAddressModal} onHide={closeAddAddress}>
-                        <AddAddressForm handleClose={closeAddAddress} />
-                    </Modal>
                     <ExportModal
                         visible={exportModalVisible}
                         onClose={() => setExportModalVisible(false)}
