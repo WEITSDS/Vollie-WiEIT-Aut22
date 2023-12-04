@@ -24,6 +24,13 @@ import { useAllVolTypes } from "../hooks/useAllVolTypes";
 import { ExportModal } from "../components/exportModal/exportModal";
 import { Button } from "react-bootstrap";
 
+//adding address
+import AddAddressForm from "../components/addAddressForm";
+//adding calendar
+
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+
 type ShiftPageProps = {
     shiftType: string;
 };
@@ -54,7 +61,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         console.log(localFilters);
         return something;
     };
-
     const [resultFilters, setResultFilters] = useState<Filters | undefined>(
         loadingUserVolTypes ? undefined : getDefaultFilters(userVolTypesData?.data || [])
     );
@@ -104,6 +110,11 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const [show2, setShow2] = useState<boolean>(false);
     const [shiftdata, setshiftData] = useState("");
     const [openDupe, setOpenDupe] = useState(false);
+    const [showAddAddressModal, setShowAddAddressModal] = useState(false);
+
+    const localizer = momentLocalizer(moment);
+
+    const [currentView, setCurrentView] = useState("card");
 
     useEffect(() => {
         console.log("useEffect");
@@ -117,6 +128,10 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     useEffect(() => {
         setShowDeleteButton(isShiftSelected());
     }, [selectedShifts]);
+
+    const handleViewChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setCurrentView(event.target.value);
+    };
 
     const handleSelected = (id: string, checkStatus: boolean) => {
         setselectedShifts((prevSelectedShifts) => {
@@ -202,6 +217,14 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         setselectedShifts([]);
     };
 
+    const openAddAddress = () => {
+        setShowAddAddressModal(true);
+    };
+
+    const closeAddAddress = () => {
+        setShowAddAddressModal(false);
+    };
+
     return (
         <>
             <NavigationBar />
@@ -258,30 +281,71 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                     </button>
                                 )}
                             </div>
+
+                            <select onChange={handleViewChange} value={currentView} className="view-select">
+                                <option value="card">Card View</option>
+                                <option value="calendar">Calendar View</option>
+                                {/* <option value="map">Map View</option> */}
+                            </select>
                         </div>
                         {/* container for when shifts are added */}
-                        <div className="shiftList-container">
-                            {isLoading && <p>Loading available shifts...</p>}
-                            {isError && <p>There was a server error while loading available shifts... {error}</p>}
-                            {data?.data && data?.data?.length > 0
-                                ? data?.data?.map((shiftData) => {
-                                      return (
-                                          <ShiftCard
-                                              key={shiftData._id}
-                                              shiftData={shiftData}
-                                              isAdmin={userData?.data?.isAdmin}
-                                              handleSelected={handleSelected}
-                                          />
-                                      );
-                                  })
-                                : !isLoading && <p>No available shifts.</p>}
-                        </div>
+                        {currentView === "card" && (
+                            <div className="shiftList-container">
+                                {isLoading && <p>Loading available shifts...</p>}
+                                {isError && <p>There was a server error while loading available shifts... {error}</p>}
+                                {data?.data && data?.data?.length > 0
+                                    ? data?.data?.map((shiftData) => {
+                                          return (
+                                              <ShiftCard
+                                                  key={shiftData._id}
+                                                  shiftData={shiftData}
+                                                  isAdmin={userData?.data?.isAdmin}
+                                                  handleSelected={handleSelected}
+                                              />
+                                          );
+                                      })
+                                    : !isLoading && <p>No available shifts.</p>}
+                            </div>
+                        )}
+
+                        {currentView === "calendar" && (
+                            <Calendar
+                                localizer={localizer}
+                                events={data?.data?.map((shift) => ({
+                                    start: new Date(shift.startAt),
+                                    end: new Date(shift.endAt),
+                                    title: shift.name,
+                                    allDay: true,
+                                }))}
+                                startAccessor="start"
+                                endAccessor="end"
+                                titleAccessor="title"
+                                style={{ height: 500 }}
+                            />
+                        )}
                     </div>
+
                     <div className="export-parent">
-                        <button className="btn-primary" onClick={() => setExportModalVisible(true)}>
+                        {/* Add Address Button shown only for admins */}
+                        {userData?.data?.isAdmin && (
+                            <button
+                                className="btn-primary add-address-button"
+                                onClick={openAddAddress}
+                                style={{ marginBottom: "10px" }} // Ensures spacing if the button below is rendered
+                            >
+                                Add Address
+                            </button>
+                        )}
+
+                        {/* Export Button visible to all users */}
+                        <button className="btn-primary export-button" onClick={() => setExportModalVisible(true)}>
                             Export
                         </button>
                     </div>
+
+                    <Modal show={showAddAddressModal} onHide={closeAddAddress}>
+                        <AddAddressForm handleClose={closeAddAddress} />
+                    </Modal>
                     <ExportModal
                         visible={exportModalVisible}
                         onClose={() => setExportModalVisible(false)}
