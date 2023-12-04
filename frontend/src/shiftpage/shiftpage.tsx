@@ -1,3 +1,4 @@
+// import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./shiftpage.css";
 import { NavigationBar } from "../components/navbar";
 import { WEITBackground } from "../components/background";
@@ -14,6 +15,7 @@ import Modal from "react-bootstrap/Modal";
 import { useState, useEffect } from "react";
 import LoadingSpinner from "../components/loadingSpinner";
 import { deleteShift } from "../api/shiftApi";
+import { ResponseWithStatus } from "../api/utility";
 import { FilterResultsModal } from "../components/filterResultsModal/filterResultsModal";
 import { Filters } from "../components/filterResultsModal/types";
 import { getDefaultFilters } from "../components/filterResultsModal/util";
@@ -21,6 +23,8 @@ import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
 import { ExportModal } from "../components/exportModal/exportModal";
 import { Button } from "react-bootstrap";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
 
 type ShiftPageProps = {
     shiftType: string;
@@ -33,13 +37,14 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
 
     const getFilterInLocalStorage = (): Filters => {
         const localFiltersString: string | null = localStorage.getItem("shiftResultFilters");
+        // CONSOLE
         console.log(localFiltersString);
         if (!localFiltersString) {
             console.log("Default");
             return getDefaultFilters(userVolTypesData?.data || []);
         }
         const localFilters = JSON.parse(localFiltersString) as Filters;
-        return {
+        const something = {
             from: new Date(localFilters.from),
             to: new Date(localFilters.to),
             volTypes: localFilters.volTypes,
@@ -47,12 +52,34 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
             hours: localFilters.hours,
             hideUnavailable: localFilters.hideUnavailable,
         };
+        // CONSOLE localFilters
+        console.log(localFilters);
+        return something;
     };
-
     const [resultFilters, setResultFilters] = useState<Filters | undefined>(
         loadingUserVolTypes ? undefined : getDefaultFilters(userVolTypesData?.data || [])
     );
 
+    // useEffect(() => {
+    //     setResultFilters(getFilterInLocalStorage());
+    // }, [loadingUserVolTypes]);
+
+    //Local Storage
+    // useEffect(() => {
+    //     const localFilters: Record<string, Unknown> = JSON.parse(localStorage.getItem("shiftResultFilters"));
+    // const something = {
+    //     to: localFilters.to,
+    //     from: localFilters.from,
+    //     //volTypes: VolType[];
+    //     category: localFilters.category,
+    //     hours: localFilters.hours,
+    //     hideUnavailable: localFilters.hideUnavailable,
+    // };
+    // }, [resultFilters]);
+
+    // setResultFilters(something);
+
+    //Saves most recent filter into the local storage
     const updateFiltersInLocalStorage = (filters: Filters) => {
         localStorage.setItem("shiftResultFilters", JSON.stringify(filters));
         console.log("Updated");
@@ -78,22 +105,35 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const [show2, setShow2] = useState<boolean>(false);
     const [shiftdata, setshiftData] = useState("");
 
+    const localizer = momentLocalizer(moment);
+
+    const [currentView, setCurrentView] = useState("card");
+
     useEffect(() => {
+        console.log("useEffect");
         if (userVolTypesData) {
+            // setResultFilters(getDefaultFilters(userVolTypesData?.data || []));
             setResultFilters(getFilterInLocalStorage());
         }
     }, [userVolTypesData]);
 
+    //Runs everytime number of selected shift changes
     useEffect(() => {
-        setShowDeleteButton(selectedShifts.length > 0);
+        setShowDeleteButton(isShiftSelected());
     }, [selectedShifts]);
+
+    const handleViewChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setCurrentView(event.target.value);
+    };
 
     const handleSelected = (id: string, checkStatus: boolean) => {
         setselectedShifts((prevSelectedShifts) => {
             if (checkStatus) {
                 return [...prevSelectedShifts, id];
-            } else {
+            } else if (!checkStatus) {
                 return prevSelectedShifts.filter((shiftId) => shiftId !== id);
+            } else {
+                return prevSelectedShifts;
             }
         });
     };
@@ -117,7 +157,11 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const deleteSelected = async () => {
         setisDeleteLoading(true);
         try {
-            const deleteActions = selectedShifts.map((shiftId) => deleteShift({ _id: shiftId }));
+            let deleteActions: Array<Promise<ResponseWithStatus>> = [];
+            selectedShifts.forEach((shiftId) => {
+                const deletePromise = deleteShift({ _id: shiftId });
+                deleteActions = [...deleteActions, deletePromise];
+            });
             await Promise.all(deleteActions);
         } catch (error) {
             console.log("error deleting shifts", error);
@@ -126,7 +170,16 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         setisDeleteLoading(false);
         setselectedShifts([]);
     };
+    //Enable button if any shift is selected
+    const isShiftSelected = () => {
+        if (selectedShifts.length > 0) {
+            console.log(selectedShifts.length);
+            return true;
+        }
+        return false;
+    };
 
+    // Opens addShiftForm that has copied fields from selected shift
     const openDupeShift = (shiftId: string) => {
         setshiftData(shiftId);
         setShow2(true);
@@ -137,6 +190,8 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         setShow2(false);
     };
 
+    // Upon clicking Filter button, resets the selectedshifts list
+    // Shows filter panel
     const handleFilterPanel = () => {
         setFilterPanelVisible(true);
         setselectedShifts([]);
@@ -157,10 +212,15 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                             <img className="btn-icon" src={addShiftIcon} />
                                             {"Add Shift"}
                                         </button>
+
                                         <button
                                             id="whiteButton"
                                             className={"admin-btn"}
-                                            onClick={openDeleteModal}
+                                            onClick={() => {
+                                                void openDeleteModal();
+                                                // void deleteSelected();
+                                            }}
+                                            //Disable button if showDeleteButton is false
                                             disabled={!showDeleteButton}
                                         >
                                             {isDeleteLoading ? (
@@ -177,6 +237,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                         </button>
                                     </>
                                 )}
+
                                 {shiftType === "searchShifts" && (
                                     <button id="whiteButton" className={"admin-btn"} onClick={handleFilterPanel}>
                                         <img className="btn-icon" src={filterIcon} />
@@ -184,28 +245,58 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                     </button>
                                 )}
                             </div>
+
+                            <select onChange={handleViewChange} value={currentView} className="view-select">
+                                <option value="card">Card View</option>
+                                <option value="calendar">Calendar View</option>
+                                {/* <option value="map">Map View</option> */}
+                            </select>
                         </div>
-                        <div className="shiftList-container">
-                            {isLoading && <p>Loading available shifts...</p>}
-                            {isError && <p>There was a server error while loading available shifts... {error}</p>}
-                            {data?.data && data?.data?.length > 0
-                                ? data?.data?.map((shiftData) => (
-                                      <ShiftCard
-                                          key={shiftData._id}
-                                          shiftData={shiftData}
-                                          isAdmin={userData?.data?.isAdmin}
-                                          handleSelected={handleSelected}
-                                          handleDuplicate={openDupeShift}
-                                      />
-                                  ))
-                                : !isLoading && <p>No available shifts.</p>}
-                        </div>
+                        {/* container for when shifts are added */}
+                        {currentView === "card" && (
+                            <div className="shiftList-container">
+                                {isLoading && <p>Loading available shifts...</p>}
+                                {isError && <p>There was a server error while loading available shifts... {error}</p>}
+                                {data?.data && data?.data?.length > 0
+                                    ? data?.data?.map((shiftData) => {
+                                          return (
+                                              <ShiftCard
+                                                  key={shiftData._id}
+                                                  shiftData={shiftData}
+                                                  isAdmin={userData?.data?.isAdmin}
+                                                  handleSelected={handleSelected}
+                                                  handleDuplicate={openDupeShift}
+                                              />
+                                          );
+                                      })
+                                    : !isLoading && <p>No available shifts.</p>}
+                            </div>
+                        )}
+
+                        {currentView === "calendar" && (
+                            <Calendar
+                                localizer={localizer}
+                                events={data?.data?.map((shift) => ({
+                                    start: new Date(shift.startAt),
+                                    end: new Date(shift.endAt),
+                                    title: shift.name,
+                                    allDay: true,
+                                }))}
+                                startAccessor="start"
+                                endAccessor="end"
+                                titleAccessor="title"
+                                style={{ height: 500 }}
+                            />
+                        )}
                     </div>
+
                     <div className="export-parent">
-                        <button className="btn-primary" onClick={() => setExportModalVisible(true)}>
+                        {/* Export Button visible to all users */}
+                        <button className="btn-primary export-button" onClick={() => setExportModalVisible(true)}>
                             Export
                         </button>
                     </div>
+
                     <ExportModal
                         visible={exportModalVisible}
                         onClose={() => setExportModalVisible(false)}
@@ -245,7 +336,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                         <Button
                             variant="primary"
                             onClick={() => {
-                                closeDeleteModal();
+                                closeDeleteModal;
                                 void deleteSelected();
                             }}
                         >
