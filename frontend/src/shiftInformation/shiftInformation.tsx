@@ -19,6 +19,7 @@ import { setCompleteShift } from "../api/userApi";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import { Link } from "react-router-dom";
+import React from "react";
 
 // import AttendanceListModal from "./attendanceList";
 import AddShiftForm from "../components/addShiftForm";
@@ -43,6 +44,9 @@ const ShiftInformation = () => {
     const [show, setShow] = useState<boolean>(false);
     const [showError, setShowError] = useState<boolean>(false);
     const toggleShow = () => setShowError(false);
+
+    //const [roleApproved, setRoleApproved] = useState(false);
+    const [showRoleError, setShowRoleError] = useState(false);
 
     if (isLoading || userQuery.isLoading) return <p>Loading...</p>;
     if (isError || userQuery.isError) return <p>Error loading data...{error || userQuery.error}</p>;
@@ -81,7 +85,8 @@ const ShiftInformation = () => {
         setshowEditModal(false);
     };
 
-    const handleApply = () => {
+    const handleApply = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
         handleShowRoles();
     };
     const handleComplete = async () => {
@@ -171,7 +176,12 @@ const ShiftInformation = () => {
 
     /* Assign this to the apply to shift button  this opens the modal for role selection*/
     const handleShowRoles = () => {
-        setShow(true);
+        if (volTypesForUser && Array.isArray(volTypesForUser.data) && volTypesForUser.data.length > 0) {
+            setShow(true);
+        } else {
+            // No approved roles, so show the error message
+            setShowRoleError(true);
+        }
     };
 
     const handleRoleSelectClose = () => {
@@ -220,7 +230,7 @@ const ShiftInformation = () => {
                                                 className="apply-btn"
                                                 onClick={(e) => {
                                                     e.preventDefault();
-                                                    void handleApply();
+                                                    handleApply(e);
                                                 }}
                                             >
                                                 Apply to Shift
@@ -470,6 +480,18 @@ const ShiftInformation = () => {
                             </form>
                         )}
                     </Modal>
+                    <Modal show={showRoleError} onHide={() => setShowRoleError(false)}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Error</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>Please wait until your role has been approved to apply for this shift.</Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={() => setShowRoleError(false)}>
+                                Close
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+
                     <AttendanceListVolModal
                         showModal={showParticipantsModal}
                         hideButton={true}

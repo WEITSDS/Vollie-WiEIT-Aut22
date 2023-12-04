@@ -80,14 +80,37 @@ h1 {
     bottom: 20px;
 }
 
-.export-parent button {
-    border-radius: 4rem;
-    padding: 0.9rem 1.75rem;
+/* Existing styles for export-parent */
+.export-parent {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: center; /* Center buttons horizontally */
+}
+
+/* Styles for buttons within export-parent */
+.export-parent .btn-primary {
+    border-radius: 4rem; /* Rounded edges */
+    padding: 0.9rem 1.75rem; /* Padding inside the button */
     font-size: 18px;
     font-weight: 400;
     line-height: 19px;
-    color: rgb(255, 253, 253);
+    color: #FFFFFF; /* White text */
     font-family: Lato;
     font-style: normal;
     border: 0;
+    margin-bottom: 10px; /* Space between buttons */
+    background: #3a5fe2; /* Blue background */
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Shadow for depth */
+    cursor: pointer; /* Mouse cursor becomes a hand icon when hovering */
 }
+
+/* Additional hover effect for buttons */
+.export-parent .btn-primary:hover {
+    transform: translateY(-0.25em); /* Slightly move up when hovered */
+    background: #2a4cb8; /* Slightly darker shade of blue on hover */
+}
+
+/* Remove the id selector if it conflicts, or ensure it's styled in a way that complements the .btn-primary class */
