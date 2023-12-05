@@ -197,6 +197,14 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         setselectedShifts([]);
     };
 
+    interface ShiftEvent {
+        id: string;
+    }
+    //redirect to shift page upon clicking shift on calendar
+    const handleSelectEvent = (event: ShiftEvent) => {
+        window.location.replace(`/shift/${event.id}`);
+    };
+
     return (
         <>
             <NavigationBar />
@@ -280,11 +288,13 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                     start: new Date(shift.startAt),
                                     end: new Date(shift.endAt),
                                     title: shift.name,
+                                    id: shift._id,
                                     allDay: true,
                                 }))}
                                 startAccessor="start"
                                 endAccessor="end"
                                 titleAccessor="title"
+                                onSelectEvent={handleSelectEvent}
                                 style={{ height: 500 }}
                             />
                         )}
