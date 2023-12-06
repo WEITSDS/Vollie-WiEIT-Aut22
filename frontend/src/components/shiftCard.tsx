@@ -3,6 +3,7 @@ import { Button, Card, Form, Stack, Modal } from "react-bootstrap";
 import locationIcon from "../assets/location.svg";
 import calendarIcon from "../assets/calendar.svg";
 import editIcon from "../assets/edit.svg";
+import duplicateIcon from "../assets/clone.svg";
 import { IShift } from "../api/shiftApi";
 import { Link } from "react-router-dom";
 import AttendanceListModal from "./attendanceList";
@@ -40,9 +41,10 @@ type ShiftCardProps = {
     shiftData: IShift;
     isAdmin: boolean | undefined;
     handleSelected: (id: string, checkStatus: boolean) => void;
+    handleDuplicate: (card: IShift) => Promise<void>;
 };
 
-export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftCardProps) {
+export default function ShiftCard({ shiftData, isAdmin, handleSelected, handleDuplicate }: ShiftCardProps) {
     const { name, startAt, address, _id } = shiftData;
     const [showEditModal, setShowEditModal] = useState(false);
 
@@ -70,6 +72,17 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftC
                             {isAdmin && <AttendanceListModal shift={shiftData || {}} />}
                             {isAdmin && (
                                 <>
+                                    <Button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleDuplicate(shiftData || {}).catch((err) => console.log(err));
+                                        }}
+                                        size="sm"
+                                        variant="light"
+                                        style={{ borderRadius: "50%", marginLeft: "10px" }}
+                                    >
+                                        <img src={duplicateIcon} alt="duplicate shift icon" title="Duplicate Shift" />
+                                    </Button>
                                     <Button
                                         onClick={(e) => {
                                             e.preventDefault();
