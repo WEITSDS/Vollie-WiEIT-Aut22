@@ -14,7 +14,7 @@ import filterIcon from "../assets/filterIcon.svg";
 import Modal from "react-bootstrap/Modal";
 import { useState, useEffect } from "react";
 import LoadingSpinner from "../components/loadingSpinner";
-import { IShift, deleteShift, createShift } from "../api/shiftApi";
+import { deleteShift } from "../api/shiftApi";
 import { ResponseWithStatus } from "../api/utility";
 import { FilterResultsModal } from "../components/filterResultsModal/filterResultsModal";
 import { Filters } from "../components/filterResultsModal/types";
@@ -23,7 +23,6 @@ import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
 import { ExportModal } from "../components/exportModal/exportModal";
 import { Button } from "react-bootstrap";
-import cloneDeep from "lodash/cloneDeep";
 
 type ShiftPageProps = {
     shiftType: string;
@@ -102,9 +101,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const [selectedShifts, setselectedShifts] = useState<string[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showDeleteButton, setShowDeleteButton] = useState(false);
-    // const [show2, setShow2] = useState<boolean>(false);
-    // const [shiftdata, setshiftData] = useState("");
-    // const [openDupe, setOpenDupe] = useState(false);
 
     useEffect(() => {
         console.log("useEffect");
@@ -129,18 +125,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                 return prevSelectedShifts;
             }
         });
-    };
-
-    const handleDeplicate = async (card: IShift): Promise<void> => {
-        const clonedShift = cloneDeep(card);
-        clonedShift.name = `Copy ${clonedShift.name}`;
-        clonedShift._id = "";
-        try {
-            await createShift(clonedShift);
-        } catch (error) {
-            console.log("error duplicating shifts", error);
-        }
-        await refetchShifts();
     };
 
     const closeDeleteModal = () => {
@@ -184,30 +168,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         return false;
     };
 
-    // Opens addShiftForm that has copied fields from selected shift
-    // const openDupeShift = useCallback(() => {
-    //     if (selectedShifts.length === 1) {
-    //         setshiftData(selectedShifts[0]);
-    //         setShow2(true);
-    //     } else {
-    //         setshiftData("");
-    //         setShow2(false);
-    //         alert("Please select only ONE shift to duplicate.");
-    //     }
-    // }, [selectedShifts]);
-
-    // useEffect(() => {
-    //     if (openDupe) {
-    //         openDupeShift();
-    //     }
-    // }, [openDupe, openDupeShift]);
-
-    // const closeDupeShift = () => {
-    //     setshiftData("");
-    //     setShow2(false);
-    //     setOpenDupe(false);
-    // };
-
     // Upon clicking Filter button, resets the selectedshifts list
     // Shows filter panel
     const handleFilterPanel = () => {
@@ -230,15 +190,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                             <img className="btn-icon" src={addShiftIcon} />
                                             {"Add Shift"}
                                         </button>
-                                        {/* <button
-                                            id="whiteButton"
-                                            className={"admin-btn"}
-                                            onClick={() => setOpenDupe(true)}
-                                            // onMouseEnter={checkDupeID}
-                                        >
-                                            <img className="btn-icon" src={addShiftIcon} />
-                                            {"Duplicate Shift"}
-                                        </button> */}
                                         <button
                                             id="whiteButton"
                                             className={"admin-btn"}
@@ -284,7 +235,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                               shiftData={shiftData}
                                               isAdmin={userData?.data?.isAdmin}
                                               handleSelected={handleSelected}
-                                              handleDuplicate={handleDeplicate}
                                           />
                                       );
                                   })
@@ -304,9 +254,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                     <Modal show={show}>
                         <AddShiftForm handleClose={closeAddShift} shiftdata={""} />
                     </Modal>
-                    {/* <Modal show={show2}>
-                        <AddShiftForm handleClose={closeDupeShift} shiftdata={shiftdata} />
-                    </Modal> */}
                     {!loadingAllVolTypes && resultFilters && (
                         <FilterResultsModal
                             visible={filterPanelVisible}

@@ -41,17 +41,23 @@ type ShiftCardProps = {
     shiftData: IShift;
     isAdmin: boolean | undefined;
     handleSelected: (id: string, checkStatus: boolean) => void;
-    handleDuplicate: (card: IShift) => Promise<void>;
 };
 
-export default function ShiftCard({ shiftData, isAdmin, handleSelected, handleDuplicate }: ShiftCardProps) {
+export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftCardProps) {
     const { name, startAt, address, _id } = shiftData;
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showDupeModal, setShowDupeModal] = useState(false);
+    const [shiftdata, setshiftData] = useState("");
 
     const dateString = new Date(startAt).toLocaleString();
 
     const handleCloseModal = () => {
         setShowEditModal(false);
+    };
+
+    const closeDupeShift = () => {
+        setshiftData("");
+        setShowDupeModal(false);
     };
 
     return (
@@ -75,7 +81,8 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected, handleDu
                                     <Button
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            handleDuplicate(shiftData || {}).catch((err) => console.log(err));
+                                            setshiftData(shiftData._id);
+                                            setShowDupeModal(true);
                                         }}
                                         size="sm"
                                         variant="light"
@@ -128,6 +135,9 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected, handleDu
             </Card>
             <Modal show={showEditModal}>
                 <AddShiftForm previousShiftFields={shiftData} handleClose={handleCloseModal} shiftdata={""} />
+            </Modal>
+            <Modal show={showDupeModal}>
+                <AddShiftForm handleClose={closeDupeShift} shiftdata={shiftdata} />
             </Modal>
         </>
     );
