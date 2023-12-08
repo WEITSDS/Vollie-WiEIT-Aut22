@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import ModalBody from "react-bootstrap/ModalBody";
@@ -27,9 +27,12 @@ const RegisterPage = () => {
     const [password, setpassword] = useState<string>("");
     const [confirmPassword, setconfirmPassword] = useState<string>("");
     const [volunteerTypes, setvolunteerTypes] = useState<IVolunteerTypeUser[]>([]);
+    const [elWidth, setElWidth] = useState(0);
+    const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setPageTitle("Register");
+        setElWidth(ref?.current?.offsetWidth || 315);
     }, []);
 
     const onChangeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,7 +169,7 @@ const RegisterPage = () => {
                                         isInvalid={passwordInvalid}
                                     />
                                 </Form.Group>
-                                <Form.Group controlId="formConfirmPassword" className="mb-3">
+                                <Form.Group controlId="formConfirmPassword" className="mb-3" ref={ref}>
                                     <Form.Control
                                         type="password"
                                         name="confirmPassword"
@@ -184,6 +187,12 @@ const RegisterPage = () => {
                                         isSearchable={true}
                                         isMulti
                                         onChange={onChangeVolunteerType}
+                                        styles={{
+                                            control: (base) => ({
+                                                ...base,
+                                                width: `${elWidth}px`,
+                                            }),
+                                        }}
                                     />
                                 </Form.Group>
                                 <Button variant="primary" type="submit" className="w-100">
