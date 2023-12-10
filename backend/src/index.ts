@@ -9,6 +9,7 @@ import qualificationTypeRoutes from "./QualificationType/qualificationType.route
 import notificationRoutes from "./Notifications/notifications.route";
 import volunteerTypeRoutes from "./VolunteerType/volunteerType.route";
 import notificationTypeRoutes from "./NotificationType/notificationType.route";
+import addressRoutes from "./Address/address.route";
 // import https = require("https");
 
 // Middleware
@@ -82,6 +83,8 @@ app.use("/api/notifications", notificationRoutes);
 //Notification Type routes
 app.use("/api/notificationType", notificationTypeRoutes);
 
+//Address routes
+app.use("/api/addresses", addressRoutes);
 //Sling API Call to retrieve Auth Token
 // app.get("/api/credentials/:email/:password", (request, response) => {
 //     const email = request.params.email;

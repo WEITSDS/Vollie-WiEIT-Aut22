@@ -37,25 +37,26 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
 
     const getFilterInLocalStorage = (): Filters => {
         const localFiltersString: string | null = localStorage.getItem("shiftResultFilters");
-        // CONSOLE
-        console.log(localFiltersString);
+        console.log(localFiltersString); // Console log for debugging
+
         if (!localFiltersString) {
             console.log("Default");
             return getDefaultFilters(userVolTypesData?.data || []);
         }
+
         const localFilters = JSON.parse(localFiltersString) as Filters;
-        const something = {
-            from: new Date(localFilters.from),
-            to: new Date(localFilters.to),
-            volTypes: localFilters.volTypes,
-            category: localFilters.category,
-            hours: localFilters.hours,
-            hideUnavailable: localFilters.hideUnavailable,
+        // Add a default value for location if it doesn't exist in the retrieved filters
+        const locationFilter = localFilters.location || ""; // Default to an empty string if not present
+
+        const filtersWithLocation = {
+            ...localFilters,
+            location: locationFilter, // Include location filter
         };
-        // CONSOLE localFilters
-        console.log(localFilters);
-        return something;
+
+        console.log(filtersWithLocation); // Console log for debugging
+        return filtersWithLocation;
     };
+
     const [resultFilters, setResultFilters] = useState<Filters | undefined>(
         loadingUserVolTypes ? undefined : getDefaultFilters(userVolTypesData?.data || [])
     );
