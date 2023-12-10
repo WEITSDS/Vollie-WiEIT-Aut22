@@ -113,4 +113,12 @@ h1 {
     background: #2a4cb8; /* Slightly darker shade of blue on hover */
 }
 
-/* Remove the id selector if it conflicts, or ensure it's styled in a way that complements the .btn-primary class */
+.view-select {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 40px;
+    margin-right: 150px;
+    border-radius: 8px;
+    width: 150px;
+    height: 80px;
+}
