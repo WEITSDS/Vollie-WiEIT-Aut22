@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { IShift, setApprovalUserForShift, UserShiftAttendaceSummary } from "../api/shiftApi";
