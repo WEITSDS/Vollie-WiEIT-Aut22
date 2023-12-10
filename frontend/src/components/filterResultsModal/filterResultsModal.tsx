@@ -145,7 +145,8 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                     type="text"
                                     className="location-input"
                                     placeholder="Enter location"
-                                    value={filters.location || ""} // Controlled with the current location value
+                                    value={filters.location ? filters.location : ""}
+                                    // Controlled with the current location value
                                     onChange={(e) => updateFilters({ ...filters, location: e.target.value })}
                                 />
                             </>
