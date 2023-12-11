@@ -95,7 +95,7 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                     aria-label="Shift Length"
                                 >
                                     <option value="All">All</option>
-                                    <option value="Short">Short (1-2 Hours)</option>
+                                    <option value="Short">Short (0-2 Hours)</option>
                                     <option value="Medium">Medium (3-4 Hours)</option>
                                     <option value="Long">Long (5+ Hours)</option>
                                 </Form.Select>
