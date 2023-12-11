@@ -49,7 +49,13 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftC
     const [showDupeModal, setShowDupeModal] = useState(false);
     const [shiftdata, setshiftData] = useState("");
 
-    const dateString = new Date(startAt).toLocaleString();
+    const dateString = new Date(startAt).toLocaleString([], {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
 
     const handleCloseModal = () => {
         setShowEditModal(false);
