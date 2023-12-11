@@ -290,7 +290,11 @@ const ShiftInformation = () => {
 
                                         <div className="info-box-right-container">
                                             <h3 className="info-body">
-                                                {startDate.toLocaleDateString()} {startDate.toLocaleTimeString()}
+                                                {startDate.toLocaleDateString()}{" "}
+                                                {startDate.toLocaleTimeString([], {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
                                             </h3>
                                         </div>
                                     </div>
@@ -303,7 +307,8 @@ const ShiftInformation = () => {
 
                                         <div className="info-box-right-container">
                                             <h3 className="info-body">
-                                                {endDate.toLocaleDateString()} {endDate.toLocaleTimeString()}
+                                                {endDate.toLocaleDateString()}{" "}
+                                                {endDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                                             </h3>
                                         </div>
                                     </div>
