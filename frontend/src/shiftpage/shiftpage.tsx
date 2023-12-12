@@ -34,7 +34,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const { data: userVolTypesData, isLoading: loadingUserVolTypes } = useVoltypesForUser(userData?.data?._id);
 
     const getFilterInLocalStorage = (): Filters => {
-        const localFiltersString: string | null = localStorage.getItem("shiftResultFilters");
+        const localFiltersString: string | null = sessionStorage.getItem("shiftResultFilters");
         // CONSOLE
         console.log(localFiltersString);
         if (!localFiltersString) {
@@ -80,7 +80,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
 
     //Saves most recent filter into the local storage
     const updateFiltersInLocalStorage = (filters: Filters) => {
-        localStorage.setItem("shiftResultFilters", JSON.stringify(filters));
+        sessionStorage.setItem("shiftResultFilters", JSON.stringify(filters));
         console.log("Updated");
         console.log(filters);
         console.log(JSON.stringify(filters));

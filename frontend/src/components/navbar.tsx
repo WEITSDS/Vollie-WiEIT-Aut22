@@ -22,6 +22,7 @@ export class NavigationBar extends React.Component<Record<string, never>, NavBar
             .then(({ success, status }) => {
                 if (success && status == 200) {
                     window.location.href = "/login";
+                    sessionStorage.clear();
                 } else {
                     console.error(`Failed to logout`);
                 }
