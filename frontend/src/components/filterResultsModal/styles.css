@@ -81,3 +81,11 @@
 .filter-modal select {
     width: 100% !important;
 }
+
+.filter-buttons {
+    position: absolute;
+    direction: rtl;
+    bottom: 20px;
+    right: 0;
+    padding: 0 1rem;
+}
