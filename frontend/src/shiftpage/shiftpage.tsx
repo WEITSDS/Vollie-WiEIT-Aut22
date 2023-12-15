@@ -33,25 +33,25 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const { isLoading: loadingAllVolTypes, data: allVolTypes } = useAllVolTypes();
     const { data: userVolTypesData, isLoading: loadingUserVolTypes } = useVoltypesForUser(userData?.data?._id);
 
-    const getFilterInLocalStorage = (): Filters => {
-        const localFiltersString: string | null = sessionStorage.getItem("shiftResultFilters");
+    const getFilterInSessionStorage = (): Filters => {
+        const sessionFiltersString: string | null = sessionStorage.getItem("shiftResultFilters");
         // CONSOLE
-        console.log(localFiltersString);
-        if (!localFiltersString) {
+        console.log(sessionFiltersString);
+        if (!sessionFiltersString) {
             console.log("Default");
             return getDefaultFilters(userVolTypesData?.data || []);
         }
-        const localFilters = JSON.parse(localFiltersString) as Filters;
+        const sessionFilters = JSON.parse(sessionFiltersString) as Filters;
         const something = {
-            from: new Date(localFilters.from),
-            to: new Date(localFilters.to),
-            volTypes: localFilters.volTypes,
-            category: localFilters.category,
-            hours: localFilters.hours,
-            hideUnavailable: localFilters.hideUnavailable,
+            from: new Date(sessionFilters.from),
+            to: new Date(sessionFilters.to),
+            volTypes: sessionFilters.volTypes,
+            category: sessionFilters.category,
+            hours: sessionFilters.hours,
+            hideUnavailable: sessionFilters.hideUnavailable,
         };
-        // CONSOLE localFilters
-        console.log(localFilters);
+        // CONSOLE sessionFilters
+        console.log(sessionFilters);
         return something;
     };
 
@@ -78,8 +78,8 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
 
     // setResultFilters(something);
 
-    //Saves most recent filter into the local storage
-    const updateFiltersInLocalStorage = (filters: Filters) => {
+    //Saves most recent filter into the session storage
+    const updateFiltersInSessionStorage = (filters: Filters) => {
         sessionStorage.setItem("shiftResultFilters", JSON.stringify(filters));
         console.log("Updated");
         console.log(filters);
@@ -106,7 +106,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         console.log("useEffect");
         if (userVolTypesData) {
             // setResultFilters(getDefaultFilters(userVolTypesData?.data || []));
-            setResultFilters(getFilterInLocalStorage());
+            setResultFilters(getFilterInSessionStorage());
         }
     }, [userVolTypesData]);
 
@@ -260,7 +260,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                             filters={resultFilters}
                             updateFilters={(filters) => {
                                 setResultFilters(filters);
-                                updateFiltersInLocalStorage(filters);
+                                updateFiltersInSessionStorage(filters);
                             }}
                             onClose={() => setFilterPanelVisible(false)}
                             allVolTypes={allVolTypes?.data || []}
