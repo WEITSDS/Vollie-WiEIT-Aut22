@@ -5,7 +5,7 @@
 
 .header-container {
     display: flex;
-    justify-content: flex-start; /* Align items to the start */
+    justify-content: flex-start; 
     margin-top: 53px;
 }
 
@@ -16,7 +16,7 @@
 .btn-container {
     display: flex;
     justify-content: flex-start;
-    margin-right: auto; /* Pushes the container to the left */
+    margin-right: auto;
     position: static;
 }
 

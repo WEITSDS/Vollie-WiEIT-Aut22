@@ -28,19 +28,19 @@ const AdminViewAllUsers = () => {
     };
 
     const exportUsersToCSV = () => {
-        let csvContent = "Name,Email,Role\n"; // CSV Header
+        let csvContent = "Name,Email,Role\n";
 
         filteredUsers.forEach((user) => {
             const userName = `${user.firstName} ${user.lastName}`;
             const userEmail = user.email;
-            const userRoles = getVolunteerTypeNames(user).replace(/, /g, " | "); // Separating multiple roles with ' | '
-            const row = [userName, userEmail, userRoles].join(","); // Joining the data with commas
+            const userRoles = getVolunteerTypeNames(user).replace(/, /g, " | ");
+            const row = [userName, userEmail, userRoles].join(",");
             csvContent += row + "\r\n";
         });
 
         const fileName = "users_export.csv";
         downloadCSV(csvContent, fileName);
-        setShowExportModal(false); // Close the modal after exporting
+        setShowExportModal(false);
     };
 
     useEffect(() => {
@@ -90,7 +90,6 @@ const AdminViewAllUsers = () => {
             return user.volunteerTypes.some((volType) => !volType.approved);
         }
 
-        // Existing filtering logic for other volunteer types
         const filterByVolType = selectedVolType
             ? user.volunteerTypes.some((volType) => volType.type === selectedVolType)
             : true;
