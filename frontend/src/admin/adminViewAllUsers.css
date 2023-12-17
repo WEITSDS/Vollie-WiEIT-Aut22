@@ -44,3 +44,12 @@
     margin-left: 20px;
     background-color: #f9f9f9;
 }
+
+#exportButton {
+    margin-left: 15px;
+    width: 120px;
+    height: 35px;
+    border: 1px solid #989898;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}

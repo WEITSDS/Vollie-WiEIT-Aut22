@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { getAllUsers, User } from "../api/userApi";
 
 import { getAllVolTypes, IVolunteerType } from "../api/volTypeAPI";
+import { ExportUsersModal } from "../components/exportUserModal/UserExportModal";
 
 const AdminViewAllUsers = () => {
     const navigate = useNavigate();
@@ -14,6 +15,33 @@ const AdminViewAllUsers = () => {
     const [search, setSearch] = useState<string>("");
     const [volunteerTypes, setVolunteerTypes] = useState<IVolunteerType[]>([]);
     const [selectedVolType, setSelectedVolType] = useState<string>("");
+    const [showExportModal, setShowExportModal] = useState(false);
+
+    const downloadCSV = (csv: string, filename: string) => {
+        const csvFile = new Blob([csv], { type: "text/csv" });
+        const downloadLink = document.createElement("a");
+        downloadLink.download = filename;
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    };
+
+    const exportUsersToCSV = () => {
+        let csvContent = "Name,Email,Role\n"; // CSV Header
+
+        filteredUsers.forEach((user) => {
+            const userName = `${user.firstName} ${user.lastName}`;
+            const userEmail = user.email;
+            const userRoles = getVolunteerTypeNames(user).replace(/, /g, " | "); // Separating multiple roles with ' | '
+            const row = [userName, userEmail, userRoles].join(","); // Joining the data with commas
+            csvContent += row + "\r\n";
+        });
+
+        const fileName = "users_export.csv";
+        downloadCSV(csvContent, fileName);
+        setShowExportModal(false); // Close the modal after exporting
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -52,6 +80,17 @@ const AdminViewAllUsers = () => {
     };
 
     const filteredUsers = users.filter((user) => {
+        // Filter for admins if 'admin' is selected
+        if (selectedVolType === "admin") {
+            return user.isAdmin;
+        }
+
+        // Filter for unapproved users if 'unapproved' is selected
+        if (selectedVolType === "unapproved") {
+            return user.volunteerTypes.some((volType) => !volType.approved);
+        }
+
+        // Existing filtering logic for other volunteer types
         const filterByVolType = selectedVolType
             ? user.volunteerTypes.some((volType) => volType.type === selectedVolType)
             : true;
@@ -65,6 +104,9 @@ const AdminViewAllUsers = () => {
     });
 
     const getVolunteerTypeNames = (user: User) => {
+        if (user.isAdmin) {
+            return "Admin";
+        }
         return user.volunteerTypes
             .map((volType) => {
                 const foundType = volunteerTypes.find((type) => type._id === volType.type);
@@ -88,13 +130,22 @@ const AdminViewAllUsers = () => {
                 <input type="text" className="search-bar" onChange={handleChange}></input>
                 <select onChange={handleVolTypeChange} value={selectedVolType} className="volunteer-type-select">
                     <option value="">All User Types</option>
-                    <option value="unapproved">Unapproved Users</option>
+                    <option value="admin">Admin</option>
+                    <option value="unapproved">Unapproved User</option>
                     {volunteerTypes.map((volType) => (
                         <option key={volType._id} value={volType._id}>
                             {volType.name}
                         </option>
                     ))}
                 </select>
+                <button id="exportButton" onClick={() => setShowExportModal(true)}>
+                    Export Users
+                </button>
+                <ExportUsersModal
+                    visible={showExportModal}
+                    onClose={() => setShowExportModal(false)}
+                    onExport={exportUsersToCSV}
+                />
                 <div className="all-users-container">
                     <img className="allUsersIcon" src={peopleIcon} alt="participants icon" />
                     <div className="all-users-text">
@@ -106,7 +157,7 @@ const AdminViewAllUsers = () => {
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Volunteer Type</th>
+                            <th>Role</th>
                         </tr>
                     </thead>
                     <tbody className="email-search-table-body">

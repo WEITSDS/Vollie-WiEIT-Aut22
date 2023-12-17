@@ -25,6 +25,7 @@ import { ExportModal } from "../components/exportModal/exportModal";
 import { Button } from "react-bootstrap";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+import MapView from "./mapView";
 
 type ShiftPageProps = {
     shiftType: string;
@@ -45,12 +46,12 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         }
 
         const localFilters = JSON.parse(localFiltersString) as Filters;
-        // Add a default value for location if it doesn't exist in the retrieved filters
-        const locationFilter = localFilters.location || ""; // Default to an empty string if not present
+
+        const locationFilter = localFilters.location || "";
 
         const filtersWithLocation = {
             ...localFilters,
-            location: locationFilter, // Include location filter
+            location: locationFilter,
         };
 
         console.log(filtersWithLocation); // Console log for debugging
@@ -123,9 +124,9 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         setShowDeleteButton(isShiftSelected());
     }, [selectedShifts]);
 
-    const handleViewChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setCurrentView(event.target.value);
-    };
+    // const handleViewChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    //     setCurrentView(event.target.value);
+    // };
 
     const handleSelected = (id: string, checkStatus: boolean) => {
         setselectedShifts((prevSelectedShifts) => {
@@ -211,103 +212,118 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
             <NavigationBar />
             <WEITBackground>
                 <ModalBody>
-                    <div className="page-container">
-                        <div className="header-container">
-                            <h1>{shiftType == "myShifts" ? "My" : "Search"} Shifts</h1>
-                            <div className="btn-container">
-                                {userData?.data?.isAdmin && (
-                                    <>
-                                        <button id="whiteButton" className={"admin-btn"} onClick={openAddShift}>
-                                            <img className="btn-icon" src={addShiftIcon} />
-                                            {"Add Shift"}
-                                        </button>
-
-                                        <button
-                                            id="whiteButton"
-                                            className={"admin-btn"}
-                                            onClick={() => {
-                                                void openDeleteModal();
-                                                // void deleteSelected();
-                                            }}
-                                            //Disable button if showDeleteButton is false
-                                            disabled={!showDeleteButton}
-                                        >
-                                            {isDeleteLoading ? (
-                                                <>
-                                                    <LoadingSpinner />
-                                                    {"Loading"}
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <img className="btn-icon" src={deleteIcon} />
-                                                    {"Delete Selected"}
-                                                </>
-                                            )}
-                                        </button>
-                                    </>
-                                )}
-
-                                {shiftType === "searchShifts" && (
-                                    <button id="whiteButton" className={"admin-btn"} onClick={handleFilterPanel}>
-                                        <img className="btn-icon" src={filterIcon} />
-                                        {"Filters"}
-                                    </button>
-                                )}
+                    <div className="main-container">
+                        {/* Tab Container */}
+                        <div className="tab-container">
+                            <div
+                                className={currentView === "card" ? "tab active" : "tab"}
+                                onClick={() => setCurrentView("card")}
+                            >
+                                Card View
                             </div>
-
-                            <select onChange={handleViewChange} value={currentView} className="view-select">
-                                <option value="card">Card View</option>
-                                <option value="calendar">Calendar View</option>
-                                {/* <option value="map">Map View</option> */}
-                            </select>
+                            <div
+                                className={currentView === "calendar" ? "tab active" : "tab"}
+                                onClick={() => setCurrentView("calendar")}
+                            >
+                                Calendar View
+                            </div>
+                            <div
+                                className={currentView === "map" ? "tab active" : "tab"}
+                                onClick={() => setCurrentView("map")}
+                            >
+                                Map View
+                            </div>
                         </div>
-                        {/* container for when shifts are added */}
-                        {currentView === "card" && (
-                            <div className="shiftList-container">
-                                {isLoading && <p>Loading available shifts...</p>}
-                                {isError && <p>There was a server error while loading available shifts... {error}</p>}
-                                {data?.data && data?.data?.length > 0
-                                    ? data?.data?.map((shiftData) => {
-                                          return (
-                                              <ShiftCard
-                                                  key={shiftData._id}
-                                                  shiftData={shiftData}
-                                                  isAdmin={userData?.data?.isAdmin}
-                                                  handleSelected={handleSelected}
-                                                  handleDuplicate={openDupeShift}
-                                              />
-                                          );
-                                      })
-                                    : !isLoading && <p>No available shifts.</p>}
+
+                        {/* Content Container */}
+                        <div className="content-container">
+                            <div className="header-container">
+                                <h1>{shiftType == "myShifts" ? "My" : "Search"} Shifts</h1>
+                                <div className="btn-container">
+                                    {userData?.data?.isAdmin && (
+                                        <>
+                                            <button id="whiteButton" className={"admin-btn"} onClick={openAddShift}>
+                                                <img className="btn-icon" src={addShiftIcon} />
+                                                {"Add Shift"}
+                                            </button>
+
+                                            <button
+                                                id="whiteButton"
+                                                className={"admin-btn"}
+                                                onClick={() => {
+                                                    void openDeleteModal();
+                                                }}
+                                                disabled={!showDeleteButton}
+                                            >
+                                                {isDeleteLoading ? (
+                                                    <>
+                                                        <LoadingSpinner />
+                                                        {"Loading"}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <img className="btn-icon" src={deleteIcon} />
+                                                        {"Delete Selected"}
+                                                    </>
+                                                )}
+                                            </button>
+                                        </>
+                                    )}
+
+                                    {shiftType === "searchShifts" && (
+                                        <button id="whiteButton" className={"admin-btn"} onClick={handleFilterPanel}>
+                                            <img className="btn-icon" src={filterIcon} />
+                                            {"Filters"}
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                        )}
-
-                        {currentView === "calendar" && (
-                            <Calendar
-                                localizer={localizer}
-                                events={data?.data?.map((shift) => ({
-                                    start: new Date(shift.startAt),
-                                    end: new Date(shift.endAt),
-                                    title: shift.name,
-                                    id: shift._id,
-                                    allDay: true,
-                                }))}
-                                startAccessor="start"
-                                endAccessor="end"
-                                titleAccessor="title"
-                                onSelectEvent={handleSelectEvent}
-                                style={{ height: 500 }}
-                            />
-                        )}
+                            {currentView === "card" && (
+                                <div className="shiftList-container">
+                                    {isLoading && <p>Loading available shifts...</p>}
+                                    {isError && (
+                                        <p>There was a server error while loading available shifts... {error}</p>
+                                    )}
+                                    {data?.data && data?.data?.length > 0
+                                        ? data?.data?.map((shiftData) => {
+                                              return (
+                                                  <ShiftCard
+                                                      key={shiftData._id}
+                                                      shiftData={shiftData}
+                                                      isAdmin={userData?.data?.isAdmin}
+                                                      handleSelected={handleSelected}
+                                                      handleDuplicate={openDupeShift}
+                                                  />
+                                              );
+                                          })
+                                        : !isLoading && <p>No available shifts.</p>}
+                                </div>
+                            )}
+                            {currentView === "calendar" && (
+                                <Calendar
+                                    localizer={localizer}
+                                    events={data?.data?.map((shift) => ({
+                                        start: new Date(shift.startAt),
+                                        end: new Date(shift.endAt),
+                                        title: shift.name,
+                                        id: shift._id,
+                                        allDay: true,
+                                    }))}
+                                    startAccessor="start"
+                                    endAccessor="end"
+                                    titleAccessor="title"
+                                    onSelectEvent={handleSelectEvent}
+                                    style={{ height: 500 }}
+                                />
+                            )}
+                            {currentView === "map" && <MapView />}
+                        </div>
                     </div>
-
                     <div className="export-parent">
-                        {/* Export Button visible to all users */}
                         <button className="btn-primary export-button" onClick={() => setExportModalVisible(true)}>
                             Export
                         </button>
                     </div>
-
                     <ExportModal
                         visible={exportModalVisible}
                         onClose={() => setExportModalVisible(false)}
@@ -332,29 +348,29 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                             userVolTypes={userVolTypesData?.data || []}
                         />
                     )}
+                    <Modal show={showDeleteModal} onHide={closeDeleteModal} animation={false}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Shift Deletion</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            You have selected {selectedShifts.length} shift/s to delete. Do you want to proceed?
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={closeDeleteModal}>
+                                No
+                            </Button>
+                            <Button
+                                variant="primary"
+                                onClick={() => {
+                                    closeDeleteModal();
+                                    void deleteSelected();
+                                }}
+                            >
+                                Yes
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
                 </ModalBody>
-                <Modal show={showDeleteModal} onHide={closeDeleteModal} animation={false}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Shift Deletion</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        You have selected {selectedShifts.length} shift/s to delete. Do you want to proceed?
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={closeDeleteModal}>
-                            No
-                        </Button>
-                        <Button
-                            variant="primary"
-                            onClick={() => {
-                                closeDeleteModal;
-                                void deleteSelected();
-                            }}
-                        >
-                            Yes
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
             </WEITBackground>
         </>
     );

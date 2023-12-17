@@ -177,12 +177,19 @@ export function deleteShift(req: DeleteDetails): Promise<ResponseWithStatus> {
     return deleteBasicResponse(`${ROOT_URL}/api/shifts/${req._id}`);
 }
 
+// export async function getSearchShifts(filters: Filters | undefined): Promise<ResponseWithData<IShift[]>> {
+//     return typeof filters === "undefined"
+//         ? Promise.reject(new Error("Invalid id"))
+//         : await postAndGetDataResponse(`${ROOT_URL}/api/shifts/get-search-shifts`, {
+//               filters,
+//           });
+// }
+
 export async function getSearchShifts(filters: Filters | undefined): Promise<ResponseWithData<IShift[]>> {
-    return typeof filters === "undefined"
-        ? Promise.reject(new Error("Invalid id"))
-        : await postAndGetDataResponse(`${ROOT_URL}/api/shifts/get-search-shifts`, {
-              filters,
-          });
+    const effectiveFilters = filters ?? {};
+    return await postAndGetDataResponse(`${ROOT_URL}/api/shifts/get-search-shifts`, {
+        filters: effectiveFilters,
+    });
 }
 
 export async function postAdminExportShifts(dateRange: {
