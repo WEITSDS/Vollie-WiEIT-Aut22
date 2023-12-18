@@ -309,7 +309,6 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
         if (actionMeta.action === "create-option" && newValue?.label) {
             handleAddAddress(newValue.label);
         }
-        // set the form field value
         if (newValue?.label) {
             setFormFields((prevFormFields) => ({ ...prevFormFields, address: newValue.label }));
         }
@@ -374,16 +373,17 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
                 /> */}
                 <hr className="type-line" />
                 <label>Venue</label>
-                <input type="text" defaultValue={formFields.venue} name="venue" onChange={handleChange} />
-                <label>Address</label>
                 <CreatableSelect
                     components={makeAnimated()}
                     options={addresses.map((addr) => ({ value: addr._id, label: addr.address }))}
                     isClearable
                     formatOptionLabel={formatOptionLabel}
                     onChange={handleAddressChange}
-                    placeholder="Select or type an address"
+                    placeholder="Select or type a venue"
                 />
+
+                <label>Address</label>
+                <input type="text" defaultValue={formFields.address} name="address" onChange={handleChange} />
 
                 <label>Description</label>
                 <textarea name="description" defaultValue={formFields.description} onChange={handleChange} />

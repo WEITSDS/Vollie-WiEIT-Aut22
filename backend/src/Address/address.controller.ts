@@ -44,3 +44,20 @@ export const deleteAddress = async (req: Request, res: Response) => {
         return res.status(500).json({ message }); // Ensure return here
     }
 };
+export const updateAddress = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { address } = req.body;
+
+        const updatedAddress = await Address.findByIdAndUpdate(id, { address }, { new: true });
+
+        if (!updatedAddress) {
+            return;
+        }
+
+        res.json({ message: "Address updated successfully", updatedAddress });
+    } catch (error) {
+        const message = (error as Error).message;
+        res.status(500).json({ message });
+    }
+};

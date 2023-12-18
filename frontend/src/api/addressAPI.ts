@@ -57,7 +57,21 @@ export const deleteAddress = async (id: string): Promise<void> => {
         throw error;
     }
 };
-
+// Update an existing address
+export const updateAddress = async (id: string, address: string): Promise<IAddress> => {
+    try {
+        const response = await fetch(`${ROOT_URL}/api/addresses/update-addresses/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ address }),
+        });
+        return handleResponse(response);
+    } catch (error) {
+        throw error;
+    }
+};
 export default {
     addNewAddress,
     getAllAddresses,
