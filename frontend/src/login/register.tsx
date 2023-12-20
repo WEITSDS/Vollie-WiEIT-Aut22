@@ -5,7 +5,7 @@ import ModalBody from "react-bootstrap/ModalBody";
 import ModalTitle from "react-bootstrap/ModalTitle";
 import { registerUser } from "../api/userApi";
 import { SITE_NAME } from "../constants";
-import { emailIsValid, passwordIsValid, setPageTitle, stringValueIsValid } from "../utility";
+import { emailIsValid, setPageTitle, stringValueIsValid } from "../utility";
 import { WEITBackground } from "../components/background";
 import Select from "react-select";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
@@ -34,6 +34,14 @@ const RegisterPage = () => {
         setPageTitle("Register");
         setElWidth(ref?.current?.offsetWidth || 315);
     }, []);
+
+    function containsUpperCase(val: string): boolean {
+        return /[A-Z]/.test(val);
+    }
+
+    function passwordIsValid(val: string): boolean {
+        return stringValueIsValid(val) && val.length >= 8 && val.length <= 64 && containsUpperCase(val) === true;
+    }
 
     const onChangeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
         setfirstName(e.target.value);
@@ -78,6 +86,9 @@ const RegisterPage = () => {
         }
         if (!email || !/(uts\.edu\.au)/gm.test(email)) {
             errorMessages.push("Email must be a valid UTS email ending in 'uts.edu.au'");
+        }
+        if (!passwordIsValid(password)) {
+            errorMessages.push("Passwords must have at least one uppercase letter and more than 8 characters.");
         }
         if (password !== confirmPassword) {
             errorMessages.push("Passwords must match");
