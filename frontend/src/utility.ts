@@ -10,9 +10,14 @@ export function stringValueIsValid(val: string): boolean {
 export function emailIsValid(val: string): boolean {
     return stringValueIsValid(val) && /(uts\.edu\.au)/gm.test(val);
 }
+
+export function containsUpperCase(val: string): boolean {
+    return /[A-Z]/.test(val);
+}
+
 // TODO add more password strength checks here
 export function passwordIsValid(val: string): boolean {
-    return stringValueIsValid(val) && val.length >= 8 && val.length <= 64;
+    return stringValueIsValid(val) && val.length >= 8 && val.length <= 64 && containsUpperCase(val) === true;
 }
 
 export function volunteerTypeIsValid(val: string): boolean {
