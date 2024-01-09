@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { IShift, setApprovalUserForShift, UserShiftAttendaceSummary } from "../api/shiftApi";
@@ -9,6 +10,8 @@ import RemoveUserFromShiftModal from "./removeUserFromShiftModal";
 import "./attendanceList.css";
 import { Link } from "react-router-dom";
 import { setCompleteShift } from "../api/userApi";
+import { assignUserToShift } from "../api/shiftApi";
+import { getAllUsers, User } from "../api/userApi";
 
 type AttendanceListProps = {
     shift: IShift;
@@ -30,6 +33,45 @@ export default function AttendanceListModal({
     const handleShow = () => setModalBox(true);
 
     const { data: attendanceListUsers, isLoading, isError, refetch } = useAttendanceList(shift._id);
+
+    const [showAssignModal, setShowAssignModal] = useState(false);
+    const [users, setUsers] = useState<User[]>([]);
+    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+
+    // Fetch all users when the Assign Users modal opens
+    useEffect(() => {
+        if (showAssignModal) {
+            const fetchUsers = async () => {
+                const response = await getAllUsers();
+                setUsers(response.data!);
+            };
+            fetchUsers().catch(console.error);
+        }
+    }, [showAssignModal]);
+
+    // Function to handle user selection
+    const handleUserSelection = (userId: string, isSelected: boolean) => {
+        setSelectedUsers(isSelected ? [...selectedUsers, userId] : selectedUsers.filter((id) => id !== userId));
+    };
+
+    // Function to assign selected users to the shift
+    const handleAssignUsers = async () => {
+        for (const userId of selectedUsers) {
+            await assignUserToShift({
+                shiftid: shift._id,
+                userid: userId,
+                selectedVolType: "defaultVolType", // replace with actual volunteer type or a selected one
+            });
+        }
+        setShowAssignModal(false);
+        setSelectedUsers([]);
+        // Add logic to refresh the attendance list here
+    };
+
+    // Function to open the Assign Users modal
+    const handleOpenAssignModal = () => {
+        setShowAssignModal(true);
+    };
 
     useEffect(() => {
         void refetch();
@@ -221,6 +263,28 @@ export default function AttendanceListModal({
             )}
 
             {/* Table template for attendance list */}
+            <Modal show={showAssignModal} onHide={() => setShowAssignModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Assign Users to Shift</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {users.map((user) => (
+                        <div key={user._id}>
+                            <input
+                                type="checkbox"
+                                checked={selectedUsers.includes(user._id)}
+                                onChange={(e) => handleUserSelection(user._id, e.target.checked)}
+                            />
+                            {user.firstName} {user.lastName}
+                        </div>
+                    ))}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleAssignUsers}>
+                        Assign Selected Users
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <Modal
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
@@ -255,6 +319,9 @@ export default function AttendanceListModal({
                 </Modal.Body>
                 <Modal.Footer className="attendance-modal-footer">
                     <Button onClick={handleExport}>Export</Button>
+                    <Button variant="primary" onClick={handleOpenAssignModal}>
+                        Assign Users
+                    </Button>
                     <Button onClick={handleClosingThis}>Close</Button>
                 </Modal.Footer>
             </Modal>

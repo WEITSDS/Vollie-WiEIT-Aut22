@@ -42,5 +42,6 @@ router.delete("/:shiftid", wrapAsync(deleteShift));
 router.get("/get-all-shifts", wrapAsync(getAllShifts));
 router.post("/get-volunteer-report", wrapAsync(getVolunteerReport));
 router.post("/export-report-excel", wrapAsync(exportVolunteerReportAsExcel));
+//router.get("/get-shifts-address", wrapAsync(getAllUniqueShiftAddresses));
 
 export = router;

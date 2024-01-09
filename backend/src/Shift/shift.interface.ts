@@ -44,6 +44,7 @@ export interface IShiftFiltersRequest {
     category: string;
     hours: string;
     hideUnavailable: boolean;
+    location: string;
 }
 
 export interface IExportShiftRequest {

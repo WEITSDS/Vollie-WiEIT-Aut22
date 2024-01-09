@@ -7,6 +7,7 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import { setPageTitle } from "../utility";
 import QualificationsTable from "../components/qualificationsTable";
+import VenuesTable from "../components/venuesTable";
 // import "./adminLandingPage.css";
 interface AdminDashboardState {
     loading: boolean;
@@ -92,6 +93,7 @@ export class AdminDashboard extends React.Component<Record<string, never>, Admin
                         <div className="dashboard-table-container">
                             <QualificationsTable tableType="Qualification" />
                             <QualificationsTable tableType="Volunteer" />
+                            <VenuesTable />
                         </div>
                     </ModalBody>
                 </WEITBackground>

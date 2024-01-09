@@ -21,4 +21,6 @@ export interface Filters {
     category: string;
     hours: string;
     hideUnavailable: boolean;
+    location: string;
+    limit?: number;
 }

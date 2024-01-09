@@ -43,6 +43,9 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                     <button type="button" onClick={() => setCurrentMenu("Availability")}>
                         Availability
                     </button>
+                    <button type="button" onClick={() => setCurrentMenu("Location")}>
+                        Location
+                    </button>
                 </div>
                 <div className="right-section">
                     <form>
@@ -132,6 +135,20 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                     <option value="true">Hide Unavailable Shifts</option>
                                     <option value="false">Show Taken Shifts</option>
                                 </Form.Select>
+                            </>
+                        )}
+
+                        {currentMenu === "Location" && (
+                            <>
+                                <label>Location</label>
+                                <Form.Control
+                                    type="text"
+                                    className="location-input"
+                                    placeholder="Enter location"
+                                    value={filters.location ? filters.location : ""}
+                                    // Controlled with the current location value
+                                    onChange={(e) => updateFilters({ ...filters, location: e.target.value })}
+                                />
                             </>
                         )}
                         <div className="filter-buttons">

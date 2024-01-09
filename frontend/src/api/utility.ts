@@ -60,7 +60,7 @@ export function isBasicResponse(args: unknown): args is BasicResponse {
 export interface ResponseWithData<T> {
     message: string;
     success: boolean;
-    data: T | null;
+    data?: T | null;
 }
 
 export interface BasicResponseWithData {

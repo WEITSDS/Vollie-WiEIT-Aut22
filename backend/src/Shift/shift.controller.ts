@@ -673,6 +673,8 @@ export const getFindConfigFromFilters = (filters: IShiftFiltersRequest) => {
         ...(filters.volTypes.length > 0 && {
             "volunteerTypeAllocations.type": { $in: filters.volTypes.map((volType) => volType.value) },
         }),
+        // Map 'location' filter to 'address' field in the schema
+        ...(filters.location && filters.location.trim() !== "" && { address: filters.location }),
     };
 };
 
@@ -686,12 +688,13 @@ export const getSearchShifts = async (req: Request, res: Response) => {
 
         const defaultFilters = {
             from: new Date().toDateString(),
-            to: new Date(Date.now() + 31536000000).toDateString(), //Default to a year from now
+            to: new Date(Date.now() + 31536000000).toDateString(), // Default to a year from now
             role: "All",
             category: "All",
             hours: "All",
             hideUnavailable: true,
             volTypes: [],
+            location: "",
         } as IShiftFiltersRequest;
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -703,15 +706,17 @@ export const getSearchShifts = async (req: Request, res: Response) => {
             return;
         }
 
+        const queryConfig = getFindConfigFromFilters(filters);
+
+        // Include 'address' in the query if 'location' is specified
+        if (filters.location && filters.location.trim() !== "") {
+            queryConfig.address = filters.location; // Update this line
+        }
+
         // Only show events that are UPCOMING and sort by upcoming start at dates
-        let availableShifts = await Shift.find({
-            ...getFindConfigFromFilters(filters),
-        }).sort({
-            startAt: 1,
-        });
+        let availableShifts = await Shift.find(queryConfig).sort({ startAt: 1 });
 
         if (filters.hideUnavailable) {
-            // filter to ensure that only return shifts where approved user vol types have available slots
             availableShifts = availableShifts.filter((shift) => {
                 let hasSlotsAvailable = false;
                 for (const volAllocation of shift.volunteerTypeAllocations) {
@@ -729,7 +734,6 @@ export const getSearchShifts = async (req: Request, res: Response) => {
             data: availableShifts,
             success: true,
         });
-        return;
     } catch (error) {
         console.log("get search shifts error", error);
         res.status(500).json({
@@ -737,7 +741,6 @@ export const getSearchShifts = async (req: Request, res: Response) => {
             error,
             success: false,
         });
-        return;
     }
 };
 
@@ -1221,3 +1224,22 @@ export const exportVolunteerReportAsExcel = async (req: Request, res: Response) 
         });
     }
 };
+// export const getAllUniqueShiftAddresses = async (req: Request, res: Response) => {
+//     try {
+//         // Fetch all unique addresses from the Shift collection
+//         const uniqueAddresses = await Shift.distinct("address");
+
+//         res.status(200).json({
+//             message: "Unique addresses retrieved successfully",
+//             data: uniqueAddresses,
+//             success: true,
+//         });
+//     } catch (error) {
+//         console.error("Error fetching unique addresses", error);
+//         res.status(500).json({
+//             message: "Error fetching unique addresses",
+//             error,
+//             success: false,
+//         });
+//     }
+// };
