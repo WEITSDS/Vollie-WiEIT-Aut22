@@ -1,10 +1,9 @@
 import { FilterResultsModalProps, VolType } from "./types";
 import DateTimePicker from "react-datetime-picker";
-import Form from "react-bootstrap/Form";
-import Modal from "react-bootstrap/Modal";
 import Select, { MultiValue } from "react-select";
 import "./styles.css";
 import { useState } from "react";
+import { Form, Modal } from "react-bootstrap";
 
 export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element => {
     const { visible, onClose, allVolTypes, updateFilters, filters } = props;
@@ -98,7 +97,7 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                     aria-label="Shift Length"
                                 >
                                     <option value="All">All</option>
-                                    <option value="Short">Short (1-2 Hours)</option>
+                                    <option value="Short">Short (0-2 Hours)</option>
                                     <option value="Medium">Medium (3-4 Hours)</option>
                                     <option value="Long">Long (5+ Hours)</option>
                                 </Form.Select>
@@ -138,6 +137,7 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                 </Form.Select>
                             </>
                         )}
+
                         {currentMenu === "Location" && (
                             <>
                                 <label>Location</label>
@@ -151,6 +151,24 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                 />
                             </>
                         )}
+                        <div className="filter-buttons">
+                            <button
+                                className="btn btn-secondary"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    updateFilters({
+                                        to: new Date(),
+                                        from: new Date(),
+                                        volTypes: [],
+                                        category: "All",
+                                        hours: "All",
+                                        hideUnavailable: false,
+                                    });
+                                }}
+                            >
+                                Reset Filter
+                            </button>
+                        </div>
                     </form>
                 </div>
             </Modal.Body>

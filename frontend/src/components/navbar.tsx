@@ -22,6 +22,7 @@ export class NavigationBar extends React.Component<Record<string, never>, NavBar
             .then(({ success, status }) => {
                 if (success && status == 200) {
                     window.location.href = "/login";
+                    sessionStorage.clear();
                 } else {
                     console.error(`Failed to logout`);
                 }
@@ -48,9 +49,12 @@ export class NavigationBar extends React.Component<Record<string, never>, NavBar
                                     <i className="bi bi-activity" /> Admin Dashboard
                                 </Nav.Link>
                             )}
-                            <Nav.Link href="/myshifts" className="text-body">
-                                <i className="bi bi-alarm" /> My Shifts
-                            </Nav.Link>
+                            {!currentUser?.isAdmin && (
+                                <Nav.Link href="/myshifts" className="text-body">
+                                    <i className="bi bi-alarm" /> My Shifts
+                                </Nav.Link>
+                            )}
+
                             {currentUser?.isAdmin && (
                                 <Nav.Link href="/notificationsadmin" className="text-body">
                                     <i className="bi bi-bell" /> Admin Notifications

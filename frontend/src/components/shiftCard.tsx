@@ -3,6 +3,7 @@ import { Button, Card, Form, Stack, Modal } from "react-bootstrap";
 import locationIcon from "../assets/location.svg";
 import calendarIcon from "../assets/calendar.svg";
 import editIcon from "../assets/edit.svg";
+import duplicateIcon from "../assets/clone.svg";
 import { IShift } from "../api/shiftApi";
 import { Link } from "react-router-dom";
 import AttendanceListModal from "./attendanceList";
@@ -46,11 +47,24 @@ type ShiftCardProps = {
 export default function ShiftCard({ shiftData, isAdmin, handleSelected, handleDuplicate }: ShiftCardProps) {
     const { name, startAt, address, _id } = shiftData;
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showDupeModal, setShowDupeModal] = useState(false);
+    const [shiftdata, setshiftData] = useState("");
 
-    const dateString = new Date(startAt).toLocaleString();
+    const dateString = new Date(startAt).toLocaleString([], {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
 
     const handleCloseModal = () => {
         setShowEditModal(false);
+    };
+
+    const closeDupeShift = () => {
+        setshiftData("");
+        setShowDupeModal(false);
     };
 
     return (
@@ -78,6 +92,18 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected, handleDu
                                         style={{ borderRadius: "50%", margin: "10px" }}
                                     >
                                         <img src={editIcon} alt="duplicate shift icon" title="Duplicate Shift" />
+                                    </Button>
+                                    <Button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setshiftData(shiftData._id);
+                                            setShowDupeModal(true);
+                                        }}
+                                        size="sm"
+                                        variant="light"
+                                        style={{ borderRadius: "50%", marginLeft: "10px" }}
+                                    >
+                                        <img src={duplicateIcon} alt="duplicate shift icon" title="Duplicate Shift" />
                                     </Button>
                                     <Button
                                         onClick={(e) => {
@@ -124,6 +150,9 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected, handleDu
             </Card>
             <Modal show={showEditModal}>
                 <AddShiftForm previousShiftFields={shiftData} handleClose={handleCloseModal} shiftdata={""} />
+            </Modal>
+            <Modal show={showDupeModal}>
+                <AddShiftForm handleClose={closeDupeShift} shiftdata={shiftdata} />
             </Modal>
         </>
     );

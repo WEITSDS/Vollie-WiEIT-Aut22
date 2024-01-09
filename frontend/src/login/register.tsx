@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import ModalBody from "react-bootstrap/ModalBody";
 import ModalTitle from "react-bootstrap/ModalTitle";
 import { registerUser } from "../api/userApi";
 import { SITE_NAME } from "../constants";
-import { emailIsValid, passwordIsValid, setPageTitle, stringValueIsValid } from "../utility";
+import { emailIsValid, setPageTitle, stringValueIsValid } from "../utility";
 import { WEITBackground } from "../components/background";
 import Select from "react-select";
 import { useAllVolTypes } from "../hooks/useAllVolTypes";
@@ -27,10 +27,21 @@ const RegisterPage = () => {
     const [password, setpassword] = useState<string>("");
     const [confirmPassword, setconfirmPassword] = useState<string>("");
     const [volunteerTypes, setvolunteerTypes] = useState<IVolunteerTypeUser[]>([]);
+    const [elWidth, setElWidth] = useState(0);
+    const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setPageTitle("Register");
+        setElWidth(ref?.current?.offsetWidth || 315);
     }, []);
+
+    function containsUpperCase(val: string): boolean {
+        return /[A-Z]/.test(val);
+    }
+
+    function passwordIsValid(val: string): boolean {
+        return stringValueIsValid(val) && val.length >= 8 && val.length <= 64 && containsUpperCase(val) === true;
+    }
 
     const onChangeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
         setfirstName(e.target.value);
@@ -75,6 +86,9 @@ const RegisterPage = () => {
         }
         if (!email || !/(uts\.edu\.au)/gm.test(email)) {
             errorMessages.push("Email must be a valid UTS email ending in 'uts.edu.au'");
+        }
+        if (!passwordIsValid(password)) {
+            errorMessages.push("Passwords must have at least one uppercase letter and more than 8 characters.");
         }
         if (password !== confirmPassword) {
             errorMessages.push("Passwords must match");
@@ -166,7 +180,7 @@ const RegisterPage = () => {
                                         isInvalid={passwordInvalid}
                                     />
                                 </Form.Group>
-                                <Form.Group controlId="formConfirmPassword" className="mb-3">
+                                <Form.Group controlId="formConfirmPassword" className="mb-3" ref={ref}>
                                     <Form.Control
                                         type="password"
                                         name="confirmPassword"
@@ -184,6 +198,12 @@ const RegisterPage = () => {
                                         isSearchable={true}
                                         isMulti
                                         onChange={onChangeVolunteerType}
+                                        styles={{
+                                            control: (base) => ({
+                                                ...base,
+                                                width: `${elWidth}px`,
+                                            }),
+                                        }}
                                     />
                                 </Form.Group>
                                 <Button variant="primary" type="submit" className="w-100">

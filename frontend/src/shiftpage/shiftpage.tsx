@@ -36,26 +36,49 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const { isLoading: loadingAllVolTypes, data: allVolTypes } = useAllVolTypes();
     const { data: userVolTypesData, isLoading: loadingUserVolTypes } = useVoltypesForUser(userData?.data?._id);
 
-    const getFilterInLocalStorage = (): Filters => {
-        const localFiltersString: string | null = localStorage.getItem("shiftResultFilters");
-        console.log(localFiltersString); // Console log for debugging
+// <<<<<<< dev
+//     const getFilterInLocalStorage = (): Filters => {
+//         const localFiltersString: string | null = localStorage.getItem("shiftResultFilters");
+//         console.log(localFiltersString); // Console log for debugging
 
-        if (!localFiltersString) {
+//         if (!localFiltersString) {
+//             console.log("Default");
+//             return getDefaultFilters(userVolTypesData?.data || []);
+//         }
+
+//         const localFilters = JSON.parse(localFiltersString) as Filters;
+
+//         const locationFilter = localFilters.location || "";
+
+//         const filtersWithLocation = {
+//             ...localFilters,
+//             location: locationFilter,
+//         };
+
+//         console.log(filtersWithLocation); // Console log for debugging
+//         return filtersWithLocation;
+// =======
+    const getFilterInSessionStorage = (): Filters => {
+        const sessionFiltersString: string | null = sessionStorage.getItem("shiftResultFilters");
+        // CONSOLE
+        console.log(sessionFiltersString);
+        if (!sessionFiltersString) {
             console.log("Default");
             return getDefaultFilters(userVolTypesData?.data || []);
         }
-
-        const localFilters = JSON.parse(localFiltersString) as Filters;
-
-        const locationFilter = localFilters.location || "";
-
-        const filtersWithLocation = {
-            ...localFilters,
-            location: locationFilter,
+        const sessionFilters = JSON.parse(sessionFiltersString) as Filters;
+        const something = {
+            from: new Date(sessionFilters.from),
+            to: new Date(sessionFilters.to),
+            volTypes: sessionFilters.volTypes,
+            category: sessionFilters.category,
+            hours: sessionFilters.hours,
+            hideUnavailable: sessionFilters.hideUnavailable,
         };
-
-        console.log(filtersWithLocation); // Console log for debugging
-        return filtersWithLocation;
+        // CONSOLE sessionFilters
+        console.log(sessionFilters);
+        return something;
+// >>>>>>> master
     };
 
     const [resultFilters, setResultFilters] = useState<Filters | undefined>(
@@ -81,9 +104,9 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
 
     // setResultFilters(something);
 
-    //Saves most recent filter into the local storage
-    const updateFiltersInLocalStorage = (filters: Filters) => {
-        localStorage.setItem("shiftResultFilters", JSON.stringify(filters));
+    //Saves most recent filter into the session storage
+    const updateFiltersInSessionStorage = (filters: Filters) => {
+        sessionStorage.setItem("shiftResultFilters", JSON.stringify(filters));
         console.log("Updated");
         console.log(filters);
         console.log(JSON.stringify(filters));
@@ -104,18 +127,21 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const [selectedShifts, setselectedShifts] = useState<string[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showDeleteButton, setShowDeleteButton] = useState(false);
-    const [show2, setShow2] = useState<boolean>(false);
-    const [shiftdata, setshiftData] = useState("");
+// <<<<<<< dev
+//     const [show2, setShow2] = useState<boolean>(false);
+//     const [shiftdata, setshiftData] = useState("");
 
-    const localizer = momentLocalizer(moment);
+//     const localizer = momentLocalizer(moment);
 
-    const [currentView, setCurrentView] = useState("card");
+//     const [currentView, setCurrentView] = useState("card");
+// =======
+// >>>>>>> master
 
     useEffect(() => {
         console.log("useEffect");
         if (userVolTypesData) {
             // setResultFilters(getDefaultFilters(userVolTypesData?.data || []));
-            setResultFilters(getFilterInLocalStorage());
+            setResultFilters(getFilterInSessionStorage());
         }
     }, [userVolTypesData]);
 
@@ -181,17 +207,20 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         return false;
     };
 
-    // Opens addShiftForm that has copied fields from selected shift
-    const openDupeShift = (shiftId: string) => {
-        setshiftData(shiftId);
-        setShow2(true);
-    };
+// <<<<<<< dev
+//     // Opens addShiftForm that has copied fields from selected shift
+//     const openDupeShift = (shiftId: string) => {
+//         setshiftData(shiftId);
+//         setShow2(true);
+//     };
 
-    const closeDupeShift = () => {
-        setshiftData("");
-        setShow2(false);
-    };
+//     const closeDupeShift = () => {
+//         setshiftData("");
+//         setShow2(false);
+//     };
 
+// =======
+// >>>>>>> master
     // Upon clicking Filter button, resets the selectedshifts list
     // Shows filter panel
     const handleFilterPanel = () => {
@@ -212,6 +241,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
             <NavigationBar />
             <WEITBackground>
                 <ModalBody>
+<!-- <<<<<<< dev
                     <div className="main-container">
                         {/* Tab Container */}
                         <div className="tab-container">
@@ -232,6 +262,49 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                 onClick={() => setCurrentView("map")}
                             >
                                 Map View
+======= -->
+                    <div className="page-container">
+                        <div className="header-container">
+                            <h1>{shiftType == "myShifts" ? "My" : "Search"} Shifts</h1>
+                            <div className="btn-container">
+                                {userData?.data?.isAdmin && (
+                                    <>
+                                        <button id="whiteButton" className={"admin-btn"} onClick={openAddShift}>
+                                            <img className="btn-icon" src={addShiftIcon} />
+                                            {"Add Shift"}
+                                        </button>
+                                        <button
+                                            id="whiteButton"
+                                            className={"admin-btn"}
+                                            onClick={() => {
+                                                void openDeleteModal();
+                                                // void deleteSelected();
+                                            }}
+                                            //Disable button if showDeleteButton is false
+                                            disabled={!showDeleteButton}
+                                        >
+                                            {isDeleteLoading ? (
+                                                <>
+                                                    <LoadingSpinner />
+                                                    {"Loading"}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <img className="btn-icon" src={deleteIcon} />
+                                                    {"Delete Selected"}
+                                                </>
+                                            )}
+                                        </button>
+                                    </>
+                                )}
+
+                                {shiftType === "searchShifts" && (
+                                    <button id="whiteButton" className={"admin-btn"} onClick={handleFilterPanel}>
+                                        <img className="btn-icon" src={filterIcon} />
+                                        {"Filters"}
+                                    </button>
+                                )}
+<!-- >>>>>>> master -->
                             </div>
                         </div>
 
@@ -332,16 +405,13 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                     <Modal show={show}>
                         <AddShiftForm handleClose={closeAddShift} shiftdata={""} />
                     </Modal>
-                    <Modal show={show2}>
-                        <AddShiftForm handleClose={closeDupeShift} shiftdata={shiftdata} />
-                    </Modal>
                     {!loadingAllVolTypes && resultFilters && (
                         <FilterResultsModal
                             visible={filterPanelVisible}
                             filters={resultFilters}
                             updateFilters={(filters) => {
                                 setResultFilters(filters);
-                                updateFiltersInLocalStorage(filters);
+                                updateFiltersInSessionStorage(filters);
                             }}
                             onClose={() => setFilterPanelVisible(false)}
                             allVolTypes={allVolTypes?.data || []}
