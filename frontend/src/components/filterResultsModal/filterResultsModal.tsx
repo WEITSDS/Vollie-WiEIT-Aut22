@@ -163,6 +163,7 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                         category: "All",
                                         hours: "All",
                                         hideUnavailable: false,
+                                        location: "",
                                     });
                                 }}
                             >
