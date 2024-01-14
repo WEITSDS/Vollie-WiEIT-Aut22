@@ -41,10 +41,9 @@ type ShiftCardProps = {
     shiftData: IShift;
     isAdmin: boolean | undefined;
     handleSelected: (id: string, checkStatus: boolean) => void;
-    handleDuplicate: (shiftId: string) => void;
 };
 
-export default function ShiftCard({ shiftData, isAdmin, handleSelected, handleDuplicate }: ShiftCardProps) {
+export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftCardProps) {
     const { name, startAt, address, _id } = shiftData;
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDupeModal, setShowDupeModal] = useState(false);
@@ -85,14 +84,6 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected, handleDu
                             {isAdmin && <AttendanceListModal shift={shiftData || {}} />}
                             {isAdmin && (
                                 <>
-                                    <Button
-                                        onClick={() => handleDuplicate(_id)}
-                                        size="sm"
-                                        variant="light"
-                                        style={{ borderRadius: "50%", margin: "10px" }}
-                                    >
-                                        <img src={editIcon} alt="duplicate shift icon" title="Duplicate Shift" />
-                                    </Button>
                                     <Button
                                         onClick={(e) => {
                                             e.preventDefault();
