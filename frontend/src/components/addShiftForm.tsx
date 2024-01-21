@@ -17,10 +17,7 @@ import DateTimePicker from "react-datetime-picker";
 
 import cloneDeep from "lodash/cloneDeep";
 import { useShiftById } from "../hooks/useShiftById";
-import { IAddress, addNewAddress, deleteAddress, getAllAddresses } from "../api/addressAPI";
-import makeAnimated from "react-select/animated";
-import CreatableSelect from "react-select/creatable";
-import { ActionMeta, FormatOptionLabelMeta } from "react-select";
+import { IAddress, addNewVenue, getAllVenues } from "../api/addressAPI";
 
 type HandleClose = () => void;
 type formProps = {
@@ -69,12 +66,14 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
     const volTypes = allVolTypesData?.data;
     const qualTypes = allQualTypesData?.data;
     const [addresses, setAddresses] = useState<IAddress[]>([]);
+    const [isReleased, setIsReleased] = useState(true); // Shift is released by default
+
     // In your AddShiftForm component
 
     useEffect(() => {
         const fetchAddresses = async () => {
             try {
-                const addresses = await getAllAddresses();
+                const addresses = await getAllVenues();
                 setAddresses(addresses);
             } catch (error) {
                 console.error("Error fetching addresses:", error);
@@ -85,9 +84,9 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
     }, []);
 
     // Handle adding a new address
-    const handleAddAddress = async (address: string) => {
+    const handleAddAddress = async (venue: string, address: string) => {
         try {
-            const newAddress = await addNewAddress(address);
+            const newAddress = await addNewVenue(venue, address);
             setAddresses([...addresses, newAddress]);
         } catch (error) {
             console.error("Error adding address:", error);
@@ -95,14 +94,6 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
     };
 
     // Handle deleting an address
-    const handleDeleteAddress = async (addressId: string) => {
-        try {
-            await deleteAddress(addressId);
-            setAddresses(addresses.filter((addr) => addr._id !== addressId));
-        } catch (error) {
-            console.error("Error deleting address:", error);
-        }
-    };
 
     const [formFields, setFormFields] = useState<IShift>(
         previousShiftFields
@@ -185,7 +176,7 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
         try {
             setIsLoading(true);
             if (!addresses.find((addr) => addr.address === formFields.address)) {
-                await handleAddAddress(formFields.address);
+                await handleAddAddress(formFields.venue, formFields.address);
             }
             let response;
             if (previousShiftFields) {
@@ -293,24 +284,23 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
     useEffect(() => {
         checkifDupe();
     }, [checkifDupe, data]);
-    const formatOptionLabel = (data: unknown, _formatOptionLabelMeta: FormatOptionLabelMeta<unknown>) => {
-        const { label, value } = data as { label: string; value: string }; // Type assertion
-        return (
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                {label}
-                <button onClick={() => handleDeleteAddress(value)} style={{ border: "none", background: "none" }}>
-                    Delete {/* Replace with an icon or style as needed */}
-                </button>
-            </div>
-        );
-    };
 
-    const handleAddressChange = (newValue: any, actionMeta: ActionMeta<any>) => {
-        if (actionMeta.action === "create-option" && newValue?.label) {
-            handleAddAddress(newValue.label);
-        }
-        if (newValue?.label) {
-            setFormFields((prevFormFields) => ({ ...prevFormFields, address: newValue.label }));
+    const handleVenueChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedVenue = event.target.value;
+        const selectedAddress = addresses.find((addr) => addr.venue === selectedVenue);
+
+        if (selectedAddress) {
+            setFormFields((prevFormFields) => ({
+                ...prevFormFields,
+                venue: selectedAddress.venue,
+                address: selectedAddress.address,
+            }));
+        } else {
+            setFormFields((prevFormFields) => ({
+                ...prevFormFields,
+                venue: "",
+                address: "",
+            }));
         }
     };
 
@@ -322,6 +312,9 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
                 <div className="form-header">
                     <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
                 </div>
+                <label>Unreleased Shift</label>
+                <input type="checkbox" checked={isReleased} onChange={() => setIsReleased(!isReleased)} />
+
                 <label className="title">Title</label>
                 <input type="text" defaultValue={formFields.name} name="name" onChange={handleChange} />
                 <label>Start Date</label>
@@ -373,17 +366,22 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
                 /> */}
                 <hr className="type-line" />
                 <label>Venue</label>
-                <CreatableSelect
-                    components={makeAnimated()}
-                    options={addresses.map((addr) => ({ value: addr._id, label: addr.address }))}
-                    isClearable
-                    formatOptionLabel={formatOptionLabel}
-                    onChange={handleAddressChange}
-                    placeholder="Select or type a venue"
-                />
+                <select
+                    className="form-control"
+                    value={formFields.venue}
+                    onChange={handleVenueChange}
+                    placeholder="Select a venue"
+                >
+                    <option value="">Select a venue</option>
+                    {addresses.map((addr) => (
+                        <option key={addr._id} value={addr.venue}>
+                            {addr.venue}
+                        </option>
+                    ))}
+                </select>
 
                 <label>Address</label>
-                <input type="text" defaultValue={formFields.address} name="address" onChange={handleChange} />
+                <input type="text" value={formFields.address} name="address" disabled />
 
                 <label>Description</label>
                 <textarea name="description" defaultValue={formFields.description} onChange={handleChange} />

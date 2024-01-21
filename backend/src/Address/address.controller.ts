@@ -1,61 +1,60 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import Address from "./address.model"; // Import the address model
 import { Request, Response } from "express";
 
-// Create a new address
-export const addAddress = async (_req: Request, res: Response) => {
+export const addVenue = async (req: Request, res: Response) => {
     try {
-        const { address } = _req.body;
-        const newAddress = new Address({ address });
-        await newAddress.save();
-        res.status(201).json(newAddress);
+        const { venue, address } = req.body; // Extracting address from the request body
+        const newVenue = new Address({ venue, address }); // Including address in the new document
+        await newVenue.save();
+        res.status(201).json(newVenue);
     } catch (error) {
         const message = (error as Error).message; // Type assertion
         res.status(400).json({ message });
     }
 };
 
-// Get all addresses
-export const getAllAddresses = async (_req: Request, res: Response) => {
+export const getAllVenues = async (_req: Request, res: Response) => {
     try {
-        const addresses = await Address.find({});
-        res.json(addresses);
+        const venues = await Address.find({});
+        res.json(venues);
     } catch (error) {
         const message = (error as Error).message; // Type assertion
         res.status(500).json({ message });
-        return; // Ensure there's a return statement here
     }
 };
 
-// Delete an address
-// Delete an address
-export const deleteAddress = async (req: Request, res: Response) => {
+export const deleteVenue = async (req: Request, res: Response): Promise<Response> => {
     try {
         const { id } = req.params;
-        const address = await Address.findByIdAndDelete(id);
-        if (!address) {
-            return res.status(404).json({ message: "Address not found" });
+        const venue = await Address.findByIdAndDelete(id);
+        if (!venue) {
+            return res.status(404).json({ message: "Venue not found" });
         }
-        return res.json({ message: "Address deleted successfully", address }); // Ensure return here
+        return res.json({ message: "Venue deleted successfully", venue }); // Ensure return here
     } catch (error) {
         const message = (error as Error).message; // Type assertion
         return res.status(500).json({ message }); // Ensure return here
     }
 };
-export const updateAddress = async (req: Request, res: Response): Promise<void> => {
+
+export const updateVenue = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { address } = req.body;
+        const { venue, address } = req.body; // Extracting address from the request body
 
-        const updatedAddress = await Address.findByIdAndUpdate(id, { address }, { new: true });
+        const updatedVenue = await Address.findByIdAndUpdate(
+            id,
+            { venue, address }, // Updating both venue and address
+            { new: true }
+        );
 
-        if (!updatedAddress) {
+        if (!updatedVenue) {
+            res.status(404).json({ message: "Venue not found" });
             return;
         }
 
-        res.json({ message: "Address updated successfully", updatedAddress });
+        res.json({ message: "Venue updated successfully", updatedVenue });
     } catch (error) {
         const message = (error as Error).message;
         res.status(500).json({ message });

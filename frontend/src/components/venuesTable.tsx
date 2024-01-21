@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { addNewAddress, deleteAddress, getAllAddresses, IAddress, updateAddress } from "../api/addressAPI";
+import { addNewVenue, deleteVenue, getAllVenues, IAddress, updateVenue } from "../api/addressAPI";
 import addShiftIcon from "../assets/addShiftIcon.svg";
 import deleteIcon from "../assets/deleteIcon.svg";
 import editIcon from "../assets/edit.svg";
@@ -11,6 +11,7 @@ import "./qualificationsTable.css"; // Using your provided CSS file
 import { useEffect } from "react"; // Import useEffect
 
 const initiFormFields = {
+    venue: "",
     address: "",
 };
 
@@ -25,7 +26,7 @@ const venuesTable = () => {
 
     const fetchAddresses = async () => {
         try {
-            const addresses = await getAllAddresses();
+            const addresses = await getAllVenues();
             setData(addresses);
         } catch (error) {
             console.error(error);
@@ -41,8 +42,8 @@ const venuesTable = () => {
     }, []);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        const value = event.target.value;
-        setFormFields({ address: value });
+        const { name, value } = event.target;
+        setFormFields((prevFields) => ({ ...prevFields, [name]: value }));
     };
 
     const toggleModal = (address?: IAddress) => {
@@ -52,7 +53,7 @@ const venuesTable = () => {
             setEditingID(null);
         } else {
             setModalTitle(`Edit Venue: ${address.address}`);
-            setFormFields({ address: address.address });
+            setFormFields({ venue: address.venue, address: address.address });
             setEditingID(address._id || null); // Set to null if _id is undefined
         }
         setShowModal(!showModal);
@@ -62,9 +63,9 @@ const venuesTable = () => {
         setIsProcessing(true);
         try {
             if (editingID) {
-                await updateAddress(editingID, formFields.address);
+                await updateVenue(editingID, formFields.venue, formFields.address);
             } else {
-                await addNewAddress(formFields.address);
+                await addNewVenue(formFields.venue, formFields.address);
             }
             await fetchAddresses();
             setIsProcessing(false);
@@ -79,7 +80,7 @@ const venuesTable = () => {
         if (!editingID) return;
         setIsProcessing(true);
         try {
-            await deleteAddress(editingID); // This will only be called if editingID is not null
+            await deleteVenue(editingID); // This will only be called if editingID is not null
             setEditingID(null);
             setShowDeleteModal(false);
             await fetchAddresses();
@@ -103,12 +104,14 @@ const venuesTable = () => {
                     <thead className="table-danger">
                         <tr>
                             <th>Venue</th>
+                            <th>Address</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {data.map((address) => (
                             <tr key={address._id}>
+                                <td>{address.venue}</td>
                                 <td>{address.address}</td>
                                 <td>
                                     <div className="action-button-container">
@@ -139,10 +142,25 @@ const venuesTable = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <div className="add-shift-form">
+                        <label>Venue</label>
+                        <input
+                            type="text"
+                            value={formFields.venue}
+                            name="venue"
+                            onChange={handleChange}
+                            placeholder="Venue name"
+                        />
                         <label>Address</label>
-                        <input type="text" value={formFields.address} name="address" onChange={handleChange} />
+                        <input
+                            type="text"
+                            value={formFields.address}
+                            name="address"
+                            onChange={handleChange}
+                            placeholder="Venue address"
+                        />
                     </div>
                 </Modal.Body>
+
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>
                         Cancel

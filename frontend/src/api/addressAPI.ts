@@ -8,6 +8,7 @@ const ROOT_URL = window.location.origin;
 // Interface for Address
 export interface IAddress {
     _id?: string;
+    venue: string;
     address: string;
 }
 
@@ -20,15 +21,15 @@ const handleResponse = async (response: Response) => {
     return response.json();
 };
 
-// Add a new address
-export const addNewAddress = async (address: string): Promise<IAddress> => {
+// Add a new venue along with address
+export const addNewVenue = async (venue: string, address: string): Promise<IAddress> => {
     try {
-        const response = await fetch(`${ROOT_URL}/api/addresses/add-addresses`, {
+        const response = await fetch(`${ROOT_URL}/api/addresses/add-venues`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ address }),
+            body: JSON.stringify({ venue, address }),
         });
         return handleResponse(response);
     } catch (error) {
@@ -36,20 +37,20 @@ export const addNewAddress = async (address: string): Promise<IAddress> => {
     }
 };
 
-// Get all addresses
-export const getAllAddresses = async (): Promise<IAddress[]> => {
+// Get all venues with addresses
+export const getAllVenues = async (): Promise<IAddress[]> => {
     try {
-        const response = await fetch(`${ROOT_URL}/api/addresses/get-addresses`);
+        const response = await fetch(`${ROOT_URL}/api/addresses/get-venues`);
         return handleResponse(response);
     } catch (error) {
         throw error;
     }
 };
 
-// Delete an address
-export const deleteAddress = async (id: string): Promise<void> => {
+// Delete a venue
+export const deleteVenue = async (id: string): Promise<void> => {
     try {
-        const response = await fetch(`${ROOT_URL}/api/addresses/delete-addresses/${id}`, {
+        const response = await fetch(`${ROOT_URL}/api/addresses/delete-venues/${id}`, {
             method: "DELETE",
         });
         await handleResponse(response);
@@ -57,23 +58,19 @@ export const deleteAddress = async (id: string): Promise<void> => {
         throw error;
     }
 };
-// Update an existing address
-export const updateAddress = async (id: string, address: string): Promise<IAddress> => {
+
+// Update an existing venue and address
+export const updateVenue = async (id: string, venue: string, address: string): Promise<IAddress> => {
     try {
-        const response = await fetch(`${ROOT_URL}/api/addresses/update-addresses/${id}`, {
+        const response = await fetch(`${ROOT_URL}/api/addresses/update-venues/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ address }),
+            body: JSON.stringify({ venue, address }),
         });
         return handleResponse(response);
     } catch (error) {
         throw error;
     }
-};
-export default {
-    addNewAddress,
-    getAllAddresses,
-    deleteAddress,
 };
