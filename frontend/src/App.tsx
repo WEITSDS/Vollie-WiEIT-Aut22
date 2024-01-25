@@ -11,6 +11,7 @@ import { ResetPaswordForm } from "./forms/resetPassword/resetPasswordForm";
 import { ProfilePage } from "./profile/profile";
 import { VolunteersList } from "./admin/tags/volunteersList";
 import { AdminDashboard } from "./admin/adminDashboard";
+import { Settings } from "./admin/settings";
 import { Modal } from "./profile/modal";
 import ShiftInformation from "./shiftInformation/shiftInformation";
 import AdminViewAllUsers from "./admin/adminViewAllUsers";
@@ -48,6 +49,10 @@ function App(): JSX.Element {
                     <Route
                         path="/dashboard"
                         element={<ProtectedRoute needsAdmin={true} outlet={<AdminDashboard />} />}
+                    ></Route>
+                    <Route
+                        path="/settings"
+                        element={<ProtectedRoute needsAdmin={true} outlet={<Settings />} />}
                     ></Route>
                     <Route path="/reports" element={<ProtectedRoute outlet={<AdminReport />} />}></Route>
                     <Route
