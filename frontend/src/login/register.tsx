@@ -131,7 +131,23 @@ const RegisterPage = () => {
             {!loadingVolTypes && volTypes && (
                 <WEITBackground>
                     <ModalBody className="form-body">
-                        <div className="form-container">
+                        <div className="form-container weit-form">
+                            {errorMessages != null && errorMessages.length > 0 && (
+                                <>
+                                    {errorMessages.map((err, index) => (
+                                        <div className="mb-3 alert alert-danger" key={`err-message-${index}`}>
+                                            {err}
+                                        </div>
+                                    ))}
+                                </>
+                            )}
+                            {externalError && (
+                                <>
+                                    <div className="mb-3 alert alert-danger" key={`err-message-external`}>
+                                        {externalError}
+                                    </div>
+                                </>
+                            )}
                             <Form onSubmit={onSubmit}>
                                 <ModalTitle className="text-center">
                                     <h1 className="display-6">Join {SITE_NAME}!</h1>
@@ -211,24 +227,6 @@ const RegisterPage = () => {
                                 </Button>
                             </Form>
                             <div className="text-center">
-                                {errorMessages != null && errorMessages.length > 0 && (
-                                    <>
-                                        <br></br>
-                                        <ul>
-                                            {errorMessages.map((err, index) => (
-                                                <li key={`err-message-${index}`}>{err}</li>
-                                            ))}
-                                        </ul>
-                                    </>
-                                )}
-                                {externalError && (
-                                    <>
-                                        <br></br>
-                                        <ul>
-                                            <li key={`err-message-external`}>{externalError}</li>
-                                        </ul>
-                                    </>
-                                )}
                                 <hr />
                                 <span>Already on {SITE_NAME}?</span>{" "}
                                 <a href="/login" role="button">
