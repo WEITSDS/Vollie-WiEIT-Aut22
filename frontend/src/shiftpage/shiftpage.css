@@ -24,6 +24,11 @@
     margin-right: 48px;
     vertical-align: middle;
 }
+.unreleased-state {
+    background-color: rgb(245,172,183) !important;
+}
+
+
 
 h1 {
     font-style: normal;

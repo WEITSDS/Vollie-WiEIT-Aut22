@@ -51,6 +51,7 @@ const shiftFormFields = (
         category: fields?.category || "Other",
         requiredQualifications: fields?.requiredQualifications || [],
         volunteerTypeAllocations: fields?.volunteerTypeAllocations || [],
+        isUnreleased: fields?.isUnreleased || false,
     };
 };
 
@@ -66,7 +67,7 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
     const volTypes = allVolTypesData?.data;
     const qualTypes = allQualTypesData?.data;
     const [addresses, setAddresses] = useState<IAddress[]>([]);
-    const [isReleased, setIsReleased] = useState(true); // Shift is released by default
+    const [isUnreleased, setIsUnreleased] = useState(previousShiftFields?.isUnreleased || false);
 
     // In your AddShiftForm component
 
@@ -143,11 +144,29 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
 
     const handleChange = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
         event.preventDefault();
-        const target = event.target as HTMLInputElement | HTMLSelectElement;
-        const value = target.type === "number" ? parseInt(target.value) : target.value;
-        setFormFields((prevFormFields) => {
-            return { ...prevFormFields, [`${target.name}`]: value };
-        });
+        const target = event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+        if (target.type === "checkbox") {
+            // Handle checkbox inputs
+            const checkboxTarget = target as HTMLInputElement;
+            const checked = checkboxTarget.checked;
+
+            if (checkboxTarget.name === "isUnreleased") {
+                setIsUnreleased(checked);
+            } else {
+                setFormFields((prevFormFields) => ({
+                    ...prevFormFields,
+                    [checkboxTarget.name]: checked,
+                }));
+            }
+        } else {
+            // Handle other types of inputs (text, select, number, etc.)
+            const value = target.type === "number" ? parseInt(target.value) : target.value;
+            setFormFields((prevFormFields) => ({
+                ...prevFormFields,
+                [target.name]: value,
+            }));
+        }
     };
 
     const handleDateChange = (newDate: Date, name: string) => {
@@ -174,17 +193,22 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
 
     const handleSubmit = async (): Promise<void> => {
         try {
+            const submitFields = {
+                ...formFields,
+                isUnreleased: isUnreleased, // Ensure this state is included
+            };
+
             setIsLoading(true);
-            if (!addresses.find((addr) => addr.address === formFields.address)) {
-                await handleAddAddress(formFields.venue, formFields.address);
+            if (!addresses.find((addr) => addr.address === submitFields.address)) {
+                await handleAddAddress(submitFields.venue, submitFields.address);
             }
             let response;
             if (previousShiftFields) {
                 // do update
-                response = await updateShift(formFields, previousShiftFields._id);
+                response = await updateShift(submitFields, previousShiftFields._id);
             } else {
                 // do create
-                response = await createShift(formFields);
+                response = await createShift(submitFields);
             }
 
             setIsLoading(false);
@@ -313,8 +337,12 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
                     <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
                 </div>
                 <label>Unreleased Shift</label>
-                <input type="checkbox" checked={isReleased} onChange={() => setIsReleased(!isReleased)} />
-
+                <input
+                    type="checkbox"
+                    name="isUnreleased"
+                    checked={isUnreleased} // Make sure this is controlled by state
+                    onChange={handleChange} // Ensure handleChange updates the state correctly
+                />
                 <label className="title">Title</label>
                 <input type="text" defaultValue={formFields.name} name="name" onChange={handleChange} />
                 <label>Start Date</label>

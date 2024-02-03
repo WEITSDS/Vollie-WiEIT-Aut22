@@ -93,7 +93,7 @@ export const updateShift = async (req: Request, res: Response) => {
     const userObj = await User.findOne({ _id: req.session.user?._id });
 
     if (!userObj || !userObj?.isAdmin) {
-        handleError(logger, res, null, "Unauthorized", 401);
+        handleError(logger, res, null, "check Unauthorized", 401);
         return;
     }
 

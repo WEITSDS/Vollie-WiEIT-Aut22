@@ -110,6 +110,7 @@ export interface IShift {
     category: "School Outreach" | "Event" | "Committee" | "Other";
     requiredQualifications: Array<IShiftRequiredQualification>;
     volunteerTypeAllocations: Array<IShiftVolunteerAllocations>;
+    isUnreleased: boolean;
 }
 
 export interface IReport {
