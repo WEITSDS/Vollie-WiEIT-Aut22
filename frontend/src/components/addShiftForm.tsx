@@ -17,10 +17,7 @@ import DateTimePicker from "react-datetime-picker";
 
 import cloneDeep from "lodash/cloneDeep";
 import { useShiftById } from "../hooks/useShiftById";
-import { IAddress, addNewAddress, deleteAddress, getAllAddresses } from "../api/addressAPI";
-import makeAnimated from "react-select/animated";
-import CreatableSelect from "react-select/creatable";
-import { ActionMeta, FormatOptionLabelMeta } from "react-select";
+import { IAddress, addNewVenue, getAllVenues } from "../api/addressAPI";
 
 type HandleClose = () => void;
 type formProps = {
@@ -54,6 +51,7 @@ const shiftFormFields = (
         category: fields?.category || "Other",
         requiredQualifications: fields?.requiredQualifications || [],
         volunteerTypeAllocations: fields?.volunteerTypeAllocations || [],
+        isUnreleased: fields?.isUnreleased || false,
     };
 };
 
@@ -69,12 +67,14 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
     const volTypes = allVolTypesData?.data;
     const qualTypes = allQualTypesData?.data;
     const [addresses, setAddresses] = useState<IAddress[]>([]);
+    const [isUnreleased, setIsUnreleased] = useState(previousShiftFields?.isUnreleased || false);
+
     // In your AddShiftForm component
 
     useEffect(() => {
         const fetchAddresses = async () => {
             try {
-                const addresses = await getAllAddresses();
+                const addresses = await getAllVenues();
                 setAddresses(addresses);
             } catch (error) {
                 console.error("Error fetching addresses:", error);
@@ -85,9 +85,9 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
     }, []);
 
     // Handle adding a new address
-    const handleAddAddress = async (address: string) => {
+    const handleAddAddress = async (venue: string, address: string) => {
         try {
-            const newAddress = await addNewAddress(address);
+            const newAddress = await addNewVenue(venue, address);
             setAddresses([...addresses, newAddress]);
         } catch (error) {
             console.error("Error adding address:", error);
@@ -95,14 +95,6 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
     };
 
     // Handle deleting an address
-    const handleDeleteAddress = async (addressId: string) => {
-        try {
-            await deleteAddress(addressId);
-            setAddresses(addresses.filter((addr) => addr._id !== addressId));
-        } catch (error) {
-            console.error("Error deleting address:", error);
-        }
-    };
 
     const [formFields, setFormFields] = useState<IShift>(
         previousShiftFields
@@ -152,11 +144,29 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
 
     const handleChange = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
         event.preventDefault();
-        const target = event.target as HTMLInputElement | HTMLSelectElement;
-        const value = target.type === "number" ? parseInt(target.value) : target.value;
-        setFormFields((prevFormFields) => {
-            return { ...prevFormFields, [`${target.name}`]: value };
-        });
+        const target = event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+        if (target.type === "checkbox") {
+            // Handle checkbox inputs
+            const checkboxTarget = target as HTMLInputElement;
+            const checked = checkboxTarget.checked;
+
+            if (checkboxTarget.name === "isUnreleased") {
+                setIsUnreleased(checked);
+            } else {
+                setFormFields((prevFormFields) => ({
+                    ...prevFormFields,
+                    [checkboxTarget.name]: checked,
+                }));
+            }
+        } else {
+            // Handle other types of inputs (text, select, number, etc.)
+            const value = target.type === "number" ? parseInt(target.value) : target.value;
+            setFormFields((prevFormFields) => ({
+                ...prevFormFields,
+                [target.name]: value,
+            }));
+        }
     };
 
     const handleDateChange = (newDate: Date, name: string) => {
@@ -183,17 +193,22 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
 
     const handleSubmit = async (): Promise<void> => {
         try {
+            const submitFields = {
+                ...formFields,
+                isUnreleased: isUnreleased, // Ensure this state is included
+            };
+
             setIsLoading(true);
-            if (!addresses.find((addr) => addr.address === formFields.address)) {
-                await handleAddAddress(formFields.address);
+            if (!addresses.find((addr) => addr.address === submitFields.address)) {
+                await handleAddAddress(submitFields.venue, submitFields.address);
             }
             let response;
             if (previousShiftFields) {
                 // do update
-                response = await updateShift(formFields, previousShiftFields._id);
+                response = await updateShift(submitFields, previousShiftFields._id);
             } else {
                 // do create
-                response = await createShift(formFields);
+                response = await createShift(submitFields);
             }
 
             setIsLoading(false);
@@ -293,24 +308,23 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
     useEffect(() => {
         checkifDupe();
     }, [checkifDupe, data]);
-    const formatOptionLabel = (data: unknown, _formatOptionLabelMeta: FormatOptionLabelMeta<unknown>) => {
-        const { label, value } = data as { label: string; value: string }; // Type assertion
-        return (
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                {label}
-                <button onClick={() => handleDeleteAddress(value)} style={{ border: "none", background: "none" }}>
-                    Delete {/* Replace with an icon or style as needed */}
-                </button>
-            </div>
-        );
-    };
 
-    const handleAddressChange = (newValue: any, actionMeta: ActionMeta<any>) => {
-        if (actionMeta.action === "create-option" && newValue?.label) {
-            handleAddAddress(newValue.label);
-        }
-        if (newValue?.label) {
-            setFormFields((prevFormFields) => ({ ...prevFormFields, address: newValue.label }));
+    const handleVenueChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedVenue = event.target.value;
+        const selectedAddress = addresses.find((addr) => addr.venue === selectedVenue);
+
+        if (selectedAddress) {
+            setFormFields((prevFormFields) => ({
+                ...prevFormFields,
+                venue: selectedAddress.venue,
+                address: selectedAddress.address,
+            }));
+        } else {
+            setFormFields((prevFormFields) => ({
+                ...prevFormFields,
+                venue: "",
+                address: "",
+            }));
         }
     };
 
@@ -322,6 +336,13 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
                 <div className="form-header">
                     <button type="button" className="btn-close" aria-label="Close" onClick={handleClose}></button>
                 </div>
+                <label>Unreleased Shift</label>
+                <input
+                    type="checkbox"
+                    name="isUnreleased"
+                    checked={isUnreleased} // Make sure this is controlled by state
+                    onChange={handleChange} // Ensure handleChange updates the state correctly
+                />
                 <label className="title">Title</label>
                 <input type="text" defaultValue={formFields.name} name="name" onChange={handleChange} />
                 <label>Start Date</label>
@@ -373,17 +394,22 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
                 /> */}
                 <hr className="type-line" />
                 <label>Venue</label>
-                <CreatableSelect
-                    components={makeAnimated()}
-                    options={addresses.map((addr) => ({ value: addr._id, label: addr.address }))}
-                    isClearable
-                    formatOptionLabel={formatOptionLabel}
-                    onChange={handleAddressChange}
-                    placeholder="Select or type a venue"
-                />
+                <select
+                    className="form-control"
+                    value={formFields.venue}
+                    onChange={handleVenueChange}
+                    placeholder="Select a venue"
+                >
+                    <option value="">Select a venue</option>
+                    {addresses.map((addr) => (
+                        <option key={addr._id} value={addr.venue}>
+                            {addr.venue}
+                        </option>
+                    ))}
+                </select>
 
                 <label>Address</label>
-                <input type="text" defaultValue={formFields.address} name="address" onChange={handleChange} />
+                <input type="text" value={formFields.address} name="address" disabled />
 
                 <label>Description</label>
                 <textarea name="description" defaultValue={formFields.description} onChange={handleChange} />

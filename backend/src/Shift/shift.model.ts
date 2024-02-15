@@ -11,6 +11,8 @@ const ShiftSchema: Schema = new Schema(
         address: { type: String, required: true },
         description: { type: String, default: "" },
         hours: { type: Number, default: 0 },
+        isUnreleased: { type: Boolean, default: false },
+
         // notes: { type: String, default: "" },
         users: [
             {

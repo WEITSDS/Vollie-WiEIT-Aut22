@@ -13,6 +13,7 @@ export interface IShift extends Document {
     category: "School Outreach" | "Event" | "Committee" | "Other";
     requiredQualifications: Array<IShiftRequiredQualification>;
     volunteerTypeAllocations: Array<IShiftVolunteerAllocations>;
+    isUnreleased: boolean;
 }
 
 export interface IShiftRequiredQualification {

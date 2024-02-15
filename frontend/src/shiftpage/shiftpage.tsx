@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 // import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./shiftpage.css";
 import { NavigationBar } from "../components/navbar";
@@ -14,7 +15,7 @@ import filterIcon from "../assets/filterIcon.svg";
 import Modal from "react-bootstrap/Modal";
 import { useState, useEffect } from "react";
 import LoadingSpinner from "../components/loadingSpinner";
-import { deleteShift } from "../api/shiftApi";
+import { deleteShift, updateShift } from "../api/shiftApi";
 import { ResponseWithStatus } from "../api/utility";
 import { FilterResultsModal } from "../components/filterResultsModal/filterResultsModal";
 import { Filters } from "../components/filterResultsModal/types";
@@ -90,6 +91,16 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     // const [shiftdata, setshiftData] = useState("");
     const localizer = momentLocalizer(moment);
     const [currentView, setCurrentView] = useState("card");
+    const [showUnreleased, setShowUnreleased] = useState(false);
+    const [isPublishButtonEnabled, setIsPublishButtonEnabled] = useState(false);
+
+    const toggleUnreleasedShifts = () => {
+        setShowUnreleased(!showUnreleased);
+
+        if (!showUnreleased) {
+            setIsPublishButtonEnabled(false);
+        }
+    };
 
     useEffect(() => {
         console.log("useEffect");
@@ -111,9 +122,12 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const handleSelected = (id: string, checkStatus: boolean) => {
         setselectedShifts((prevSelectedShifts) => {
             if (checkStatus) {
+                setIsPublishButtonEnabled(true); // Enable the "Publish" button when a shift is selected
                 return [...prevSelectedShifts, id];
             } else if (!checkStatus) {
-                return prevSelectedShifts.filter((shiftId) => shiftId !== id);
+                const updatedSelectedShifts = prevSelectedShifts.filter((shiftId) => shiftId !== id);
+                setIsPublishButtonEnabled(updatedSelectedShifts.length > 0); // Enable if there are selected shifts
+                return updatedSelectedShifts;
             } else {
                 return prevSelectedShifts;
             }
@@ -154,8 +168,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     };
     //Enable button if any shift is selected
     const isShiftSelected = () => {
-        if (selectedShifts.length > 0) {
-            console.log(selectedShifts.length);
+        if (selectedShifts.length > 0 && currentView === "unreleased") {
             return true;
         }
         return false;
@@ -174,6 +187,25 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     //redirect to shift page upon clicking shift on calendar
     const handleSelectEvent = (event: ShiftEvent) => {
         window.location.replace(`/shift/${event.id}`);
+    };
+    const handlePublish = async () => {
+        if (!isPublishButtonEnabled) {
+            return; // Do nothing if the "Publish" button is not enabled
+        }
+
+        try {
+            for (const shiftId of selectedShifts) {
+                await updateShift({ isUnreleased: false }, shiftId);
+            }
+
+            setselectedShifts([]);
+            setIsPublishButtonEnabled(false); // Disable the "Publish" button after publishing
+
+            // Reload the page
+            window.location.reload();
+        } catch (error) {
+            console.error("Error publishing shifts", error);
+        }
     };
 
     return (
@@ -233,6 +265,22 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                                     </>
                                                 )}
                                             </button>
+                                            <button
+                                                id="whiteButton"
+                                                className={"admin-btn"}
+                                                onClick={handlePublish}
+                                                disabled={!isPublishButtonEnabled} // Disable the button when isPublishButtonEnabled is false
+                                            >
+                                                {"Publish"}
+                                            </button>
+
+                                            <button
+                                                id="whiteButton"
+                                                className={`admin-btn ${showUnreleased ? "unreleased-state" : ""}`}
+                                                onClick={toggleUnreleasedShifts}
+                                            >
+                                                {showUnreleased ? "Show Released Shifts" : "Show Unreleased Shifts"}
+                                            </button>
                                         </>
                                     )}
 
@@ -244,26 +292,32 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                     )}
                                 </div>
                             </div>
+
                             {currentView === "card" && (
                                 <div className="shiftList-container">
                                     {isLoading && <p>Loading available shifts...</p>}
                                     {isError && (
                                         <p>There was a server error while loading available shifts... {error}</p>
                                     )}
-                                    {data?.data && data?.data?.length > 0
-                                        ? data?.data?.map((shiftData) => {
-                                              return (
-                                                  <ShiftCard
-                                                      key={shiftData._id}
-                                                      shiftData={shiftData}
-                                                      isAdmin={userData?.data?.isAdmin}
-                                                      handleSelected={handleSelected}
-                                                  />
-                                              );
-                                          })
-                                        : !isLoading && <p>No available shifts.</p>}
+                                    {data?.data &&
+                                        data?.data
+                                            .filter((shiftData) =>
+                                                showUnreleased ? shiftData.isUnreleased : !shiftData.isUnreleased
+                                            )
+                                            .map((shiftData) => (
+                                                <ShiftCard
+                                                    key={shiftData._id}
+                                                    shiftData={shiftData}
+                                                    isAdmin={userData?.data?.isAdmin}
+                                                    handleSelected={handleSelected}
+                                                    className={showUnreleased ? "unreleased-state" : ""}
+                                                    isUnreleased={shiftData.isUnreleased}
+                                                />
+                                            ))}
+                                    {!isLoading && data?.data?.length === 0 && <p>No available shifts.</p>}
                                 </div>
                             )}
+
                             {currentView === "calendar" && (
                                 <Calendar
                                     localizer={localizer}

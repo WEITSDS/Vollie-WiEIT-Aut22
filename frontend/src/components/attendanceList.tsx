@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
@@ -12,6 +16,7 @@ import { Link } from "react-router-dom";
 import { setCompleteShift } from "../api/userApi";
 import { assignUserToShift } from "../api/shiftApi";
 import { getAllUsers, User } from "../api/userApi";
+import { IVolunteerType, getAllVolTypes } from "../api/volTypeAPI";
 
 type AttendanceListProps = {
     shift: IShift;
@@ -37,6 +42,22 @@ export default function AttendanceListModal({
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+    const [userVolunteerTypes, setUserVolunteerTypes] = useState<{ [userId: string]: string }>({});
+
+    const [volunteerTypes, setVolunteerTypes] = useState<IVolunteerType[]>([]);
+
+    useEffect(() => {
+        const fetchVolunteerTypes = async () => {
+            const response = await getAllVolTypes();
+            if (response.success && response.data) {
+                setVolunteerTypes(response.data);
+            } else {
+                // Set an empty array if response data is null or undefined
+                setVolunteerTypes([]);
+            }
+        };
+        fetchVolunteerTypes();
+    }, []);
 
     // Fetch all users when the Assign Users modal opens
     useEffect(() => {
@@ -53,19 +74,40 @@ export default function AttendanceListModal({
     const handleUserSelection = (userId: string, isSelected: boolean) => {
         setSelectedUsers(isSelected ? [...selectedUsers, userId] : selectedUsers.filter((id) => id !== userId));
     };
+    const handleVolunteerTypeSelection = (userId: string, volTypeId: string) => {
+        setUserVolunteerTypes({ ...userVolunteerTypes, [userId]: volTypeId });
+    };
 
     // Function to assign selected users to the shift
+    // Function to assign selected users to the shift
     const handleAssignUsers = async () => {
-        for (const userId of selectedUsers) {
-            await assignUserToShift({
-                shiftid: shift._id,
-                userid: userId,
-                selectedVolType: "defaultVolType", // replace with actual volunteer type or a selected one
-            });
+        try {
+            // Create an array of promises for each user assignment
+            if (selectedUsers.some((userId) => !userVolunteerTypes[userId])) {
+                alert("Please select a volunteer type for each user.");
+                return;
+            }
+            const assignmentPromises = selectedUsers.map((userId) =>
+                assignUserToShift({
+                    shiftid: shift._id,
+                    userid: userId,
+                    selectedVolType: userVolunteerTypes[userId],
+                })
+            );
+
+            // Wait for all assignments to complete
+            await Promise.all(assignmentPromises);
+
+            // Clear the selected users and close the modal after successful assignments
+            setSelectedUsers([]);
+            setShowAssignModal(false);
+
+            // Refetch the attendance list to reflect the changes
+            await refetch();
+        } catch (error) {
+            console.error("Error assigning users to shift:", error);
+            // Handle errors (e.g., show a notification to the user)
         }
-        setShowAssignModal(false);
-        setSelectedUsers([]);
-        // Add logic to refresh the attendance list here
     };
 
     // Function to open the Assign Users modal
@@ -276,6 +318,25 @@ export default function AttendanceListModal({
                                 onChange={(e) => handleUserSelection(user._id, e.target.checked)}
                             />
                             {user.firstName} {user.lastName}
+                            {/* Add dropdown or radio buttons for volunteer type selection */}
+                            <select
+                                onChange={(e) => handleVolunteerTypeSelection(user._id, e.target.value)}
+                                defaultValue=""
+                            >
+                                <option value="" disabled>
+                                    Select Volunteer Type
+                                </option>
+                                {shift.volunteerTypeAllocations.map((allocation) => {
+                                    const volType = volunteerTypes.find(
+                                        (type) => type._id === allocation.type.toString()
+                                    );
+                                    return (
+                                        <option key={allocation.type.toString()} value={allocation.type.toString()}>
+                                            {volType ? volType.name : "Unknown Type"}
+                                        </option>
+                                    );
+                                })}
+                            </select>
                         </div>
                     ))}
                 </Modal.Body>

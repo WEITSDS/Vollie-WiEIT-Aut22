@@ -41,9 +41,11 @@ type ShiftCardProps = {
     shiftData: IShift;
     isAdmin: boolean | undefined;
     handleSelected: (id: string, checkStatus: boolean) => void;
+    className?: string;
+    isUnreleased: boolean;
 };
 
-export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftCardProps) {
+export default function ShiftCard({ shiftData, isAdmin, handleSelected, className }: ShiftCardProps) {
     const { name, startAt, address, _id } = shiftData;
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDupeModal, setShowDupeModal] = useState(false);
@@ -69,6 +71,7 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected }: ShiftC
     return (
         <>
             <Card
+                className={className} // className is now correctly included
                 style={{
                     width: "25rem",
                     padding: "0.5rem",

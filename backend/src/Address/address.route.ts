@@ -4,9 +4,10 @@ import * as addressController from "./address.controller";
 
 const router = express.Router();
 
-router.post("/add-addresses", addressController.addAddress);
-router.get("/get-addresses", addressController.getAllAddresses);
-router.delete("/delete-addresses/:id", addressController.deleteAddress);
-router.put("/update-addresses/:id", addressController.updateAddress);
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+router.post("/add-venues", addressController.addVenue);
+router.get("/get-venues", addressController.getAllVenues);
+router.delete("/delete-venues/:id", addressController.deleteVenue);
+router.put("/update-venues/:id", addressController.updateVenue);
 
 export default router;
