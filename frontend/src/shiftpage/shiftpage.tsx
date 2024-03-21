@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-// import "react-big-calendar/lib/css/react-big-calendar.css";
+
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./shiftpage.css";
 import { NavigationBar } from "../components/navbar";
 import { WEITBackground } from "../components/background";
@@ -321,21 +322,25 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                             )}
 
                             {currentView === "calendar" && (
-                                <Calendar
-                                    localizer={localizer}
-                                    events={data?.data?.map((shift) => ({
-                                        start: new Date(shift.startAt),
-                                        end: new Date(shift.endAt),
-                                        title: shift.name,
-                                        id: shift._id,
-                                        allDay: true,
-                                    }))}
-                                    startAccessor="start"
-                                    endAccessor="end"
-                                    titleAccessor="title"
-                                    onSelectEvent={handleSelectEvent}
-                                    style={{ height: 500 }}
-                                />
+                                <div className="calendar-page">
+                                    <Calendar
+                                        localizer={localizer}
+                                        events={data?.data?.map((shift) => ({
+                                            start: new Date(shift.startAt),
+                                            end: new Date(shift.endAt),
+                                            title: shift.name,
+                                            id: shift._id,
+                                            allDay: true,
+                                        }))}
+                                        startAccessor="start"
+                                        endAccessor="end"
+                                        titleAccessor="title"
+                                        onSelectEvent={handleSelectEvent}
+                                        style={{
+                                            height: "75vh",
+                                        }}
+                                    />
+                                </div>
                             )}
                             {currentView === "map" && <MapView />}
                         </div>
