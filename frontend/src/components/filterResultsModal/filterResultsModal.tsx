@@ -67,6 +67,7 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                     className="filter-date-input"
                                     value={filters.to}
                                     onChange={(value: Date) => updateFilters({ ...filters, to: value })}
+                                    minDate={filters.from}
                                 />
                             </>
                         )}
