@@ -168,7 +168,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     };
     //Enable button if any shift is selected
     const isShiftSelected = () => {
-        if (selectedShifts.length > 0 && currentView === "unreleased") {
+        if (selectedShifts.length > 0) {
             return true;
         }
         return false;
