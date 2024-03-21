@@ -39,8 +39,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
 
     const getFilterInSessionStorage = (): Filters => {
         const sessionFiltersString: string | null = sessionStorage.getItem("shiftResultFilters");
-        // CONSOLE
-        console.log(sessionFiltersString);
         if (!sessionFiltersString) {
             console.log("Default");
             return getDefaultFilters(userVolTypesData?.data || []);
@@ -55,8 +53,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
             hideUnavailable: sessionFilters.hideUnavailable,
             location: sessionFilters.location,
         };
-        // CONSOLE sessionFilters
-        console.log(sessionFilters);
         return something;
     };
 
@@ -67,9 +63,6 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     //Saves most recent filter into the session storage
     const updateFiltersInSessionStorage = (filters: Filters) => {
         sessionStorage.setItem("shiftResultFilters", JSON.stringify(filters));
-        console.log("Updated");
-        console.log(filters);
-        console.log(JSON.stringify(filters));
     };
 
     const {
@@ -96,14 +89,14 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
 
     const toggleUnreleasedShifts = () => {
         setShowUnreleased(!showUnreleased);
-
         if (!showUnreleased) {
             setIsPublishButtonEnabled(false);
         }
+        setselectedShifts([]);
     };
 
+    //Apply filter from previous session if user exists
     useEffect(() => {
-        console.log("useEffect");
         if (userVolTypesData) {
             // setResultFilters(getDefaultFilters(userVolTypesData?.data || []));
             setResultFilters(getFilterInSessionStorage());
@@ -115,6 +108,15 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
         setShowDeleteButton(isShiftSelected());
     }, [selectedShifts]);
 
+    //Enable the publish button if page is on Unreleased mode and at least one shift has been selected
+    useEffect(() => {
+        if (showUnreleased && isShiftSelected()) {
+            setIsPublishButtonEnabled(true);
+        } else {
+            setIsPublishButtonEnabled(false);
+        }
+    }, [selectedShifts]);
+
     // const handleViewChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     //     setCurrentView(event.target.value);
     // };
@@ -122,11 +124,11 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
     const handleSelected = (id: string, checkStatus: boolean) => {
         setselectedShifts((prevSelectedShifts) => {
             if (checkStatus) {
-                setIsPublishButtonEnabled(true); // Enable the "Publish" button when a shift is selected
+                //setIsPublishButtonEnabled(true); // Enable the "Publish" button when a shift is selected
                 return [...prevSelectedShifts, id];
             } else if (!checkStatus) {
                 const updatedSelectedShifts = prevSelectedShifts.filter((shiftId) => shiftId !== id);
-                setIsPublishButtonEnabled(updatedSelectedShifts.length > 0); // Enable if there are selected shifts
+                //setIsPublishButtonEnabled(updatedSelectedShifts.length > 0); // Enable if there are selected shifts
                 return updatedSelectedShifts;
             } else {
                 return prevSelectedShifts;
