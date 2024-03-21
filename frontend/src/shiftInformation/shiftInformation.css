@@ -21,6 +21,7 @@
 }
 .right-box-container {
     width: 45%;
+    height: 850px;
     margin-left: 19px;
     margin-top: 19px;
     background: #ffffff;
@@ -365,9 +366,9 @@
     color: #000000;
 }
 
-.calendar-title-divider {
+/* .calendar-title-divider {
     margin-top: 10px !important;
-}
+} */
 
 .calender-title-box {
     height: 50px;
