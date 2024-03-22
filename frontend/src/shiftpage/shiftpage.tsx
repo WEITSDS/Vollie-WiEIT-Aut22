@@ -330,7 +330,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                             end: new Date(shift.endAt),
                                             title: shift.name,
                                             id: shift._id,
-                                            allDay: true,
+                                            // allDay: true,
                                         }))}
                                         startAccessor="start"
                                         endAccessor="end"

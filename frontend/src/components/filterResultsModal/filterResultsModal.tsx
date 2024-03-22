@@ -34,17 +34,17 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                     <button type="button" onClick={() => setCurrentMenu("Category")}>
                         Category
                     </button>
-                    <button type="button" onClick={() => setCurrentMenu("Length")}>
-                        Length
-                    </button>
                     <button type="button" onClick={() => setCurrentMenu("Role")}>
                         Role
                     </button>
                     <button type="button" onClick={() => setCurrentMenu("Availability")}>
                         Availability
                     </button>
-                    <button type="button" onClick={() => setCurrentMenu("Location")}>
-                        Location
+                    <button type="button" onClick={() => setCurrentMenu("Venue")}>
+                        Venue
+                    </button>
+                    <button type="button" onClick={() => setCurrentMenu("Length")}>
+                        Length
                     </button>
                 </div>
                 <div className="right-section">
@@ -139,13 +139,13 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                             </>
                         )}
 
-                        {currentMenu === "Location" && (
+                        {currentMenu === "Venue" && (
                             <>
-                                <label>Location</label>
+                                <label>Venue</label>
                                 <Form.Control
                                     type="text"
-                                    className="location-input"
-                                    placeholder="Enter location"
+                                    className="venue-input"
+                                    placeholder="Enter venue"
                                     value={filters.location ? filters.location : ""}
                                     // Controlled with the current location value
                                     onChange={(e) => updateFilters({ ...filters, location: e.target.value })}
@@ -158,7 +158,7 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                 onClick={(e) => {
                                     e.preventDefault();
                                     updateFilters({
-                                        to: new Date(),
+                                        to: new Date(new Date(Date.now() + 63120000000)),
                                         from: new Date(),
                                         volTypes: [],
                                         category: "All",
