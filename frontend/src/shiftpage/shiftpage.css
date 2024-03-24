@@ -25,6 +25,7 @@
     display: flex;
     justify-content: flex-start;
     margin-top: 53px;
+    width: 2000px;
 }
 
 .header-container h1 {
