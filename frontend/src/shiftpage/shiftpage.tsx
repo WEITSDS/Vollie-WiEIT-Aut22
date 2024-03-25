@@ -274,7 +274,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                                 onClick={handlePublish}
                                                 disabled={!isPublishButtonEnabled} // Disable the button when isPublishButtonEnabled is false
                                             >
-                                                {"Publish"}
+                                                {"Release"}
                                             </button>
 
                                             <button
