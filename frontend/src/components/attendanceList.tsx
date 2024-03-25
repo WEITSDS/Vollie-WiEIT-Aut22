@@ -87,13 +87,16 @@ export default function AttendanceListModal({
                 alert("Please select a volunteer type for each user.");
                 return;
             }
-            const assignmentPromises = selectedUsers.map((userId) =>
+            const assignmentPromises = selectedUsers.map((userId) => {
                 assignUserToShift({
                     shiftid: shift._id,
                     userid: userId,
                     selectedVolType: userVolunteerTypes[userId],
-                })
-            );
+                });
+                //Error that says "User doesn't exist in this shift"
+                setApprovalUserForShift(userId, shift._id, "approved");
+                console.log("Hi");
+            });
 
             // Wait for all assignments to complete
             await Promise.all(assignmentPromises);

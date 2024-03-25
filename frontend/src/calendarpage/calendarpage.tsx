@@ -97,7 +97,7 @@ const CalendarPage = () => {
                         startAccessor="startAt"
                         endAccessor="endAt"
                         titleAccessor="name"
-                        style={{ height: 500 }}
+                        style={{ height: "75vh" }}
                     />
                 </div>
             </ModalBody>
