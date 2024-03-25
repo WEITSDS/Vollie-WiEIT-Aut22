@@ -16,7 +16,7 @@ export default function CalendarModal(props: Props) {
     return (
         <>
             <Nav.Link href="#" onClick={() => setCalendarModalVisible(true)} className="text-body me-1">
-                <i className="bi bi-calendar" /> Import
+                <i className="bi bi-calendar" /> Export to Personal Calendar
             </Nav.Link>
 
             <Modal show={calendarModalVisible} onHide={() => setCalendarModalVisible(false)}>
