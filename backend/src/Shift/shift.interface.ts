@@ -32,6 +32,7 @@ export interface IShiftUser {
     user: Types.ObjectId; // userID
     chosenVolunteerType: Types.ObjectId; // volunteerTypeID
     approved: boolean;
+    completed: boolean;
 }
 
 export interface IVolType {

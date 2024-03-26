@@ -1243,3 +1243,58 @@ export const exportVolunteerReportAsExcel = async (req: Request, res: Response) 
 //         });
 //     }
 // };
+
+export async function getTotalHoursWorked(req: Request, res: Response) {
+    try {
+        // Retrieve the userId from the request
+        const targetUserID = req.params.userid;
+
+        // consider adding this check too (from the getUserShifts method) -
+        // // users can get their own shifts, if request is looking for user other than themselves, they must be admin
+        // if (targetUserID !== userObj._id.toString() && !userObj.isAdmin) {
+        //     res.status(403).json({ message: "Authorization error", success: false });
+        //     return;
+        // }
+
+        // Retrieve all completed shifts for the user - neither of these two methods properly register the completed property
+        // const completedShifts = await Shift.find({ "users.user": targetUserID, "users.completed": true }).sort({
+        //     startAt: 1,
+        // });
+        const completedShifts = await Shift.find({
+            users: {
+                $elemMatch: {
+                    //completed: true, //- DOESN'T CURRENTLY WORK, NEED TO IMPLEMENT
+                    approved: false, //temporary field for testing, "approved" property can be filtered but not "completed"
+                    user: targetUserID,
+                },
+            },
+        }).sort({ startAt: 1 });
+
+        //print statement for checking "completed" status
+        completedShifts.forEach((shift) => {
+            shift.users.forEach((user) => {
+                if (user.user.toString() === targetUserID) {
+                    console.log("testing");
+                    console.log("Completed status for user:", user.completed);
+                }
+            });
+        });
+
+        // Sum up the hours worked from each completed shift
+        let totalHoursWorked = 0;
+        completedShifts.forEach((shift) => {
+            totalHoursWorked += shift.hours;
+        });
+
+        // Respond with the total hours worked
+        res.status(200).json({
+            message: "success",
+            totalHoursWorked,
+            data: [completedShifts], //also for testing the "completed status" field
+            success: true,
+        });
+    } catch (error) {
+        console.error("Error retrieving total hours worked:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}

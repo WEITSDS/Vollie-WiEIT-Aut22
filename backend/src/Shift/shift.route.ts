@@ -18,6 +18,7 @@ import {
     getAllShifts,
     getVolunteerReport,
     exportVolunteerReportAsExcel,
+    getTotalHoursWorked,
 } from "./shift.controller";
 
 const router = express.Router();
@@ -30,6 +31,7 @@ router.get("/shift/:shiftid", wrapAsync(getShiftById));
 router.get("/calendar/:userid", wrapAsync(generateShiftCalendar));
 router.get("/attendance-list/:shiftid", wrapAsync(getShiftAttendanceList));
 router.get("/available-roles-for-shift-user/:userid/:shiftid", wrapAsync(getAvailableRolesForShiftUser));
+router.get("/total-user-hours/:userid", wrapAsync(getTotalHoursWorked));
 
 router.post("/create", wrapAsync(createShift));
 router.post("/update/:shiftid", wrapAsync(updateShift));
