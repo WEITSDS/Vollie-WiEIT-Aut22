@@ -332,7 +332,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                                     endAccessor="end"
                                     titleAccessor="title"
                                     onSelectEvent={handleSelectEvent}
-                                    style={{ height: 500 }}
+                                    style={{ height: "70vh" }}
                                 />
                             )}
                             {currentView === "map" && <MapView />}
