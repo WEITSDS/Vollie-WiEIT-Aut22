@@ -322,6 +322,7 @@ const ShiftPage = ({ shiftType }: ShiftPageProps) => {
                             )}
 
                             {currentView === "calendar" && (
+
                                 <div className="calendar-page">
                                     <Calendar
                                         localizer={localizer}
