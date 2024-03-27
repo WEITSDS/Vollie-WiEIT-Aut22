@@ -441,7 +441,6 @@ const ShiftInformation = () => {
                                     titleAccessor="name"
                                     style={{ height: 500 }}
                                 />
-                                <hr className="calendar-title-divider" />
                             </div>
                         </div>
                     </div>
