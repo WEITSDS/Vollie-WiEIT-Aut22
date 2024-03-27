@@ -1264,7 +1264,7 @@ export async function getTotalHoursWorked(req: Request, res: Response) {
             users: {
                 $elemMatch: {
                     //completed: true, //- DOESN'T CURRENTLY WORK, NEED TO IMPLEMENT
-                    approved: false, //temporary field for testing, "approved" property can be filtered but not "completed"
+                    approved: true, //temporary field for testing, "approved" property can be filtered but not "completed"
                     user: targetUserID,
                 },
             },
@@ -1290,7 +1290,7 @@ export async function getTotalHoursWorked(req: Request, res: Response) {
         res.status(200).json({
             message: "success",
             totalHoursWorked,
-            data: [completedShifts], //also for testing the "completed status" field
+            //data: [completedShifts], //also for testing the "completed status" field
             success: true,
         });
     } catch (error) {
