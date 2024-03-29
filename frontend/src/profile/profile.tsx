@@ -17,6 +17,7 @@ import { removeVolunteerType, setApprovalUserVolunteerType } from "../api/userAp
 import { loggedInUserIsAdmin } from "../protectedRoute";
 import { AddRoleModal, ConfirmDeleteModal } from "./volunteer/addRoleModal";
 import { IVolunteerTypeUserWithApproved } from "../api/volTypeAPI";
+import { AddWorkingWithChildrenCheckModal } from "./workingWithChildrenCheckModal";
 
 export const ProfilePage = () => {
     const { id } = useParams();
@@ -25,6 +26,7 @@ export const ProfilePage = () => {
     const [showAddModal, setshowAddModal] = useState(false);
     const [showDeleteModal, setshowDeleteModal] = useState(false);
     const [selectedVolType, setselectedVolType] = useState<IVolunteerTypeUserWithApproved | null>(null);
+    const [showAddWorkingWithChildrenCheckModal, setShowAddWorkingWithChildrenCheckModal] = useState(false);
 
     const isAdmin = loggedInUserIsAdmin();
 
@@ -84,6 +86,16 @@ export const ProfilePage = () => {
         } catch (error) {
             console.log(error);
         }
+    };
+
+    const handleAddWorkingWithChildrenCheck = () => {
+        setShowAddWorkingWithChildrenCheckModal(true);
+    };
+
+    const onAddWWCCClose = () => {
+        // change to async once api done
+        setShowAddWorkingWithChildrenCheckModal(false);
+        //await refetchVolTypeUser(); TODO when api finished
     };
 
     if (!(!isLoading && user)) {
@@ -215,6 +227,36 @@ export const ProfilePage = () => {
                         {user?._id && (
                             <QualificationsSection userId={user._id} isAdmin={isAdmin} editingSelf={editingSelf} />
                         )}
+                        <br></br>
+                        <div className="working-with-children-check-table" hidden={!isAdmin && !editingSelf}>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Number</th>
+                                        <th>Expiry</th>
+                                        <th>Date of Birth</th>
+                                        <th>Full legal name</th>
+                                    </tr>
+                                </thead>
+                            </Table>
+                            <Button
+                                title="Add Working With Children Check"
+                                variant="success"
+                                onClick={() => handleAddWorkingWithChildrenCheck()}
+                                disabled={!editingSelf}
+                            >
+                                Add Working With Children Check {"   "}
+                                <i className="bi bi-plus-square" />
+                            </Button>
+                            {showAddWorkingWithChildrenCheckModal && user._id && (
+                                <AddWorkingWithChildrenCheckModal
+                                    userId={user?._id}
+                                    onClose={() => {
+                                        void onAddWWCCClose();
+                                    }}
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
