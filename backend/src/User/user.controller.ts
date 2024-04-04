@@ -9,6 +9,7 @@ import { isIBasicUser, IUser, IUserVolunteerType, mapUserToUserSummary } from ".
 import VolunteerType from "../VolunteerType/volunteerType.model";
 import { sendVolunteerRequestEmail, sendVolunteerApprovalEmail } from "../mailer/mailer";
 import bcrypt from "bcrypt";
+import Cohort from "../Cohort/cohort.model";
 
 const logger = new Logger({ name: "user.controller" });
 
@@ -573,5 +574,115 @@ export const removeVolunteerType = async (req: Request, res: Response) => {
         }
     } catch (err) {
         handleError(logger, res, err, "Volunteer type removal from user failed");
+    }
+};
+
+export const assignCohortType = async (req: Request, res: Response) => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) {
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
+            return;
+        }
+
+        const sessionUserId = userObj._id;
+        if (sessionUserId != req.params.userid && !userObj.isAdmin) {
+            res.status(401).json({
+                message: "Unauthorised, you can only assign cohort types to yourself unless you are an admin",
+                success: false,
+            });
+            return;
+        }
+        //const newCohortId = new mongoose.Types.ObjectId().toString();
+
+        const targetCohort = await Cohort.findById(req.params.cohortid);
+        const assignCohortResult = await User.findOneAndUpdate(
+            { _id: req.params.userid },
+            {
+                $addToSet: {
+                    cohorts: {
+                        //_id: new mongoose.Types.ObjectId(newCohortId), //unique
+                        //_id: targetCohort?._id,
+                        type: targetCohort,
+                        //type: req.params.cohortid,
+                        //cohort: targetCohort?.cohort,
+                        //approved: !targetCohort?.requiresApproval,
+                    },
+                },
+            }
+        );
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        console.log(`assignCohortResult - ${assignCohortResult}`);
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        console.log(`targetCohort - ${targetCohort}`);
+        if (assignCohortResult && targetCohort) {
+            res.status(200).json({
+                message: "User assigned to cohort type",
+                success: true,
+            });
+            // if (!req.session.user?.isAdmin) {
+            //     console.log("CHECK CHECK id being passed " + userObj._id);
+            // }
+            return;
+        } else {
+            res.status(404).json({
+                message: "User not found",
+                success: true,
+            });
+            return;
+        }
+    } catch (err) {
+        handleError(logger, res, err, "Cohort type assignment to user failed");
+    }
+};
+
+export const removeCohortType = async (req: Request, res: Response) => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) {
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
+            return;
+        }
+
+        const sessionUserId = userObj._id;
+        if (sessionUserId != req.params.userid && !userObj.isAdmin) {
+            res.status(401).json({
+                message: "Unauthorised, you can only remove cohort types from yourself unless you are an admin",
+                success: false,
+            });
+            return;
+        }
+
+        const removeCohortResult = await User.updateOne(
+            { _id: req.params.userid },
+            {
+                $pull: {
+                    cohorts: { type: req.params.cohortid },
+                },
+            }
+        );
+        if (removeCohortResult && removeCohortResult.modifiedCount !== undefined) {
+            if (removeCohortResult.modifiedCount > 0) {
+                res.status(200).json({
+                    message: "Cohort removed from user",
+                    success: true,
+                });
+                return;
+            } else {
+                res.status(404).json({
+                    message: "User not found",
+                    success: true,
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                message: "cohort has not been removed from user",
+                success: true,
+            });
+            return;
+        }
+    } catch (err) {
+        handleError(logger, res, err, "Cohort removal from user failed");
     }
 };

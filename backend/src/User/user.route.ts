@@ -10,6 +10,8 @@ import {
     setApprovalVolunteerTypeForUser,
     assignVolunteerType,
     removeVolunteerType,
+    assignCohortType,
+    removeCohortType,
 } from "./user.controller";
 
 const router = express.Router();
@@ -28,5 +30,6 @@ router.patch(
 router.patch("/:userid/assign-volunteer-type/:volunteertypeid", wrapAsync(assignVolunteerType));
 router.patch("/:userid/remove-volunteer-type/:volunteertypeid", wrapAsync(removeVolunteerType));
 router.patch("/:userid/set-complete-shift/:shiftid/:completionstatus", wrapAsync(setCompleteShift));
-
+router.patch("/:userid/assign-cohort-type/:cohortid", wrapAsync(assignCohortType));
+router.patch("/:userid/remove-cohort-type/:cohortid", wrapAsync(removeCohortType));
 export = router;
