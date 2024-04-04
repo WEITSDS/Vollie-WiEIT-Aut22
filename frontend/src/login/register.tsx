@@ -39,8 +39,17 @@ const RegisterPage = () => {
         return /[A-Z]/.test(val);
     }
 
+    function containsSpecialCharacter(val: string): boolean {
+        return /[!@#$%^&*()_+[\]{};':"|,.<>/?]/.test(val);
+    }
     function passwordIsValid(val: string): boolean {
-        return stringValueIsValid(val) && val.length >= 8 && val.length <= 64 && containsUpperCase(val) === true;
+        return (
+            stringValueIsValid(val) &&
+            val.length >= 8 &&
+            val.length <= 64 &&
+            containsUpperCase(val) === true &&
+            containsSpecialCharacter(val)
+        );
     }
 
     const onChangeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +97,9 @@ const RegisterPage = () => {
             errorMessages.push("Email must be a valid UTS email ending in 'uts.edu.au'");
         }
         if (!passwordIsValid(password)) {
-            errorMessages.push("Passwords must have at least one uppercase letter and more than 8 characters.");
+            errorMessages.push(
+                "Passwords must have at least one uppercase letter, one special character and more than 8 characters."
+            );
         }
         if (password !== confirmPassword) {
             errorMessages.push("Passwords must match");
@@ -105,6 +116,7 @@ const RegisterPage = () => {
 
         const registerAttempt = await registerUser({ firstName, lastName, email, password, volunteerTypes });
         if (registerAttempt.success) {
+            alert("Registered Successfully");
             window.location.href = "/home";
         } else {
             console.log(registerAttempt);

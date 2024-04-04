@@ -12,7 +12,7 @@
 }
 
 .left-box-container {
-    width: 45%;
+    width: 30%;
     /* height: 100%; */
     margin-top: 19px;
     background: #ffffff;
@@ -20,7 +20,7 @@
     border-radius: 5px;
 }
 .right-box-container {
-    width: 45%;
+    width: 60%;
     height: 850px;
     margin-left: 19px;
     margin-top: 19px;
@@ -51,30 +51,17 @@
 }
 
 .back-btn {
-    display: flex;
-    justify-content: space-evenly;
-    align-content: center;
-    flex-wrap: wrap;
-    width: 144px;
-    height: 38px;
-    left: 88px;
-    top: 108px;
-    box-sizing: border-box;
-    background: #ffffff;
-    border: 1px solid #bab7b7;
-    border-radius: 5px;
-    font-family: "Open Sans";
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 17px;
-    color: #000000;
+    padding-top: 1%;
+   border: none;
+   background-color: transparent;
+   color: #0c50e3;
+
 }
 
 .back-btn:hover {
-    border: 1px solid #7b7982;
-    background: #f9fafa;
+    text-decoration: underline;
 }
+
 
 .edit-btn {
     display: flex;
@@ -108,7 +95,7 @@
 }
 
 .apply-btn {
-    width: 191px;
+    width: 150px;
     height: 39px;
     left: 561px;
     top: 108px;
@@ -125,8 +112,29 @@
     margin-left: 14px;
 }
 
+
 .apply-btn:hover {
     background: #0c50e3;
+}
+
+.completed-btn {
+        width: 150px;
+        height: 39px;
+        left: 561px;
+        top: 108px;
+        box-sizing: border-box;
+        background: rgb(41, 171, 41);
+        border: 1px solid #bab7b7;
+        border-radius: 5px;
+        font-family: "Open Sans";
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 17px;
+        color: #ffffff;
+        margin-left: 14px;
+
+    
 }
 
 .information-container {
@@ -251,7 +259,7 @@
 }
 
 .cancel-shift-btn {
-    width: 191px;
+    width: 150px;
     height: 39px;
     left: 319px;
     top: 945px;
@@ -405,3 +413,10 @@
     width: 30%;
     margin-bottom: 20px;
 }
+
+.back-button-div {
+    align-items: center;
+    padding-top: 1%;
+    padding-left: 4%;
+}
+
