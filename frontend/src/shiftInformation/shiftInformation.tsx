@@ -15,7 +15,7 @@ import backIcon from "../assets/backIcon.svg";
 import editIcon from "../assets/editIcon.svg";
 import categoryIcon from "../assets/categoryIcon.svg";
 import { assignUserToShift, unassignUserFromShift } from "../api/shiftApi";
-import { setCompleteShift } from "../api/userApi";
+// import { setCompleteShift } from "../api/userApi";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import { Link } from "react-router-dom";
@@ -89,18 +89,19 @@ const ShiftInformation = () => {
         e.preventDefault();
         handleShowRoles();
     };
-    const handleComplete = async () => {
-        try {
-            if (typeof shiftId === "string" && userObj?._id) {
-                await setCompleteShift(userObj?._id, shiftId, "complete");
-                await refetch();
-                await userQuery.refetch();
-            }
-        } catch (error) {
-            console.log("Error completing shift");
-            console.error(error);
-        }
-    };
+
+    // const handleComplete = async () => {
+    //     try {
+    //         if (typeof shiftId === "string" && userObj?._id) {
+    //             await setCompleteShift(userObj?._id, shiftId, "complete");
+    //             await refetch();
+    //             await userQuery.refetch();
+    //         }
+    //     } catch (error) {
+    //         console.log("Error completing shift");
+    //         console.error(error);
+    //     }
+    // };
 
     // const handleApply = async () => {
     //     try {
@@ -143,6 +144,7 @@ const ShiftInformation = () => {
                 await refetch();
                 await userQuery.refetch();
             }
+            // delete timer if it exists
         } catch (error) {
             console.log("error assigning user", error);
         }
@@ -239,11 +241,11 @@ const ShiftInformation = () => {
                                         {!!userObj && shiftId && targetShiftInUser && (
                                             <button
                                                 className="apply-btn"
-                                                disabled={targetShiftInUser.completed || !targetShiftInUser.approved}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    void handleComplete();
-                                                }}
+                                                // disabled={targetShiftInUser.completed || !targetShiftInUser.approved}
+                                                // onClick={(e) => {
+                                                //     e.preventDefault();
+                                                //     void handleComplete();
+                                                // }}
                                             >
                                                 {targetShiftInUser.completed
                                                     ? "Shift Completed"

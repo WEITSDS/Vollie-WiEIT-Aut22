@@ -13,7 +13,7 @@ import RemoveUserFromShiftModal from "./removeUserFromShiftModal";
 // import axios from "axios";
 import "./attendanceList.css";
 import { Link } from "react-router-dom";
-import { setCompleteShift } from "../api/userApi";
+// import { setCompleteShift } from "../api/userApi";
 import { assignUserToShift } from "../api/shiftApi";
 import { getAllUsers, User } from "../api/userApi";
 import { IVolunteerType, getAllVolTypes } from "../api/volTypeAPI";
@@ -124,12 +124,17 @@ export default function AttendanceListModal({
         if (onCloseModal) {
             onCloseModal();
         }
+        // delete timer if it exists
     };
 
     const onApproveUser = async (targetUserId: string) => {
         try {
             await setApprovalUserForShift(targetUserId, shift._id, "approved");
             await refetch();
+
+            // check if timer exists for this user and shift
+            // if not, create timer
+            // if yes, delete existing timer, create new timer
         } catch (error) {
             console.log(error);
         }
@@ -139,28 +144,31 @@ export default function AttendanceListModal({
         try {
             await setApprovalUserForShift(targetUserId, shift._id, "unapprove");
             await refetch();
+
+            // check if timer exists for this user and shift
+            // if yes, delete existing timer
         } catch (error) {
             console.log(error);
         }
     };
 
-    const onMarkAsComplete = async (targetUserId: string) => {
-        try {
-            await setCompleteShift(targetUserId, shift._id, "complete");
-            await refetch();
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    // const onMarkAsComplete = async (targetUserId: string) => {
+    //     try {
+    //         await setCompleteShift(targetUserId, shift._id, "complete");
+    //         await refetch();
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
 
-    const onMarkAsIncomplete = async (targetUserId: string) => {
-        try {
-            await setCompleteShift(targetUserId, shift._id, "incomplete");
-            await refetch();
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    // const onMarkAsIncomplete = async (targetUserId: string) => {
+    //     try {
+    //         await setCompleteShift(targetUserId, shift._id, "incomplete");
+    //         await refetch();
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
 
     const handleClosingThis = () => {
         if (onCloseModal) onCloseModal();
@@ -272,13 +280,13 @@ export default function AttendanceListModal({
                         <Button onClick={() => void onUnApproveUser(userShift._id)}>Unapprove</Button>
                     )}
                 </td>
-                <td>
+                {/* <td>
                     {!userShift.completed ? (
                         <Button onClick={() => void onMarkAsComplete(userShift._id)}>Mark Complete</Button>
                     ) : (
                         <Button onClick={() => void onMarkAsIncomplete(userShift._id)}>Mark Incomplete</Button>
                     )}
-                </td>
+                </td> */}
                 <td>
                     <RemoveUserFromShiftModal
                         onDelete={() => {
@@ -370,7 +378,7 @@ export default function AttendanceListModal({
                                     <th scope="col">Approval Status</th>
                                     <th scope="col">Completion Status</th>
                                     <th scope="col">Approve</th>
-                                    <th scope="col">Mark Completed</th>
+                                    {/* <th scope="col">Mark Completed</th> */}
                                     <th scope="col">Remove User</th>
                                 </tr>
                             </thead>
