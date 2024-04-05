@@ -1247,6 +1247,10 @@ export const exportVolunteerReportAsExcel = async (req: Request, res: Response) 
 // };
 
 export async function getTotalHoursWorked(req: Request, res: Response) {
+    //filter by cohort (e.g. Spring 2023 - Spring 2024)
+    //count total hours for each cohort across multiple shifts within that period
+    //return an array or object with each cohort and corresponding total hours
+    //note - the function is intended to be used by the user as it is for the ambassador hours component of the profile page
     try {
         // Retrieve the user
         const user = await User.findOne({ _id: req.params.userid });
@@ -1256,7 +1260,7 @@ export async function getTotalHoursWorked(req: Request, res: Response) {
 
         //check if user is an ambassador
         const hasAmbassadorType = user.volunteerTypes.some(
-            (volunteerType) => volunteerType.type.toString() === "65cec76e51ca130ee9af0fad" && volunteerType.approved
+            (volunteerType) => volunteerType.type.toString() === "65cec76e51ca130ee9af0fad"
         );
 
         if (!hasAmbassadorType) {
@@ -1265,9 +1269,6 @@ export async function getTotalHoursWorked(req: Request, res: Response) {
         }
 
         //Retrieve the user cohorts
-        // const userCohorts: ICohort[] = await Cohort.find({
-        //     _id: { $in: user.cohorts.map((cohortType) => cohortType.type) },
-        // });
         const cohortIds = user.cohorts.map((cohort) => cohort.type); // Extracting 'type' values from each IUserCohort object
         const userCohorts: ICohort[] = await Cohort.find({ _id: { $in: cohortIds } });
 
@@ -1276,21 +1277,16 @@ export async function getTotalHoursWorked(req: Request, res: Response) {
         // Retrieve the userId from the request
         const targetUserID = req.params.userid;
 
-        //filter by cohort (e.g. Spring 2023 - Spring 2024)
-        //count total hours for each cohort across multiple shifts within that period
-        //return an array or object with the cohort and corresponding total hours
-
         for (const cohort of userCohorts) {
             const { startDate, endDate } = cohort;
 
-            //console.log(`startDate (for cohort) - ${startDate.toISOString()}`);
-            //console.log(`endDate (for cohort) - ${endDate.toISOString()}`);
-
-            // Filter shifts by start and end dates falling within the cohort period
+            // Filter shifts by start and end dates falling within the cohort period and by approval
             const shifts = await Shift.find({
                 "users.user": targetUserID,
                 startAt: { $gte: startDate },
                 endAt: { $lte: endDate },
+                "users.approved": true,
+                //may want to add a filter for completed shifts (once it works properly) -> "users.completed": true,
             });
 
             // Sum up the 'hours' parameter for each shift within the cohort period
@@ -1303,58 +1299,17 @@ export async function getTotalHoursWorked(req: Request, res: Response) {
             totalHoursByCohort[cohort.name] = totalHours;
         }
 
-        // Filter the shifts based on their start and end times falling within the start and end dates of the cohort
-        // const completedShifts = await Shift.find({
-        //     "users.user": targetUserID,
-        //     "users.approved": true,
-        //     // startTime: { $gte: userCohorts.startAt }, //have to find out how to access user cohort details
-        //     // endTime: { $lte: userCohorts.endAt },
-        // }).sort({
-        //     startAt: 1,
-        // });
-
-        // consider adding this check too (from the getUserShifts method) -
+        // consider adding this check too(from the getUserShifts method), but only checking that the user is themselves -
         // // users can get their own shifts, if request is looking for user other than themselves, they must be admin
         // if (targetUserID !== userObj._id.toString() && !userObj.isAdmin) {
         //     res.status(403).json({ message: "Authorization error", success: false });
         //     return;
         // }
 
-        // Retrieve all completed shifts for the user - neither of these two methods properly register the completed property
-        // const completedShifts = await Shift.find({ "users.user": targetUserID, "users.completed": true }).sort({
-        //     startAt: 1,
-        // });
-        // const completedShifts = await Shift.find({
-        //     users: {
-        //         $elemMatch: {
-        //             //completed: true, //- DOESN'T CURRENTLY WORK, NEED TO IMPLEMENT
-        //             approved: true, //temporary field for testing, "approved" property can be filtered but not "completed"
-        //             user: targetUserID,
-        //         },
-        //     },
-        // }).sort({ startAt: 1 });
-
-        //print statement for checking "completed" status
-        // completedShifts.forEach((shift) => {
-        //     shift.users.forEach((user) => {
-        //         if (user.user.toString() === targetUserID) {
-        //             console.log("testing");
-        //             console.log("Completed status for user:", user.completed);
-        //         }
-        //     });
-        // });
-
-        // // Sum up the hours worked from each completed shift
-        // let totalHoursWorked = 0;
-        // completedShifts.forEach((shift) => {
-        //     totalHoursWorked += shift.hours;
-        // });
-
         // Respond with the total hours worked
         res.status(200).json({
             message: "success",
             data: totalHoursByCohort,
-            //data: [completedShifts], //also for testing the "completed status" field
             success: true,
         });
     } catch (error) {
