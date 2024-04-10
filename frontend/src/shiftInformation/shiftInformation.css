@@ -9,11 +9,12 @@
     display: flex !important;
     flex-direction: row !important;
     justify-content: center;
+    height: fit-content;
 }
 
 .left-box-container {
     width: 30%;
-    /* height: 100%; */
+    height: 1100px;
     margin-top: 19px;
     background: #ffffff;
     border: 1px solid #bab7b7;
@@ -21,7 +22,7 @@
 }
 .right-box-container {
     width: 60%;
-    height: 850px;
+    height: 1100px;
     margin-left: 19px;
     margin-top: 19px;
     background: #ffffff;
