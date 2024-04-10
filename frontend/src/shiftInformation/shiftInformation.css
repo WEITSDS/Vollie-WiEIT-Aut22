@@ -137,6 +137,26 @@
     
 }
 
+.requires-approval-btn {
+    width: 150px;
+    height: 39px;
+    left: 561px;
+    top: 108px;
+    box-sizing: border-box;
+    background: grey;
+    border: 1px solid #bab7b7;
+    border-radius: 5px;
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
+    color: #ffffff;
+    margin-left: 14px;
+
+
+}
+
 .information-container {
     display: flex;
     flex-direction: column;

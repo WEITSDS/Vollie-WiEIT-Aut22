@@ -260,7 +260,11 @@ const ShiftInformation = () => {
                                             {!!userObj && shiftId && targetShiftInUser && (
                                                 <button
                                                     className={
-                                                        targetShiftInUser.completed ? "completed-btn" : "apply-btn"
+                                                        targetShiftInUser.completed
+                                                            ? "completed-btn"
+                                                            : !targetShiftInUser.approved
+                                                            ? "requires-approval-btn"
+                                                            : "apply-btn"
                                                     }
                                                     disabled={
                                                         targetShiftInUser.completed || !targetShiftInUser.approved
