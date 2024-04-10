@@ -11,7 +11,8 @@ import schedule from "node-schedule";
 import { getAllAdmins, getUserByEmail } from "../User/user.controller";
 import { IUser } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
-import { sendQualificationExpiryEmail, sendQualificationApprovalEmail } from "../mailer/mailer";
+// import { sendQualificationExpiryEmail, sendQualificationApprovalEmail } from "../mailer/mailer";
+import { sendQualificationExpiryEmail } from "../mailer/mailer";
 
 cloudinary.config(CLOUDINARY_CONFIG);
 const logger = new Logger({ name: "qualifications.controller" });
@@ -49,19 +50,22 @@ export const createQualification = async (req: Request, res: Response) => {
             return;
         }
 
-        const uploadResponse = await cloudinary.uploader.upload(newQualification.filePath, {
-            upload_preset: "nzdtliy9",
-        });
+        // const uploadResponse = await cloudinary.uploader.upload(newQualification.filePath, {
+        //     upload_preset: "nzdtliy9",
+        // });
 
         const qual = new Qualification({
-            title: newQualification.title,
-            description: newQualification.description,
-            filePath: uploadResponse.secure_url,
-            fileId: uploadResponse.public_id,
-            qualificationType: newQualification?.qualificationType,
-            expiryDate: newQualification.expiryDate,
-            approved: !qualificationtype.requiresApproval, // assume that the qualification is approved if it required no admin approval
+            // title: newQualification.title,
+            // description: newQualification.description,
+            // filePath: uploadResponse.secure_url,
+            // fileId: uploadResponse.public_id,
+            // qualificationType: newQualification?.qualificationType,
+            // approved: !qualificationtype.requiresApproval, // assume that the qualification is approved if it required no admin approval
             user: user._id,
+            wwccNumber: newQualification.wwccNumber,
+            expiryDate: newQualification.expiryDate,
+            dateOfbirth: newQualification.dateOfbirth,
+            fullName: newQualification.fullName,
         });
 
         qual.id = new mongoose.Types.ObjectId();
@@ -125,9 +129,12 @@ export const updateQualificationById = async (req: Request, res: Response) => {
             return;
         }
 
-        qualification.title = qualificationFields.title;
-        qualification.description = qualificationFields.description;
+        // qualification.title = qualificationFields.title;
+        // qualification.description = qualificationFields.description;
+        qualification.wwccNumber = qualificationFields.wwccNumber;
         qualification.expiryDate = qualificationFields.expiryDate;
+        qualification.dateOfbirth = qualificationFields.dateOfbirth;
+        qualification.fullName = qualificationFields.fullName;
 
         await qualification.save();
 
@@ -161,7 +168,7 @@ export const deleteQualificationById = async (req: Request, res: Response) => {
             { $pull: { qualifications: qual._id } }
         );
         console.log(pullIDResponse);
-        await cloudinary.uploader.destroy(qual.fileId);
+        // await cloudinary.uploader.destroy(qual.fileId);
         await qual.remove();
 
         res.status(200).json({
@@ -214,14 +221,14 @@ export const setApprovalQualificationForUser = async (req: Request, res: Respons
             success: true,
         });
 
-        if (req.params.status === "approve") {
-            void sendQualificationApprovalEmail(
-                targetUser.firstName,
-                targetUser.lastName,
-                targetUser.email,
-                qualification.title
-            );
-        }
+        // if (req.params.status === "approve") {
+        //     void sendQualificationApprovalEmail(
+        //         targetUser.firstName,
+        //         targetUser.lastName,
+        //         targetUser.email,
+        //         qualification.title
+        //     );
+        // }
     } catch (err) {
         handleError(logger, res, err, "Update qualification failed");
     }
@@ -246,8 +253,8 @@ export const handleQualificationExpiry = () => {
                             user.firstName,
                             user.lastName,
                             user._id,
-                            adminEmails,
-                            qual.title
+                            adminEmails
+                            // qual.title
                         );
                         const qualUpdate = await Qualification.updateOne({ _id: qual }, { expiredAndNotified: true });
                         if (qualUpdate.modifiedCount > 0) {
