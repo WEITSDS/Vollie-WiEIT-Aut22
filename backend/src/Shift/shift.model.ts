@@ -19,7 +19,7 @@ const ShiftSchema: Schema = new Schema(
                 user: { type: mongoose.Types.ObjectId, ref: "User", required: true },
                 chosenVolunteerType: { type: mongoose.Types.ObjectId, ref: "VolunteerType", required: true },
                 approved: { type: Boolean, default: false },
-                completed: { type: Boolean, default: false },
+                completed: { type: Boolean, default: false }, //not updating properly
             },
         ],
         category: { type: String, enum: ["School Outreach", "Event", "Committee", "Other"], default: "Other" },

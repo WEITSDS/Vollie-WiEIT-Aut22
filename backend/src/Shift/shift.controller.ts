@@ -1247,9 +1247,7 @@ export const exportVolunteerReportAsExcel = async (req: Request, res: Response) 
 // };
 
 export async function getTotalHoursWorked(req: Request, res: Response) {
-    //filter by cohort (e.g. Spring 2023 - Spring 2024)
-    //count total hours for each cohort across multiple shifts within that period
-    //return an array or object with each cohort and corresponding total hours
+    //returns an array with each cohort and corresponding total hours
     //note - the function is intended to be used by the user as it is for the ambassador hours component of the profile page
     try {
         // Retrieve the user
@@ -1258,14 +1256,12 @@ export async function getTotalHoursWorked(req: Request, res: Response) {
             throw new Error("User not found");
         }
 
-        //check if user is an ambassador
-        const hasAmbassadorType = user.volunteerTypes.some(
-            (volunteerType) => volunteerType.type.toString() === "65cec76e51ca130ee9af0fad"
-        );
+        //check if user has at least one cohort (e.g. Spring 2023 - Spring 2024)
+        const hasCohort = user.cohorts.length > 0;
 
-        if (!hasAmbassadorType) {
-            // Return an error message indicating that the user does not have the ambassador volunteer type
-            throw new Error("User is not an ambassador");
+        if (!hasCohort) {
+            // Return an error message indicating that the user does not have cohorts
+            throw new Error("User does not have any cohorts");
         }
 
         //Retrieve the user cohorts
@@ -1285,8 +1281,8 @@ export async function getTotalHoursWorked(req: Request, res: Response) {
                 "users.user": targetUserID,
                 startAt: { $gte: startDate },
                 endAt: { $lte: endDate },
+                "users.completed": true,
                 "users.approved": true,
-                //may want to add a filter for completed shifts (once it works properly) -> "users.completed": true,
             });
 
             // Sum up the 'hours' parameter for each shift within the cohort period

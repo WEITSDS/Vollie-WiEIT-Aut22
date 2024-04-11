@@ -10,6 +10,7 @@ import VolunteerType from "../VolunteerType/volunteerType.model";
 import { sendVolunteerRequestEmail, sendVolunteerApprovalEmail } from "../mailer/mailer";
 import bcrypt from "bcrypt";
 import Cohort from "../Cohort/cohort.model";
+import Shift from "../Shift/shift.model";
 
 const logger = new Logger({ name: "user.controller" });
 
@@ -388,7 +389,13 @@ export const setCompleteShift = async (req: Request, res: Response) => {
             { $set: { "shifts.$.completed": completionStatus } }
         );
 
-        if (completeShiftResult) {
+        //update completed status in shift schema too (users.completed)
+        const completeShiftResultUsers = await Shift.findOneAndUpdate(
+            { _id: req.params.shiftid, "users.user": req.params.userid },
+            { $set: { "users.$.completed": completionStatus } }
+        );
+
+        if (completeShiftResult && completeShiftResultUsers) {
             res.status(200).json({
                 message: "User set completion success",
                 success: true,
