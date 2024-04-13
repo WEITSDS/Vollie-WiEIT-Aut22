@@ -4,6 +4,8 @@ import { NavigationBar } from "../components/navbar";
 import { WEITBackground } from "../components/background";
 import ModalBody from "react-bootstrap/ModalBody";
 import FeedbackCard from "./feedbackCard";
+import VolunteerFeedbackCard from "./volunteerFeedbackCard";
+import SproutsFeedbackCard from "./sproutsFeedbackCard";
 
 //TODO - possibly add css file?
 
@@ -20,6 +22,8 @@ export const FeedbackFormsPage = () => {
     const completedSchoolShifts = schoolShifts?.filter((schoolShift) => {
         return completedShifts?.some((completedShift) => schoolShift._id === completedShift.shift._id);
     });
+
+    //TODO - once finished all forms add another few filters to determine roles
 
     return (
         <>
@@ -40,6 +44,14 @@ export const FeedbackFormsPage = () => {
                                 {completedSchoolShifts &&
                                     completedSchoolShifts.map((shift) => (
                                         <FeedbackCard key={shift._id} shiftData={shift} />
+                                    ))}
+                                {completedSchoolShifts &&
+                                    completedSchoolShifts.map((shift) => (
+                                        <VolunteerFeedbackCard key={shift._id} shiftData={shift} />
+                                    ))}
+                                {completedSchoolShifts &&
+                                    completedSchoolShifts.map((shift) => (
+                                        <SproutsFeedbackCard key={shift._id} shiftData={shift} />
                                     ))}
                                 {!isLoading && data?.data?.length === 0 && <p>No feedback forms.</p>}
                             </div>
