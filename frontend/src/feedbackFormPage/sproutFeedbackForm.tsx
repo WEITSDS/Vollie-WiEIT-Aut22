@@ -3,12 +3,12 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 
-interface SproutsFeedbackProps {
+interface SproutFeedbackProps {
     //userId?: string;
     onClose: (success?: boolean) => void;
 }
 
-export const SproutsFeedbackForm = (props: SproutsFeedbackProps) => {
+export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
     const [feedback, setFeedback] = useState({
         teacher: "",
         studentEngagement: "",
@@ -52,7 +52,7 @@ export const SproutsFeedbackForm = (props: SproutsFeedbackProps) => {
     return (
         <Modal show={true} onHide={onClose} backdrop="static">
             <Modal.Header closeButton>
-                <Modal.Title>Sprouts Feedback</Modal.Title>
+                <Modal.Title>SPROUT Feedback</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -143,7 +143,7 @@ export const SproutsFeedbackForm = (props: SproutsFeedbackProps) => {
                     </Form.Group>
 
                     <Form.Group controlId="rating" className="mb-3">
-                        <Form.Label>Please rate your overall experience for this session. </Form.Label>
+                        <Form.Label>Please rate your overall experience for this session:</Form.Label>
                         <Form.Control
                             type="number"
                             name="rating"

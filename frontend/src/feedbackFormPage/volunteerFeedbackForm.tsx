@@ -57,7 +57,7 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
                     </Form.Group>
 
                     <Form.Group controlId="rating" className="mb-3">
-                        <Form.Label>Please rate your overall experience for this session. </Form.Label>
+                        <Form.Label>Please rate your overall experience for this session:</Form.Label>
                         <Form.Control
                             type="number"
                             name="rating"

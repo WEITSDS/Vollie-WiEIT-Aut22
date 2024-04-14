@@ -3,7 +3,7 @@ import { Button, Card, Stack } from "react-bootstrap";
 import locationIcon from "../assets/location.svg";
 import calendarIcon from "../assets/calendar.svg";
 import { useState } from "react";
-import { SproutsFeedbackForm } from "./sproutsFeedbackForm";
+import { SproutFeedbackForm } from "./sproutFeedbackForm";
 
 type FeedbackCardProps = {
     shiftData: IShift;
@@ -92,7 +92,7 @@ export default function SproutsFeedbackCard({ shiftData }: FeedbackCardProps) {
                             {"Complete"}
                         </Button>
                         {showSproutsFeedbackForm && (
-                            <SproutsFeedbackForm
+                            <SproutFeedbackForm
                                 //userId={user?._id}
                                 onClose={() => {
                                     void onFeedbackFormClose();

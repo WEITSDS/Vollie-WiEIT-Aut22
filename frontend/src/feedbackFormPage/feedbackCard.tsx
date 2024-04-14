@@ -1,14 +1,35 @@
 import { IShift } from "../api/shiftApi";
+import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
 import { Button, Card, Stack } from "react-bootstrap";
 import locationIcon from "../assets/location.svg";
 import calendarIcon from "../assets/calendar.svg";
+import { useState } from "react";
+import { VolunteerFeedbackForm } from "./volunteerFeedbackForm";
+import { AmbassadorFeedbackForm } from "./ambassadorFeedbackForm";
+import { SproutFeedbackForm } from "./sproutFeedbackForm";
+import { LeadSproutFeedbackForm } from "./leadSproutFeedbackForm";
 
 type FeedbackCardProps = {
     shiftData: IShift;
+    userId: string | undefined;
 };
 
-export default function FeedbackCard({ shiftData }: FeedbackCardProps) {
-    const { name, startAt, address } = shiftData;
+export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
+    const { name, startAt, address, volunteerTypeAllocations } = shiftData;
+    const { data: userVolTypesData } = useVoltypesForUser(userId);
+
+    // show forms based on volunteer roles
+    const userVolTypes = userVolTypesData?.data;
+    const shiftVolTypes = volunteerTypeAllocations;
+    const volType = userVolTypes?.find((userVolType) => {
+        return shiftVolTypes?.some((shiftVolType) => userVolType._id === shiftVolType.type);
+    });
+
+    const [showFeedbackForm, setShowFeedbackForm] = useState<boolean>(false);
+
+    const handleFeedbackForm = () => {
+        setShowFeedbackForm(true);
+    };
 
     const dateString = new Date(startAt).toLocaleString([], {
         year: "numeric",
@@ -45,6 +66,12 @@ export default function FeedbackCard({ shiftData }: FeedbackCardProps) {
         ...latoFont,
     };
 
+    const onFeedbackFormClose = () => {
+        // change to async once api done
+        setShowFeedbackForm(false);
+        //await refetchVolTypeUser(); TODO when api finished
+    };
+
     return (
         <>
             <Card
@@ -70,9 +97,41 @@ export default function FeedbackCard({ shiftData }: FeedbackCardProps) {
                             <img style={{ margin: "0 5px 0 0" }} src={calendarIcon} alt="date icon" />
                             {dateString}
                         </Card.Text>
-                        <Button style={{ borderRadius: "4rem", padding: "0.5rem 1.5rem", ...buttonTextStyle }}>
+                        <Button
+                            style={{ borderRadius: "4rem", padding: "0.5rem 1.5rem", ...buttonTextStyle }}
+                            variant="success"
+                            onClick={() => handleFeedbackForm()}
+                        >
                             {"Complete"}
-                        </Button>{" "}
+                        </Button>
+                        {showFeedbackForm && volType?.name === "General Volunteer" && (
+                            <VolunteerFeedbackForm
+                                onClose={() => {
+                                    void onFeedbackFormClose();
+                                }}
+                            />
+                        )}
+                        {showFeedbackForm && volType?.name === "Ambassador" && (
+                            <AmbassadorFeedbackForm
+                                onClose={() => {
+                                    void onFeedbackFormClose();
+                                }}
+                            />
+                        )}
+                        {showFeedbackForm && volType?.name === "SPROUT" && (
+                            <SproutFeedbackForm
+                                onClose={() => {
+                                    void onFeedbackFormClose();
+                                }}
+                            />
+                        )}
+                        {showFeedbackForm && volType?.name === "Lead SPROUT" && (
+                            <LeadSproutFeedbackForm
+                                onClose={() => {
+                                    void onFeedbackFormClose();
+                                }}
+                            />
+                        )}
                     </Stack>
                 </Card.Body>
             </Card>
