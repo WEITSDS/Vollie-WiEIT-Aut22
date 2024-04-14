@@ -25,6 +25,11 @@ export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
         return shiftVolTypes?.some((shiftVolType) => userVolType._id === shiftVolType.type);
     });
 
+    // testing
+    console.log(volType);
+    console.log(userVolTypes);
+    console.log(shiftVolTypes);
+
     const [showFeedbackForm, setShowFeedbackForm] = useState<boolean>(false);
 
     const handleFeedbackForm = () => {
@@ -111,13 +116,14 @@ export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
                                 }}
                             />
                         )}
-                        {showFeedbackForm && volType?.name === "Ambassador" && (
-                            <AmbassadorFeedbackForm
-                                onClose={() => {
-                                    void onFeedbackFormClose();
-                                }}
-                            />
-                        )}
+                        {showFeedbackForm &&
+                            volType?.name === "Ambassador " && ( // there's a space after name
+                                <AmbassadorFeedbackForm
+                                    onClose={() => {
+                                        void onFeedbackFormClose();
+                                    }}
+                                />
+                            )}
                         {showFeedbackForm && volType?.name === "SPROUT" && (
                             <SproutFeedbackForm
                                 onClose={() => {
