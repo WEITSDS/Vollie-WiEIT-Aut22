@@ -1,5 +1,4 @@
 import { IShift } from "../api/shiftApi";
-import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
 import { Button, Card, Stack } from "react-bootstrap";
 import locationIcon from "../assets/location.svg";
 import calendarIcon from "../assets/calendar.svg";
@@ -8,6 +7,7 @@ import { VolunteerFeedbackForm } from "./volunteerFeedbackForm";
 import { AmbassadorFeedbackForm } from "./ambassadorFeedbackForm";
 import { SproutFeedbackForm } from "./sproutFeedbackForm";
 import { LeadSproutFeedbackForm } from "./leadSproutFeedbackForm";
+import { useVolunteerTypeById } from "../hooks/useVolunteerTypeById";
 
 type FeedbackCardProps = {
     shiftData: IShift;
@@ -15,20 +15,18 @@ type FeedbackCardProps = {
 };
 
 export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
-    const { name, startAt, address, volunteerTypeAllocations } = shiftData;
-    const { data: userVolTypesData } = useVoltypesForUser(userId);
+    const { name, startAt, address } = shiftData;
 
-    // show forms based on volunteer roles
-    const userVolTypes = userVolTypesData?.data;
-    const shiftVolTypes = volunteerTypeAllocations;
-    const volType = userVolTypes?.find((userVolType) => {
-        return shiftVolTypes?.some((shiftVolType) => userVolType._id === shiftVolType.type);
+    const shiftUsers = shiftData.users; //type Array<IShiftUser>
+    const usersShiftData = shiftUsers.find((user) => {
+        return user.user === userId;
     });
 
-    // testing
-    console.log(volType);
-    console.log(userVolTypes);
-    console.log(shiftVolTypes);
+    const type = usersShiftData?.chosenVolunteerType
+        ? useVolunteerTypeById(usersShiftData?.chosenVolunteerType)
+        : undefined;
+
+    const volType = type?.data?.data;
 
     const [showFeedbackForm, setShowFeedbackForm] = useState<boolean>(false);
 
