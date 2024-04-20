@@ -35,13 +35,7 @@ export const AmbassadorFeedbackForm = (props: AmbassadorFeedbackProps) => {
     const { onClose } = props || {};
 
     function disabled() {
-        return (
-            feedback.sessionActivities.length == 0 ||
-            feedback.experience.length == 0 ||
-            feedback.lessons.length == 0 ||
-            feedback.comments.length == 0 ||
-            feedback.rating == 0
-        );
+        return feedback.rating == 0;
     }
 
     // if ambassador, all optional except for rating

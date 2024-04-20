@@ -48,7 +48,8 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
                             it here: (Optional)
                         </Form.Label>
                         <Form.Control
-                            type="text"
+                            as="textarea"
+                            rows={2}
                             placeholder="Enter feedback..."
                             name="generalFeedback"
                             value={feedback.generalFeedback}

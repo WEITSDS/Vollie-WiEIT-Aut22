@@ -70,7 +70,8 @@ export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
                     <Form.Group controlId="studentEngagment" className="mb-3">
                         <Form.Label>How engaged were the students?</Form.Label>
                         <Form.Control
-                            type="text"
+                            as="textarea"
+                            rows={2}
                             placeholder="Student Engagement..."
                             name="studentEngagement"
                             value={feedback.studentEngagement}
@@ -81,7 +82,8 @@ export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
                     <Form.Group controlId="teacherEngagement" className="mb-3">
                         <Form.Label>How engaged were the teacher(s)?</Form.Label>
                         <Form.Control
-                            type="text"
+                            as="textarea"
+                            rows={2}
                             placeholder="Teacher Engagement..."
                             name="teacherEngagement"
                             value={feedback.teacherEngagement}
@@ -94,7 +96,8 @@ export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
                             What was the best part of the session? (in terms of classroom delivery or content)
                         </Form.Label>
                         <Form.Control
-                            type="text"
+                            as="textarea"
+                            rows={2}
                             placeholder="Best part of the session..."
                             name="bestPart"
                             value={feedback.bestPart}
@@ -107,7 +110,8 @@ export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
                             What part of the session could be improved? (in terms of classroom delivery or content)
                         </Form.Label>
                         <Form.Control
-                            type="text"
+                            as="textarea"
+                            rows={2}
                             placeholder="Improvements..."
                             name="partImproved"
                             value={feedback.partImproved}
@@ -120,7 +124,8 @@ export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
                             How could this part be improved? (in terms of classroom delivery or content)
                         </Form.Label>
                         <Form.Control
-                            type="text"
+                            as="textarea"
+                            rows={2}
                             placeholder="This can be improved by..."
                             name="improvementSuggestion"
                             value={feedback.improvementSuggestion}
@@ -134,7 +139,8 @@ export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
                             them here: (Optional)
                         </Form.Label>
                         <Form.Control
-                            type="text"
+                            as="textarea"
+                            rows={2}
                             placeholder="Any comments..."
                             name="comments"
                             value={feedback.comments}

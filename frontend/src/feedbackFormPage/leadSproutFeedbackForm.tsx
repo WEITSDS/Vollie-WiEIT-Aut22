@@ -41,7 +41,6 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
             feedback.classroomContent.length == 0 ||
             feedback.teamDynamics.length == 0 ||
             feedback.managementStyles.length == 0 ||
-            feedback.comments.length == 0 ||
             feedback.rating == 0
         );
     }
@@ -54,13 +53,13 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
             </Modal.Header>
             <Modal.Body>
                 <Form>
-                    <Form.Group controlId="teachersAndfacilitators" className="mb-3">
+                    <Form.Group controlId="teachersAndFacilitators" className="mb-3">
                         <Form.Label>Who were the classroom teachers and the facilitators with each?</Form.Label>
                         <Form.Control
                             as="textarea"
                             rows={2}
                             placeholder=""
-                            name="teachersAndfacilitators"
+                            name="teachersAndFacilitators"
                             value={feedback.teachersAndFacilitators}
                             onChange={handleChange}
                         />
@@ -114,6 +113,8 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
                             them here: (Optional)
                         </Form.Label>
                         <Form.Control
+                            as="textarea"
+                            rows={2}
                             placeholder=""
                             name="comments"
                             value={feedback.comments}
