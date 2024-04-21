@@ -2,9 +2,10 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
+import { addFeedback } from "../api/feedbackAPI";
 
 interface VolunteerFeedbackProps {
-    //userId?: string;
+    userId: string | undefined;
     onClose: (success?: boolean) => void;
 }
 
@@ -26,7 +27,39 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
         if (feedback.rating == 0) {
             return setErrorMessage("Please provide a rating for your experience.");
         }
-        //void handleSubmit(); TODO once api finished - see addrolemodal for example
+
+        //setUploading(true);
+
+        void handleSubmit();
+    };
+
+    const handleSubmit = async () => {
+        let errorMessage = "";
+        try {
+            const response = await addFeedback(
+                props.userId || "",
+                feedback.rating.toString(),
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                feedback.generalFeedback,
+                ""
+            );
+            if (!response.success) {
+                errorMessage = response.message;
+                return;
+            }
+            if (props.onClose) props.onClose(true);
+        } catch (err) {
+            console.error(err);
+            errorMessage = "An unexpected error occurred.";
+        } finally {
+            setErrorMessage(errorMessage);
+            //setUploading(false);
+        }
     };
 
     const { onClose } = props || {};

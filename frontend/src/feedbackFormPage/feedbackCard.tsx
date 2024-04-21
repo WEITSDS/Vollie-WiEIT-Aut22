@@ -109,6 +109,7 @@ export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
                         </Button>
                         {showFeedbackForm && volType?.name === "General Volunteer" && (
                             <VolunteerFeedbackForm
+                                userId={userId}
                                 onClose={() => {
                                     void onFeedbackFormClose();
                                 }}
