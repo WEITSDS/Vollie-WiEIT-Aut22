@@ -13,11 +13,15 @@ export const createFeedback = async (req: Request, res: Response) => {
         session,
         experience,
         learnings,
+        keyLearnings,
         teacher,
         studentEngagement,
         teacherEngagement,
         improvements,
+        sessionImprovements,
         styles,
+        contentDelivery,
+        teamDynamics,
         rating,
     } = req.body;
     try {
@@ -27,11 +31,15 @@ export const createFeedback = async (req: Request, res: Response) => {
             session,
             experience,
             learnings,
+            keyLearnings,
             teacher,
             studentEngagement,
             teacherEngagement,
             improvements,
+            sessionImprovements,
             styles,
+            contentDelivery,
+            teamDynamics,
             rating,
         });
         await feedback.save();
@@ -43,26 +51,38 @@ export const createFeedback = async (req: Request, res: Response) => {
 
 export const updateFeedbackById = async (req: Request, res: Response) => {
     const {
+        user,
+        qualificationType,
         session,
         experience,
         learnings,
+        keyLearnings,
         teacher,
         studentEngagement,
         teacherEngagement,
         improvements,
+        sessionImprovements,
         styles,
+        contentDelivery,
+        teamDynamics,
         rating,
     } = req.body;
     try {
         const feedback = await Feedback.findByIdAndUpdate(req.params.id, {
+            user,
+            qualificationType,
             session,
             experience,
             learnings,
+            keyLearnings,
             teacher,
             studentEngagement,
             teacherEngagement,
             improvements,
+            sessionImprovements,
             styles,
+            contentDelivery,
+            teamDynamics,
             rating,
         });
         if (!feedback) {
