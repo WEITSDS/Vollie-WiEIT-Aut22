@@ -118,6 +118,7 @@ export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
                         {showFeedbackForm &&
                             volType?.name === "Ambassador " && ( // there's a space after name
                                 <AmbassadorFeedbackForm
+                                    userId={userId}
                                     onClose={() => {
                                         void onFeedbackFormClose();
                                     }}
@@ -125,6 +126,7 @@ export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
                             )}
                         {showFeedbackForm && volType?.name === "SPROUT" && (
                             <SproutFeedbackForm
+                                userId={userId}
                                 onClose={() => {
                                     void onFeedbackFormClose();
                                 }}
@@ -132,6 +134,7 @@ export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
                         )}
                         {showFeedbackForm && volType?.name === "Lead SPROUT" && (
                             <LeadSproutFeedbackForm
+                                userId={userId}
                                 onClose={() => {
                                     void onFeedbackFormClose();
                                 }}

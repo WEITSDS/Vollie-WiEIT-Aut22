@@ -45,8 +45,11 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
                 "",
                 "",
                 "",
-                feedback.generalFeedback,
-                ""
+                "",
+                "",
+                "",
+                "",
+                feedback.generalFeedback
             );
             if (!response.success) {
                 errorMessage = response.message;

@@ -10,40 +10,49 @@ const PATH = `${window.location.origin}/api/feedback`;
 // Interface for Feedback
 export interface IBasicFeedback {
     user: string;
-    session?: string;
     experience?: string;
     learnings?: string;
     teacher?: string;
     studentEngagement?: string;
     teacherEngagement?: string;
     improvements?: string;
+    improvementMethods?: string;
     styles?: string;
-    rating: string;
+    content?: string;
+    teamDynamics?: string;
+    additionalComments?: string;
+    rating?: string;
 }
 
 export async function addFeedback(
     user: string,
     rating: string,
-    session?: string,
     experience?: string,
     learnings?: string,
     teacher?: string,
     studentEngagement?: string,
     teacherEngagement?: string,
     improvements?: string,
-    styles?: string
+    improvementMethods?: string,
+    styles?: string,
+    content?: string,
+    teamDynamics?: string,
+    additionalComments?: string
 ): Promise<ResponseWithStatus> {
     const payload: IBasicFeedback = {
         user,
         rating,
-        session,
         experience,
         learnings,
         teacher,
         studentEngagement,
         teacherEngagement,
         improvements,
+        improvementMethods,
         styles,
+        content,
+        teamDynamics,
+        additionalComments,
     };
     return await postAndGetBasicResponse(`${PATH}/create`, payload as unknown as Record<string, unknown>);
 }

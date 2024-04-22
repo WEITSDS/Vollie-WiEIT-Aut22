@@ -2,9 +2,10 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
+import { addFeedback } from "../api/feedbackAPI";
 
 interface AmbassadorFeedbackProps {
-    // userId?: string;
+    userId: string | undefined;
     onClose: (success?: boolean) => void;
 }
 
@@ -29,7 +30,42 @@ export const AmbassadorFeedbackForm = (props: AmbassadorFeedbackProps) => {
         if (feedback.rating == 0) {
             return setErrorMessage("Please provide a rating for your experience.");
         }
-        // void handleSubmit();
+
+        //setUploading(true);
+
+        void handleSubmit();
+    };
+
+    const handleSubmit = async () => {
+        let errorMessage = "";
+        try {
+            const response = await addFeedback(
+                props.userId || "",
+                feedback.rating.toString(),
+                feedback.sessionActivities, // experience
+                feedback.lessons, // learnings
+                "",
+                "",
+                "",
+                feedback.experience, // improvements
+                "",
+                "",
+                "",
+                "",
+                feedback.comments
+            );
+            if (!response.success) {
+                errorMessage = response.message;
+                return;
+            }
+            if (props.onClose) props.onClose(true);
+        } catch (err) {
+            console.error(err);
+            errorMessage = "An unexpected error occurred.";
+        } finally {
+            setErrorMessage(errorMessage);
+            //setUploading(false);
+        }
     };
 
     const { onClose } = props || {};
@@ -57,7 +93,6 @@ export const AmbassadorFeedbackForm = (props: AmbassadorFeedbackProps) => {
                             onChange={handleChange}
                         />
                     </Form.Group>
-
                     <Form.Group controlId="experience" className="mb-3">
                         <Form.Label>How did you find the experience?</Form.Label>
                         <Form.Control
@@ -69,7 +104,6 @@ export const AmbassadorFeedbackForm = (props: AmbassadorFeedbackProps) => {
                             onChange={handleChange}
                         />
                     </Form.Group>
-
                     <Form.Group controlId="lessons" className="mb-3">
                         <Form.Label>What were some key learnings from the experience?</Form.Label>
                         <Form.Control
