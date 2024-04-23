@@ -17,6 +17,7 @@ import { removeVolunteerType, setApprovalUserVolunteerType } from "../api/userAp
 import { loggedInUserIsAdmin } from "../protectedRoute";
 import { AddRoleModal, ConfirmDeleteModal } from "./volunteer/addRoleModal";
 import { IVolunteerTypeUserWithApproved } from "../api/volTypeAPI";
+import { useTotalHoursWorked } from "../hooks/useTotalHoursWorked";
 
 export const ProfilePage = () => {
     const { id } = useParams();
@@ -27,6 +28,8 @@ export const ProfilePage = () => {
     const [selectedVolType, setselectedVolType] = useState<IVolunteerTypeUserWithApproved | null>(null);
 
     const isAdmin = loggedInUserIsAdmin();
+
+    const { data: data } = useTotalHoursWorked(user?._id);
 
     const {
         data: userVolTypesData,
@@ -137,6 +140,25 @@ export const ProfilePage = () => {
                                 )}
                             </div>
                         </div>
+
+                        <div className="ambassador-hour-tracking">
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th> Cohort Name</th>
+                                        <th> Hours Worked</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data?.data?.map((cohortName, totalHours) => (
+                                        <tr>
+                                            {cohortName}: {totalHours} hourst
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </div>
+
                         <div className="volunteer-type-table" hidden={!isAdmin && !editingSelf}>
                             <Table striped bordered hover>
                                 <thead>

@@ -223,6 +223,12 @@ export async function getMyShifts(userId: string | undefined): Promise<ResponseW
         : await getDataResponse(`${ROOT_URL}/api/shifts/get-user-shifts/${userId}`);
 }
 
+export async function getTotalHoursWorked(userId: string | undefined): Promise<ResponseWithData<IShift[]>> {
+    return typeof userId === "undefined"
+        ? Promise.reject(new Error("Invalid id"))
+        : await getDataResponse(`${ROOT_URL}/api/shifts/total-user-hours/${userId}`);
+}
+
 export async function getShiftById(shiftId: string): Promise<ResponseWithData<IShift>> {
     return await getDataResponse(`${ROOT_URL}/api/shifts/shift/${shiftId}`);
 }
