@@ -119,7 +119,6 @@ const RegisterPage = () => {
             alert("Registered Successfully");
             window.location.href = "/home";
         } else {
-            console.log(registerAttempt);
             setexternalError(registerAttempt.message);
         }
     };

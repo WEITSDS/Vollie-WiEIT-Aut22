@@ -48,7 +48,6 @@ export class LoginPage extends React.Component<Record<string, never>, LoginState
 
         if (loginAttempt.success) {
             const user = await getUser();
-            console.log("userLog", user);
             if (user.data && !user.data.verified) {
                 this.showOTPVerifierModal();
                 return;
