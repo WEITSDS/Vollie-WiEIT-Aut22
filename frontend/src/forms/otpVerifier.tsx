@@ -123,7 +123,7 @@ export class OTPVerifier extends React.Component<OTPProps, OTPState> {
                         <p className="display-6">Enter your OTP</p>
                     </ModalTitle>
                     <div className="fs-5">
-                        <p className="fw-lighter">
+                        <p className="fw-lighter text-center">
                             Please enter the code sent to your UTS email account below{otpReason ? ` ${otpReason}` : ""}
                             .
                         </p>

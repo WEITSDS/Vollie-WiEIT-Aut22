@@ -89,3 +89,29 @@
     right: 0;
     padding: 0 1rem;
 }
+
+.availability-filter {
+    display: flex;
+    gap: 30px;
+}
+
+
+
+.availability-radio-buttons input[type="radio"] {
+
+    width: 20px; /* Adjust width and height to make the radio button bigger */
+    height: 20px;
+    outline: none; /* Remove outline when focused */
+    padding-right: 5%;
+    gap: 5%;
+    padding: 10%;
+    cursor: pointer;
+
+}
+
+.availability-radio-buttons {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    gap: 10px; /* Adjust the gap between the radio button and label */
+    margin-top: -3%;
+}
