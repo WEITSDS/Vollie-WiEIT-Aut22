@@ -87,7 +87,7 @@ export const AmbassadorFeedbackForm = (props: AmbassadorFeedbackProps) => {
                         <Form.Control
                             as="textarea"
                             rows={2}
-                            placeholder=""
+                            placeholder="Session activities..."
                             name="sessionActivities"
                             value={feedback.sessionActivities}
                             onChange={handleChange}
@@ -98,7 +98,7 @@ export const AmbassadorFeedbackForm = (props: AmbassadorFeedbackProps) => {
                         <Form.Control
                             as="textarea"
                             rows={2}
-                            placeholder=""
+                            placeholder="Experience..."
                             name="experience"
                             value={feedback.experience}
                             onChange={handleChange}
@@ -109,7 +109,7 @@ export const AmbassadorFeedbackForm = (props: AmbassadorFeedbackProps) => {
                         <Form.Control
                             as="textarea"
                             rows={2}
-                            placeholder=""
+                            placeholder="Key learnings..."
                             name="lessons"
                             value={feedback.lessons}
                             onChange={handleChange}
@@ -120,7 +120,7 @@ export const AmbassadorFeedbackForm = (props: AmbassadorFeedbackProps) => {
                         <Form.Control
                             as="textarea"
                             rows={2}
-                            placeholder=""
+                            placeholder="Comments..."
                             name="comments"
                             value={feedback.comments}
                             onChange={handleChange}

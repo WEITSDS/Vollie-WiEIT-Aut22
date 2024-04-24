@@ -94,7 +94,7 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
                         <Form.Control
                             as="textarea"
                             rows={2}
-                            placeholder=""
+                            placeholder="Teachers and facilitators..."
                             name="teachersAndFacilitators"
                             value={feedback.teachersAndFacilitators}
                             onChange={handleChange}
@@ -106,7 +106,7 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
                         <Form.Control
                             as="textarea"
                             rows={2}
-                            placeholder=""
+                            placeholder="Classroom content..."
                             name="classroomContent"
                             value={feedback.classroomContent}
                             onChange={handleChange}
@@ -121,7 +121,7 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
                         <Form.Control
                             as="textarea"
                             rows={2}
-                            placeholder=""
+                            placeholder="Team dynamics..."
                             name="teamDynamics"
                             value={feedback.teamDynamics}
                             onChange={handleChange}
@@ -137,7 +137,7 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
                         <Form.Control
                             as="textarea"
                             rows={2}
-                            placeholder=""
+                            placeholder="Management styles..."
                             name="managementStyles"
                             value={feedback.managementStyles}
                             onChange={handleChange}
@@ -151,7 +151,7 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
                         <Form.Control
                             as="textarea"
                             rows={2}
-                            placeholder=""
+                            placeholder="Comments..."
                             name="comments"
                             value={feedback.comments}
                             onChange={handleChange}
