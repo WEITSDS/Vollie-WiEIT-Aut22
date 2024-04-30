@@ -6,6 +6,15 @@ import Feedback from "./feedbacks.model";
 
 const logger = new Logger({ name: "feedback.controller" });
 
+export const getAllFeedback = async (_req: Request, res: Response) => {
+    try {
+        const feedbacks = await Feedback.find();
+        res.status(200).json({ feedbacks, success: true });
+    } catch (err) {
+        handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
+    }
+};
+
 export const createFeedback = async (req: Request, res: Response) => {
     const {
         user,

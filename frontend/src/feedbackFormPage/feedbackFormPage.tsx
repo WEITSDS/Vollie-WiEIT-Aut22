@@ -16,7 +16,16 @@ export const FeedbackFormsPage = () => {
     const { isLoading = true, isError, data, error } = useMyShifts(userId);
 
     // generate feedback card if shift completed and school outreach
-    const completedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed);
+
+    // pending forms
+    const pcompletedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed && !shift.formCompleted);
+    const pschoolShifts = data?.data?.filter((shift) => shift.category === "School Outreach");
+    const pcompletedSchoolShifts = pschoolShifts?.filter((schoolShift) => {
+        return pcompletedShifts?.some((completedShift) => schoolShift._id === completedShift.shift._id);
+    });
+
+    // completed forms
+    const completedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed && shift.formCompleted);
     const schoolShifts = data?.data?.filter((shift) => shift.category === "School Outreach");
     const completedSchoolShifts = schoolShifts?.filter((schoolShift) => {
         return completedShifts?.some((completedShift) => schoolShift._id === completedShift.shift._id);
@@ -47,23 +56,39 @@ export const FeedbackFormsPage = () => {
                                 <h1>My Feedback Forms</h1>
                             </div>
 
+                            {/* show completed shifts and pending forms */}
                             {currentView === "pending" && (
                                 <div className="pendingFormsList-container">
                                     {isLoading && <p>Loading feedback forms...</p>}
                                     {isError && <p>There was a server error while loading feedback forms... {error}</p>}
-                                    {completedSchoolShifts &&
-                                        completedSchoolShifts.map((shift) => (
-                                            <FeedbackCard key={shift._id} userId={userId} shiftData={shift} />
+                                    {pcompletedSchoolShifts &&
+                                        pcompletedSchoolShifts.map((shift) => (
+                                            <FeedbackCard
+                                                key={shift._id}
+                                                userId={userId}
+                                                shiftData={shift}
+                                                view={"pending"}
+                                            />
                                         ))}
                                     {!isLoading && data?.data?.length === 0 && <p>No feedback forms.</p>}
                                 </div>
                             )}
 
+                            {/* show completed shifts and completed forms */}
                             {currentView === "completed" && (
                                 <div className="completedFormsList-container">
                                     {isLoading && <p>Loading feedback forms...</p>}
                                     {isError && <p>There was a server error while loading feedback forms... {error}</p>}
-                                    {!isLoading && <p>No feedback forms.</p>}
+                                    {completedSchoolShifts &&
+                                        completedSchoolShifts.map((shift) => (
+                                            <FeedbackCard
+                                                key={shift._id}
+                                                userId={userId}
+                                                shiftData={shift}
+                                                view={"completed"}
+                                            />
+                                        ))}
+                                    {!isLoading && data?.data?.length === 0 && <p>No feedback forms.</p>}
                                 </div>
                             )}
                         </div>

@@ -12,10 +12,11 @@ import { useVolunteerTypeById } from "../hooks/useVolunteerTypeById";
 type FeedbackCardProps = {
     shiftData: IShift;
     userId: string | undefined;
+    view: string;
 };
 
-export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
-    const { name, startAt, address } = shiftData;
+export default function FeedbackCard({ shiftData, userId, view }: FeedbackCardProps) {
+    const { _id, name, startAt, address } = shiftData;
 
     const shiftUsers = shiftData.users; //type Array<IShiftUser>
     const usersShiftData = shiftUsers.find((user) => {
@@ -105,11 +106,13 @@ export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
                             variant="success"
                             onClick={() => handleFeedbackForm()}
                         >
-                            {"Complete"}
+                            {view == "pending" ? "Complete" : "View"}
                         </Button>
                         {showFeedbackForm && volType?.name === "General Volunteer" && (
                             <VolunteerFeedbackForm
+                                shiftId={_id}
                                 userId={userId}
+                                view={view}
                                 onClose={() => {
                                     void onFeedbackFormClose();
                                 }}
@@ -118,7 +121,9 @@ export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
                         {showFeedbackForm &&
                             volType?.name === "Ambassador " && ( // there's a space after name
                                 <AmbassadorFeedbackForm
+                                    shiftId={_id}
                                     userId={userId}
+                                    // view={view}
                                     onClose={() => {
                                         void onFeedbackFormClose();
                                     }}
@@ -126,7 +131,9 @@ export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
                             )}
                         {showFeedbackForm && volType?.name === "SPROUT" && (
                             <SproutFeedbackForm
+                                shiftId={_id}
                                 userId={userId}
+                                // view={view}
                                 onClose={() => {
                                     void onFeedbackFormClose();
                                 }}
@@ -134,7 +141,9 @@ export default function FeedbackCard({ shiftData, userId }: FeedbackCardProps) {
                         )}
                         {showFeedbackForm && volType?.name === "Lead SPROUT" && (
                             <LeadSproutFeedbackForm
+                                shiftId={_id}
                                 userId={userId}
+                                // view={view}
                                 onClose={() => {
                                     void onFeedbackFormClose();
                                 }}

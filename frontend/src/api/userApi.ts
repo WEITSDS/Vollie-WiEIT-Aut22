@@ -97,6 +97,7 @@ export interface IUserShift {
     shift: UserShift;
     approved: boolean;
     completed: boolean;
+    formCompleted: boolean; // for forms
     startAt: Date;
     endAt: Date;
     name: string;
@@ -140,6 +141,10 @@ export async function setApprovalUserVolunteerType(id: string, userId: string, s
 
 export async function setCompleteShift(userId: string, shiftid: string, completionStatus: string) {
     return patch(`${PATH}/${userId}/set-complete-shift/${shiftid}/${completionStatus}`);
+}
+
+export async function setCompleteForm(userId: string, shiftid: string, completionStatus: string) {
+    return patch(`${PATH}/${userId}/set-complete-form/${shiftid}/${completionStatus}`);
 }
 
 export async function assignVolunteerType(userId: string, volunteerTypeId: string) {

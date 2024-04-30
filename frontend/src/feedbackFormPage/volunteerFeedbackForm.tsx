@@ -1,15 +1,21 @@
 import { useState } from "react";
+// import { useOwnUser } from "../hooks/useOwnUser";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { addFeedback } from "../api/feedbackAPI";
 
 interface VolunteerFeedbackProps {
+    shiftId: string | undefined;
     userId: string | undefined;
+    view: string;
     onClose: (success?: boolean) => void;
 }
 
 export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
+    // const userQuery = useOwnUser();
+    // const shift = userQuery.data?.data?.shifts.find((shift) => shift.shift._id === props.shiftId);
+
     const [feedback, setFeedback] = useState({
         generalFeedback: "",
         rating: 0,
@@ -55,6 +61,9 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
                 errorMessage = response.message;
                 return;
             }
+
+            // shift?.formCompleted === true;
+            // await setCompleteForm(props.userId, props.shiftId, "complete");
             if (props.onClose) props.onClose(true);
         } catch (err) {
             console.error(err);

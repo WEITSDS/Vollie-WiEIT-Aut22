@@ -5,6 +5,7 @@ import Modal from "react-bootstrap/Modal";
 import { addFeedback } from "../api/feedbackAPI";
 
 interface AmbassadorFeedbackProps {
+    shiftId: string;
     userId: string | undefined;
     onClose: (success?: boolean) => void;
 }
