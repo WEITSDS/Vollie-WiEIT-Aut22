@@ -29,7 +29,7 @@ export const ProfilePage = () => {
 
     const isAdmin = loggedInUserIsAdmin();
 
-    const { data: data } = useTotalHoursWorked(user?._id);
+    const { data: totalhours } = useTotalHoursWorked(user?._id);
 
     const {
         data: userVolTypesData,
@@ -150,11 +150,13 @@ export const ProfilePage = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {data?.data?.map((cohortName, totalHours) => (
-                                        <tr>
-                                            {cohortName}: {totalHours} hourst
-                                        </tr>
-                                    ))}
+                                    {totalhours?.data &&
+                                        Object.entries(totalhours.data).map(([cohortName, totalHours]) => (
+                                            <tr key={cohortName}>
+                                                <td>{cohortName}</td>
+                                                <td>{totalHours}</td>
+                                            </tr>
+                                        ))}
                                 </tbody>
                             </Table>
                         </div>
