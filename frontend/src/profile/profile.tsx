@@ -142,23 +142,24 @@ export const ProfilePage = () => {
                         </div>
 
                         <div className="ambassador-hour-tracking">
-                            <Table striped bordered hover>
-                                <thead>
-                                    <tr>
-                                        <th> Cohort Name</th>
-                                        <th> Hours Worked</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {totalhours?.data &&
-                                        Object.entries(totalhours.data).map(([cohortName, totalHours]) => (
+                            {totalhours && totalhours.data && (
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr>
+                                            <th>Cohort Name</th>
+                                            <th>Hours Worked</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {Object.entries(totalhours.data).map(([cohortName, totalHours]) => (
                                             <tr key={cohortName}>
                                                 <td>{cohortName}</td>
                                                 <td>{totalHours}</td>
                                             </tr>
                                         ))}
-                                </tbody>
-                            </Table>
+                                    </tbody>
+                                </Table>
+                            )}
                         </div>
 
                         <div className="volunteer-type-table" hidden={!isAdmin && !editingSelf}>
