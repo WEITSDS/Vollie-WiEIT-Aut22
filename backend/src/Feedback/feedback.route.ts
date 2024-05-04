@@ -33,6 +33,7 @@ import {
     getAllFeedback,
     // getAllFeedbackSortedByUserId,
     getAllFeedbackByUserId,
+    getAllCompletedFeedbackByUserId,
     downloadFeedbackAsCsv,
     downloadFeedbackAsExcel,
     getFeedbackById, // Add this import
@@ -47,6 +48,7 @@ router.post("/:id/update", wrapAsync(updateFeedbackById));
 router.delete("/:id/delete", wrapAsync(deleteFeedbackById));
 router.get("/all", wrapAsync(getAllFeedback));
 router.get("/all/sortedByUserId", wrapAsync(getAllFeedbackByUserId));
+router.get("/all/sortedByCompletedUser", wrapAsync(getAllCompletedFeedbackByUserId));
 
 // Route for downloading feedback as CSV
 router.get("/download-csv", wrapAsync(downloadFeedbackAsCsv));

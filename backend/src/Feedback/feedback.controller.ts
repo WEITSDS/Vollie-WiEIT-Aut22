@@ -56,6 +56,7 @@ export const createFeedback = async (req: Request, res: Response) => {
             contentDelivery,
             teamDynamics,
             rating,
+            formCompleted: false, // Set the default value for the formCompleted field
         });
         await feedback.save();
         res.status(200).json({ message: "Feedback created successfully", success: true });
@@ -81,6 +82,7 @@ export const updateFeedbackById = async (req: Request, res: Response) => {
         contentDelivery,
         teamDynamics,
         rating,
+        formCompleted,
     } = req.body;
     try {
         const feedback = await Feedback.findByIdAndUpdate(req.params.id, {
@@ -99,6 +101,7 @@ export const updateFeedbackById = async (req: Request, res: Response) => {
             contentDelivery,
             teamDynamics,
             rating,
+            formCompleted,
         });
         if (!feedback) {
             res.status(404).json({ message: "Feedback not found", success: false });
@@ -164,6 +167,21 @@ export const getFeedbackById = async (req: Request, res: Response): Promise<void
             return; // Ensure to return after sending response
         }
         res.status(200).json({ feedback, success: true });
+    } catch (err) {
+        handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
+        res.status(500).json({ error: "An unexpected error occurred while retrieving feedback." });
+    }
+};
+
+export const getAllCompletedFeedbackByUserId = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const requestingUser = req.session.user;
+        const feedbacks = await Feedback.find({ user: requestingUser?._id, formCompleted: true });
+        if (!feedbacks || feedbacks.length === 0) {
+            res.status(404).json({ message: "No feedback found for the given user", success: false });
+            return;
+        }
+        res.status(200).json({ feedbacks, success: true });
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
         res.status(500).json({ error: "An unexpected error occurred while retrieving feedback." });

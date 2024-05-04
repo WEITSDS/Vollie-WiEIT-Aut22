@@ -19,6 +19,7 @@ const FeedbackSchema: Schema = new Schema(
         contentDelivery: { type: String, required: false }, // for lead sprouts
         teamDynamics: { type: String, required: false }, // for lead sprouts
         rating: { type: String, required: true },
+        formCompleted: { type: Boolean, required: true },
     },
     {
         timestamps: true,

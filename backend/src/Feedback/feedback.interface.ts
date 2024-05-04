@@ -18,7 +18,8 @@ export function isIFeedback(args: unknown): args is IFeedback {
         typeof p.styles === "string" &&
         typeof p.contentDelivery === "string" &&
         typeof p.teamDynamics === "string" &&
-        typeof p.rating === "string"
+        typeof p.rating === "string" &&
+        typeof p.formCompleted === "boolean"
     );
 }
 
@@ -38,6 +39,7 @@ export interface IBasicFeedback {
     contentDelivery?: string;
     teamDynamics?: string;
     rating: string;
+    formCompleted: boolean;
 }
 
 export interface IFeedback extends Document, IBasicFeedback {}
