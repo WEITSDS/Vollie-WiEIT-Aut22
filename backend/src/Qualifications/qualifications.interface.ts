@@ -8,7 +8,7 @@ export function isIBasicQualification(args: unknown): args is IBasicQualificatio
         // typeof p.title === "string" &&
         // typeof p.description === "string" &&
         // typeof p.filePath === "string" &&
-        (typeof p.user === "string" || typeof p.user === "object") && // typeof p.fileId === "string" && // typeof p.user === "object"
+        (typeof p.user === "string" || typeof p.user === "object") && // typeof p.fileId === "string" &&//typeof p.user === "string" &&
         typeof p.wwccNumber === "string" && //* typeof p.dateOfbirth === "string" // typeof p.expiryDate === "string"
         typeof p.fullName === "string"
     );

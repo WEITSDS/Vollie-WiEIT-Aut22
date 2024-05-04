@@ -1,20 +1,3 @@
-// import mongoose from "mongoose";
-// import { Schema } from "mongoose";
-// import { IFeedback } from "./feedback.interface";
-
-// const VolunteerFeedbackSchema: Schema = new Schema(
-//     {
-//         user: { type: mongoose.Types.ObjectId, ref: "User" },
-//         qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType" },
-//         feedbackText: { type: String, required: false },
-//         feedbackRating: { type: String, required: true },
-//     },
-//     {
-//         timestamps: true,
-//     }
-// );
-
-// export default mongoose.model<IFeedback>("Feedback", VolunteerFeedbackSchema);
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
 import { IFeedback } from "./feedback.interface";
@@ -23,14 +6,18 @@ const FeedbackSchema: Schema = new Schema(
     {
         user: { type: mongoose.Types.ObjectId, ref: "User" },
         qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType" },
-        session: { type: String, required: true },
+        session: { type: String, required: false },
         experience: { type: String, required: false },
+        keyLearnings: { type: String, required: false }, // for ambassadors
         learnings: { type: String, required: false },
         teacher: { type: String, required: false },
         studentEngagement: { type: String, required: false },
         teacherEngagement: { type: String, required: false },
         improvements: { type: String, required: false },
+        sessionImprovements: { type: String, required: false }, // for sprouts
         styles: { type: String, required: false },
+        contentDelivery: { type: String, required: false }, // for lead sprouts
+        teamDynamics: { type: String, required: false }, // for lead sprouts
         rating: { type: String, required: true },
     },
     {
