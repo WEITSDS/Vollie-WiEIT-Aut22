@@ -25,6 +25,7 @@ export const createFeedback = async (req: Request, res: Response) => {
     const {
         user,
         qualificationType,
+        shift,
         experience,
         learnings,
         teacher,
@@ -42,6 +43,7 @@ export const createFeedback = async (req: Request, res: Response) => {
         const feedback = new Feedback({
             user,
             qualificationType,
+            shift,
             experience,
             learnings,
             teacher,
@@ -67,6 +69,7 @@ export const updateFeedbackById = async (req: Request, res: Response) => {
     const {
         user,
         qualificationType,
+        shift,
         experience,
         learnings,
         teacher,
@@ -85,6 +88,7 @@ export const updateFeedbackById = async (req: Request, res: Response) => {
         const feedback = await Feedback.findByIdAndUpdate(req.params.id, {
             user,
             qualificationType,
+            shift,
             experience,
             learnings,
             teacher,
