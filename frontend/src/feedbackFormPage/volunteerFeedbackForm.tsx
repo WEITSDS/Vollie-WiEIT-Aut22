@@ -21,6 +21,14 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
         rating: 0,
     });
 
+    /*useEffect(() => {
+    if (props.view == "completed") {
+        // getFeedback with userId
+        // sort until finding matching shift in returned forms
+        // set feedback variable above to feedback recieved that matches shift
+    }
+    })*/
+
     const [errorMessage, setErrorMessage] = useState("");
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +63,8 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
                 "",
                 "",
                 "",
-                feedback.generalFeedback
+                feedback.generalFeedback,
+                true
             );
             if (!response.success) {
                 errorMessage = response.message;
@@ -80,50 +89,87 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
         return feedback.rating == 0;
     }
 
-    return (
-        <Modal show={true} onHide={onClose} backdrop="static">
-            <Modal.Header closeButton>
-                <Modal.Title>Volunteer Feedback</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group controlId="generalFeedback" className="mb-3">
-                        <Form.Label>
-                            If you have any feedback, or things you would like us to know about the session, please note
-                            it here: (Optional)
-                        </Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={2}
-                            placeholder="Enter feedback..."
-                            name="generalFeedback"
-                            value={feedback.generalFeedback}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+    if (props.view == "pending") {
+        return (
+            <Modal show={true} onHide={onClose} backdrop="static">
+                <Modal.Header closeButton>
+                    <Modal.Title>Volunteer Feedback</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group controlId="generalFeedback" className="mb-3">
+                            <Form.Label>
+                                If you have any feedback, or things you would like us to know about the session, please
+                                note it here: (Optional)
+                            </Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={2}
+                                placeholder="Enter feedback..."
+                                name="generalFeedback"
+                                value={feedback.generalFeedback}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
 
-                    <Form.Group controlId="rating" className="mb-3">
-                        <Form.Label>Please rate your overall experience for this session:</Form.Label>
-                        <Form.Control
-                            type="number"
-                            name="rating"
-                            value={feedback.rating}
-                            min={1}
-                            max={5}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                </Form>
-                {errorMessage && <p>{errorMessage}</p>}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={() => onClose(true)}>
-                    Cancel
-                </Button>
-                <Button onClick={(e) => onSubmit(e)} disabled={disabled()}>
-                    Submit
-                </Button>
-            </Modal.Footer>
-        </Modal>
-    );
+                        <Form.Group controlId="rating" className="mb-3">
+                            <Form.Label>Please rate your overall experience for this session:</Form.Label>
+                            <Form.Control
+                                type="number"
+                                name="rating"
+                                value={feedback.rating}
+                                min={1}
+                                max={5}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Form>
+                    {errorMessage && <p>{errorMessage}</p>}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => onClose(true)}>
+                        Cancel
+                    </Button>
+                    <Button onClick={(e) => onSubmit(e)} disabled={disabled()}>
+                        Submit
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    } else {
+        return (
+            <Modal show={true} onHide={onClose} backdrop="static">
+                <Modal.Header closeButton>
+                    <Modal.Title>Volunteer Feedback</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group controlId="generalFeedback" className="mb-3">
+                            <Form.Label>
+                                If you have any feedback, or things you would like us to know about the session, please
+                                note it here: (Optional)
+                            </Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={2}
+                                name="generalFeedback"
+                                value={feedback.generalFeedback}
+                                disabled
+                            />
+                        </Form.Group>
+
+                        <Form.Group controlId="rating" className="mb-3">
+                            <Form.Label>Please rate your overall experience for this session:</Form.Label>
+                            <Form.Control type="number" name="rating" value={feedback.rating} disabled />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => onClose(true)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
 };

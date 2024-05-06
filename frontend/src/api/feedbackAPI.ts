@@ -22,6 +22,7 @@ export interface IBasicFeedback {
     teamDynamics?: string;
     additionalComments?: string;
     rating?: string;
+    formCompleted?: boolean;
 }
 
 export async function addFeedback(
@@ -37,7 +38,8 @@ export async function addFeedback(
     styles?: string,
     content?: string,
     teamDynamics?: string,
-    additionalComments?: string
+    additionalComments?: string,
+    formCompleted?: boolean
 ): Promise<ResponseWithStatus> {
     const payload: IBasicFeedback = {
         user,
@@ -53,6 +55,7 @@ export async function addFeedback(
         content,
         teamDynamics,
         additionalComments,
+        formCompleted,
     };
     return await postAndGetBasicResponse(`${PATH}/create`, payload as unknown as Record<string, unknown>);
 }

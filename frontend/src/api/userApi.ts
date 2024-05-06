@@ -97,7 +97,6 @@ export interface IUserShift {
     shift: UserShift;
     approved: boolean;
     completed: boolean;
-    formCompleted: boolean; // for forms
     startAt: Date;
     endAt: Date;
     name: string;

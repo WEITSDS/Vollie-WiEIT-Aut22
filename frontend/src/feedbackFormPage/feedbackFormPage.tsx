@@ -6,8 +6,6 @@ import ModalBody from "react-bootstrap/ModalBody";
 import FeedbackCard from "./feedbackCard";
 import { useState } from "react";
 
-//TODO - possibly add css file?
-
 export const FeedbackFormsPage = () => {
     const [currentView, setCurrentView] = useState("pending");
 
@@ -18,14 +16,14 @@ export const FeedbackFormsPage = () => {
     // generate feedback card if shift completed and school outreach
 
     // pending forms
-    const pcompletedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed && !shift.formCompleted);
+    const pcompletedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed);
     const pschoolShifts = data?.data?.filter((shift) => shift.category === "School Outreach");
     const pcompletedSchoolShifts = pschoolShifts?.filter((schoolShift) => {
         return pcompletedShifts?.some((completedShift) => schoolShift._id === completedShift.shift._id);
     });
 
     // completed forms
-    const completedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed && shift.formCompleted);
+    const completedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed);
     const schoolShifts = data?.data?.filter((shift) => shift.category === "School Outreach");
     const completedSchoolShifts = schoolShifts?.filter((schoolShift) => {
         return completedShifts?.some((completedShift) => schoolShift._id === completedShift.shift._id);
@@ -58,7 +56,7 @@ export const FeedbackFormsPage = () => {
 
                             {/* show completed shifts and pending forms */}
                             {currentView === "pending" && (
-                                <div className="pendingFormsList-container">
+                                <div className="shiftList-container">
                                     {isLoading && <p>Loading feedback forms...</p>}
                                     {isError && <p>There was a server error while loading feedback forms... {error}</p>}
                                     {pcompletedSchoolShifts &&
@@ -76,13 +74,13 @@ export const FeedbackFormsPage = () => {
 
                             {/* show completed shifts and completed forms */}
                             {currentView === "completed" && (
-                                <div className="completedFormsList-container">
+                                <div className="shiftList-container">
                                     {isLoading && <p>Loading feedback forms...</p>}
                                     {isError && <p>There was a server error while loading feedback forms... {error}</p>}
                                     {completedSchoolShifts &&
                                         completedSchoolShifts.map((shift) => (
                                             <FeedbackCard
-                                                key={shift._id}
+                                                key={shift._id} // feedback form id
                                                 userId={userId}
                                                 shiftData={shift}
                                                 view={"completed"}

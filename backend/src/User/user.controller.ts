@@ -405,45 +405,6 @@ export const setCompleteShift = async (req: Request, res: Response) => {
     }
 };
 
-export const setCompleteForm = async (req: Request, res: Response) => {
-    try {
-        const userObj = await User.findOne({ _id: req.session.user?._id });
-        if (!userObj) {
-            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
-            return;
-        }
-
-        //Cbeck to see if user is admin so they can mark other users as complete
-        // This should be adjusted to check if the user is a supervising volunteer not admin
-        // Will likely have to make DB adjustments for this to identify if user is supervisor
-        const targettedUserId = userObj._id;
-
-        const completionStatus = req.params.completionstatus === "complete";
-
-        //Add some checking to ensure the time is past that of the shift so it cant be completed before?
-        const completeShiftResult = await User.findOneAndUpdate(
-            { _id: targettedUserId, "shifts.shift": req.params.shiftid },
-            { $set: { "shifts.$.completed": completionStatus } }
-        );
-
-        if (completeShiftResult) {
-            res.status(200).json({
-                message: "User set completion success",
-                success: true,
-            });
-            return;
-        } else {
-            res.status(404).json({
-                message: "User or user shift not found",
-                success: true,
-            });
-            return;
-        }
-    } catch (err) {
-        handleError(logger, res, err, "Complete user shift failed");
-    }
-};
-
 // Sets the approval status of a particular volunteer type inside the user obj. Checks to make sure that type exists and that user has that vol type.
 export const setApprovalVolunteerTypeForUser = async (req: Request, res: Response) => {
     try {

@@ -12,12 +12,13 @@ const FeedbackSchema: Schema = new Schema(
         studentEngagement: { type: String, required: false },
         teacherEngagement: { type: String, required: false },
         improvements: { type: String, required: false },
-        improvementMethods: { type: String, required: false }, // for sprouts
+        improvementMethods: { type: String, required: false },
         styles: { type: String, required: false },
-        content: { type: String, required: false }, // for lead sprouts
-        teamDynamics: { type: String, required: false }, // for lead sprouts
-        additionalComments: { type: String, required: false }, // for sprouts
+        content: { type: String, required: false },
+        teamDynamics: { type: String, required: false },
+        additionalComments: { type: String, required: false },
         rating: { type: String, required: true },
+        formCompleted: { type: Boolean, required: true },
     },
     {
         timestamps: true,
