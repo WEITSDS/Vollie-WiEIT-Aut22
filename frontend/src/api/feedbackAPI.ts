@@ -2,7 +2,7 @@
 /* eslint-disable no-useless-catch */
 // FeedbackAPI.ts
 
-import { postAndGetBasicResponse, ResponseWithStatus } from "./utility";
+import { postAndGetBasicResponse, ResponseWithStatus, ResponseWithData, getDataResponse } from "./utility";
 
 // The base URL of your backend server
 const PATH = `${window.location.origin}/api/feedback`;
@@ -10,6 +10,7 @@ const PATH = `${window.location.origin}/api/feedback`;
 // Interface for Feedback
 export interface IBasicFeedback {
     user: string;
+    shift: string;
     experience?: string;
     learnings?: string;
     teacher?: string;
@@ -25,8 +26,13 @@ export interface IBasicFeedback {
     formCompleted?: boolean;
 }
 
+export async function getAllCompletedFeedbackByUserId(): Promise<ResponseWithData<IBasicFeedback[]>> {
+    return getDataResponse(`${PATH}/all/sortedByCompletedUser`);
+}
+
 export async function addFeedback(
     user: string,
+    shift: string,
     rating: string,
     experience?: string,
     learnings?: string,
@@ -43,6 +49,7 @@ export async function addFeedback(
 ): Promise<ResponseWithStatus> {
     const payload: IBasicFeedback = {
         user,
+        shift,
         rating,
         experience,
         learnings,

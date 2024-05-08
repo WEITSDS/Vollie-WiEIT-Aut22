@@ -5,29 +5,52 @@ import { WEITBackground } from "../components/background";
 import ModalBody from "react-bootstrap/ModalBody";
 import FeedbackCard from "./feedbackCard";
 import { useState } from "react";
+import { useFeedbackByUserId } from "../hooks/useFeedbackByUserId";
+import { IShift } from "../api/shiftApi";
 
 export const FeedbackFormsPage = () => {
+    // to store feedback data
     const [currentView, setCurrentView] = useState("pending");
 
     const userQuery = useOwnUser();
-    const userId = userQuery.data?.data?._id;
+    const userId = userQuery.data?.data?._id || "";
     const { isLoading = true, isError, data, error } = useMyShifts(userId);
+    const feedbackQuery = useFeedbackByUserId(userId);
 
-    // generate feedback card if shift completed and school outreach
-
-    // pending forms
-    const pcompletedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed);
-    const pschoolShifts = data?.data?.filter((shift) => shift.category === "School Outreach");
-    const pcompletedSchoolShifts = pschoolShifts?.filter((schoolShift) => {
-        return pcompletedShifts?.some((completedShift) => schoolShift._id === completedShift.shift._id);
-    });
-
-    // completed forms
+    // get user's completed school outreach shifts
     const completedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed);
     const schoolShifts = data?.data?.filter((shift) => shift.category === "School Outreach");
     const completedSchoolShifts = schoolShifts?.filter((schoolShift) => {
         return completedShifts?.some((completedShift) => schoolShift._id === completedShift.shift._id);
     });
+
+    // get completed forms
+    let feedback = feedbackQuery.data?.data;
+    if (feedbackQuery.data?.success != true) {
+        feedback = null;
+    }
+
+    console.log(completedSchoolShifts);
+
+    let pendingForms: IShift[] | undefined;
+
+    if (feedback != null) {
+        // pending forms
+        pendingForms = completedSchoolShifts?.filter((shift) => {
+            return feedback?.some((form) => shift._id !== form.shift);
+        });
+    } else {
+        pendingForms = completedSchoolShifts;
+    }
+
+    console.log(pendingForms);
+
+    // completed forms
+    const completedForms = completedSchoolShifts?.filter((shift) => {
+        return feedback?.some((form) => shift._id === form.shift);
+    });
+
+    console.log(completedForms);
 
     return (
         <>
@@ -59,8 +82,8 @@ export const FeedbackFormsPage = () => {
                                 <div className="shiftList-container">
                                     {isLoading && <p>Loading feedback forms...</p>}
                                     {isError && <p>There was a server error while loading feedback forms... {error}</p>}
-                                    {pcompletedSchoolShifts &&
-                                        pcompletedSchoolShifts.map((shift) => (
+                                    {pendingForms &&
+                                        pendingForms.map((shift) => (
                                             <FeedbackCard
                                                 key={shift._id}
                                                 userId={userId}
@@ -77,8 +100,8 @@ export const FeedbackFormsPage = () => {
                                 <div className="shiftList-container">
                                     {isLoading && <p>Loading feedback forms...</p>}
                                     {isError && <p>There was a server error while loading feedback forms... {error}</p>}
-                                    {completedSchoolShifts &&
-                                        completedSchoolShifts.map((shift) => (
+                                    {completedForms &&
+                                        completedForms.map((shift) => (
                                             <FeedbackCard
                                                 key={shift._id} // feedback form id
                                                 userId={userId}

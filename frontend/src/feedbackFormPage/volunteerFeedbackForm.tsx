@@ -52,6 +52,7 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
         try {
             const response = await addFeedback(
                 props.userId || "",
+                props.shiftId || "",
                 feedback.rating.toString(),
                 "",
                 "",
