@@ -5,6 +5,7 @@ import { IFeedback } from "./feedback.interface";
 const FeedbackSchema: Schema = new Schema(
     {
         user: { type: mongoose.Types.ObjectId, ref: "User" },
+        shift: { type: mongoose.Types.ObjectId, ref: "Shift" },
         qualificationType: { type: mongoose.Types.ObjectId, ref: "QualificationType" },
         session: { type: String, required: false },
         experience: { type: String, required: false },
