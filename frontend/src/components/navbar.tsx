@@ -61,6 +61,11 @@ export class NavigationBar extends React.Component<Record<string, never>, NavBar
                                 </Nav.Link>
                             )}
                             {currentUser?.isAdmin && (
+                                <Nav.Link href="/feedbackadmin" className="text-body">
+                                    <i className="bi bi-gear" /> Feedback
+                                </Nav.Link>
+                            )}
+                            {currentUser?.isAdmin && (
                                 <Nav.Link href="/settings" className="text-body">
                                     <i className="bi bi-gear" /> Settings
                                 </Nav.Link>

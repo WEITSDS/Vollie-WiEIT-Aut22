@@ -72,6 +72,9 @@ app.use("/api/users/admin", userAdminRoutes);
 //**Shift Routes */
 app.use("/api/shifts", shiftRoutes);
 
+//**Feedback Routes */
+app.use("/api/feedbacks", feedbackRoutes);
+
 // Qualification Type Routes
 app.use("/api/qualification-types", qualificationTypeRoutes);
 
