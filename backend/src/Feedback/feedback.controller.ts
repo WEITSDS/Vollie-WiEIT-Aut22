@@ -176,12 +176,12 @@ export const getFeedbackById = async (req: Request, res: Response): Promise<void
 export const getAllCompletedFeedbackByUserId = async (req: Request, res: Response): Promise<void> => {
     try {
         const requestingUser = req.session.user;
-        const feedbacks = await Feedback.find({ user: requestingUser?._id, formCompleted: true });
-        if (!feedbacks || feedbacks.length === 0) {
+        const data = await Feedback.find({ user: requestingUser?._id, formCompleted: true });
+        if (!data || data.length === 0) {
             res.status(404).json({ message: "No feedback found for the given user", success: false });
             return;
         }
-        res.status(200).json({ feedbacks, success: true });
+        res.status(200).json({ message: "Retrieved Completed Feedback Forms by UserId", data, success: true });
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
         res.status(500).json({ error: "An unexpected error occurred while retrieving feedback." });
