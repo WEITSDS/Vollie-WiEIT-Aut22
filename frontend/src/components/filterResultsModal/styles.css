@@ -1,14 +1,21 @@
+
 .filter-modal .modal-content {
     background: #8f8f8f;
+ 
 }
 
 .filter-modal .modal-body {
     display: flex;
     padding: 0;
+
 }
 
 .filter-modal .modal-header {
-    border-bottom: 3px solid black;
+    border-bottom: 3px solid #3a5fe2;
+    background-color: #f4f4f4;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+  
 }
 
 .left-section {
@@ -16,6 +23,12 @@
     width: 200px;
     padding: 1rem;
     min-height: 400px;
+    background-color: #f4f4f4;
+    justify-content: space-between; /* Align items with space between */
+    text-align: left; /* Align text to the left */
+    padding: 5%;
+    border-bottom-left-radius: 10px;
+    
 }
 
 .right-section {
@@ -43,14 +56,25 @@
     font-family: "Lato";
     font-style: normal;
     font-weight: 700;
-    font-size: 22px;
+    font-size: 20px;
     line-height: 30px;
     display: block;
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: left;
+    transition: 0.4s;
+    padding: 10%;
+     
 }
 
 .filter-modal .left-section button:hover {
     font-weight: 900px;
-    text-decoration: underline;
+    background-color: #3a5fe2;
+    color: #ffffff;
+    border-radius: 8px;
+  
+
+    
 }
 
 .filter-modal label:first-child {

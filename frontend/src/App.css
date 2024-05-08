@@ -235,8 +235,12 @@ div.form-body {
     color: white;
     padding-left: 16px;
     padding-right: 16px;
+    transition: 0.3s;
 }
 
 .reset-filter-button:hover {
     opacity: 95%;
+    padding: 13px;
+    padding-left: 19px;
+    padding-right: 19px;
 }

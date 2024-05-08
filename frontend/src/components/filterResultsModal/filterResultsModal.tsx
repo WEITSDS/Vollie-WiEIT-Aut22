@@ -214,7 +214,7 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                     setSelectedVenue("");
                                 }}
                             >
-                                Reset Filter
+                                Reset Filters
                             </button>
                         </div>
                     </form>
