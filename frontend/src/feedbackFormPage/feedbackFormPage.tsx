@@ -15,7 +15,7 @@ export const FeedbackFormsPage = () => {
     const userQuery = useOwnUser();
     const userId = userQuery.data?.data?._id || "";
     const { isLoading = true, isError, data, error } = useMyShifts(userId);
-    const feedbackQuery = useFeedbackByUserId(userId);
+    const feedbackQuery = useFeedbackByUserId();
 
     // get user's completed school outreach shifts
     const completedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed);
@@ -30,8 +30,6 @@ export const FeedbackFormsPage = () => {
         feedback = null;
     }
 
-    console.log(completedSchoolShifts);
-
     let pendingForms: IShift[] | undefined;
 
     if (feedback != null) {
@@ -42,8 +40,6 @@ export const FeedbackFormsPage = () => {
     } else {
         pendingForms = completedSchoolShifts;
     }
-
-    console.log(pendingForms);
 
     // completed forms
     const completedForms = completedSchoolShifts?.filter((shift) => {
