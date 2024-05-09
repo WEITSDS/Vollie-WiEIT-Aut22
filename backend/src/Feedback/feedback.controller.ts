@@ -14,6 +14,7 @@ import { StreamParser } from "@json2csv/plainjs";
 import { Request, Response } from "express";
 import { handleError } from "../utility";
 import Feedback from "./feedbacks.model";
+// import Shift from "../Shift/shift.model";
 import { Parser } from "json2csv";
 // import { Query } from "mongoose";
 // import Feedback from "./feedbacks.model";
@@ -128,8 +129,15 @@ export const deleteFeedbackById = async (req: Request, res: Response) => {
 
 export const getAllFeedback = async (_req: Request, res: Response) => {
     try {
-        const feedbacks = await Feedback.find();
-        res.status(200).json({ feedbacks, success: true });
+        const feedbacks = await Feedback.find().populate({
+            path: "shift",
+            select: "name venue",
+        });
+        res.status(200).json({
+            message: "success",
+            data: feedbacks,
+            success: true,
+        });
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
     }

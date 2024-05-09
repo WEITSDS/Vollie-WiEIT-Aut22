@@ -1,0 +1,36 @@
+.button-section{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px;
+
+}
+.download-button{
+    border-radius: 6px;
+    background-color: #0c50e3;
+    color: white;
+    border: none;
+    padding: 10px;
+    padding-left: 13px;
+    padding-right: 13px;
+    transition: 0.3s;
+}
+
+.download-button:hover{
+
+    padding-left: 14px;
+    padding-right: 14px;
+
+}
+
+.table-bg{
+    background-color: rgb(191, 229, 243);
+
+
+}
+
+.bdr {
+    border-radius: 12px;
+    overflow: hidden;
+
+  }

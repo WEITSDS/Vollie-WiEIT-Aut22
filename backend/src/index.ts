@@ -77,6 +77,9 @@ app.use("/api/qualification-types", qualificationTypeRoutes);
 
 // app.use("/api/feedback-types", feedbackRoutes);
 
+//**Feedback Routes */
+app.use("/api/feedbacks", feedbackRoutes);
+
 // Volunteer Type Routes
 app.use("/api/volunteer-types", volunteerTypeRoutes);
 
