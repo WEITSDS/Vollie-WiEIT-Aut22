@@ -50,7 +50,7 @@ export const FeedbackAdminPage = () => {
                                             <td>{item.user}</td>
                                             <td>{item.qualificationType}</td>
                                             <td>{/* Column 5 data */}</td>
-                                            <td>{item.shift.name}</td>
+                                            {/* <td>{item.shift.name}</td> */}
                                         </tr>
                                     ))}
                                 </tbody>
