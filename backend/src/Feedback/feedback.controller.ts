@@ -38,6 +38,7 @@ export const createFeedback = async (req: Request, res: Response) => {
         teamDynamics,
         additionalComments,
         rating,
+        formCompleted,
     } = req.body;
     try {
         const feedback = new Feedback({
@@ -56,7 +57,7 @@ export const createFeedback = async (req: Request, res: Response) => {
             teamDynamics,
             additionalComments,
             rating,
-            formCompleted: false, // Set the default value for the formCompleted field
+            formCompleted: formCompleted || false, // Set the default value for the formCompleted field
         });
         await feedback.save();
         res.status(200).json({ message: "Feedback created successfully", success: true });

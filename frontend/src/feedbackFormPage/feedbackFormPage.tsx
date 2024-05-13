@@ -9,44 +9,41 @@ import { useFeedbackByUserId } from "../hooks/useFeedbackByUserId";
 import { IShift } from "../api/shiftApi";
 
 export const FeedbackFormsPage = () => {
-    // to store feedback data
     const [currentView, setCurrentView] = useState("pending");
-
     const userQuery = useOwnUser();
     const userId = userQuery.data?.data?._id || "";
     const { isLoading = true, isError, data, error } = useMyShifts(userId);
-    const feedbackQuery = useFeedbackByUserId();
 
-    // get user's completed school outreach shifts
+    // completed school outreach shifts
     const completedShifts = userQuery?.data?.data?.shifts.filter((shift) => shift.completed);
     const schoolShifts = data?.data?.filter((shift) => shift.category === "School Outreach");
     const completedSchoolShifts = schoolShifts?.filter((schoolShift) => {
         return completedShifts?.some((completedShift) => schoolShift._id === completedShift.shift._id);
     });
 
-    // get completed forms
-    let feedback = feedbackQuery.data?.data;
-    if (feedbackQuery.data?.success != true) {
-        feedback = null;
-    }
-
-    let pendingForms: IShift[] | undefined;
-
-    if (feedback != null) {
-        // pending forms
-        pendingForms = completedSchoolShifts?.filter((shift) => {
-            return feedback?.some((form) => shift._id !== form.shift);
-        });
-    } else {
-        pendingForms = completedSchoolShifts;
-    }
-
     // completed forms
+    const feedbackQuery = useFeedbackByUserId();
+    const feedback = feedbackQuery.data?.data;
+    // KEEP THIS? userQuery didn't have it is all
+    // if (feedbackQuery.data?.success != true) {
+    //     feedback = null;
+    // }
+
+    // find matching completed id's in shifts
     const completedForms = completedSchoolShifts?.filter((shift) => {
         return feedback?.some((form) => shift._id === form.shift);
     });
 
-    console.log(completedForms);
+    // pending forms
+    let pendingForms: IShift[] | undefined;
+    if (feedback) {
+        // if there are completed forms, find matching pending id's in shifts
+        pendingForms = completedSchoolShifts?.filter((shift) => {
+            return !feedback?.some((form) => shift._id === form.shift);
+        });
+    } else {
+        pendingForms = completedSchoolShifts;
+    }
 
     return (
         <>
