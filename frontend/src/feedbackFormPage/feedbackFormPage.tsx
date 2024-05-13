@@ -24,10 +24,6 @@ export const FeedbackFormsPage = () => {
     // completed forms
     const feedbackQuery = useFeedbackByUserId();
     const feedback = feedbackQuery.data?.data;
-    // KEEP THIS? userQuery didn't have it is all
-    // if (feedbackQuery.data?.success != true) {
-    //     feedback = null;
-    // }
 
     // find matching completed id's in shifts
     const completedForms = completedSchoolShifts?.filter((shift) => {

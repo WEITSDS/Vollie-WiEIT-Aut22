@@ -71,9 +71,7 @@ export default function FeedbackCard({ shiftData, userId, view }: FeedbackCardPr
     };
 
     const onFeedbackFormClose = () => {
-        // change to async once api done
         setShowFeedbackForm(false);
-        //await refetchVolTypeUser(); TODO when api finished
     };
 
     return (

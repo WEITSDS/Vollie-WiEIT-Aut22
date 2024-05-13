@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { addFeedback } from "../api/feedbackAPI";
+import { useFeedbackByUserId } from "../hooks/useFeedbackByUserId";
 
 interface VolunteerFeedbackProps {
     shiftId: string | undefined;
@@ -21,15 +22,27 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
         rating: 0,
     });
 
-    /*useEffect(() => {
+    const [errorMessage, setErrorMessage] = useState("");
+    const completedFeedback = {
+        additionalComments: "",
+        rating: "",
+    };
+
     if (props.view == "completed") {
         // getFeedback with userId
-        // sort until finding matching shift in returned forms
-        // set feedback variable above to feedback recieved that matches shift
-    }
-    })*/
+        const feedbackQuery = useFeedbackByUserId();
+        const feedbackData = feedbackQuery.data?.data;
 
-    const [errorMessage, setErrorMessage] = useState("");
+        // sort until finding matching shift in returned forms
+        const matchingFeedback = feedbackData?.filter((data) => data.shift === props.shiftId);
+        const firstMatching = matchingFeedback?.at(0);
+
+        // set feedback variable above to feedback recieved that matches shift
+        if (firstMatching != undefined) {
+            completedFeedback.additionalComments = firstMatching.additionalComments || "";
+            completedFeedback.rating = firstMatching.rating || "0";
+        }
+    }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -41,8 +54,6 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
         if (feedback.rating == 0) {
             return setErrorMessage("Please provide a rating for your experience.");
         }
-
-        //setUploading(true);
 
         void handleSubmit();
     };
@@ -154,14 +165,19 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
                                 as="textarea"
                                 rows={2}
                                 name="generalFeedback"
-                                value={feedback.generalFeedback}
+                                value={completedFeedback?.additionalComments}
                                 disabled
                             />
                         </Form.Group>
 
                         <Form.Group controlId="rating" className="mb-3">
                             <Form.Label>Please rate your overall experience for this session:</Form.Label>
-                            <Form.Control type="number" name="rating" value={feedback.rating} disabled />
+                            <Form.Control
+                                type="number"
+                                name="rating"
+                                value={parseInt(completedFeedback.rating || "0")}
+                                disabled
+                            />
                         </Form.Group>
                     </Form>
                 </Modal.Body>
