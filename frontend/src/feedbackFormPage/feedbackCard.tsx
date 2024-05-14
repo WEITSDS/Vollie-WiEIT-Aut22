@@ -131,7 +131,7 @@ export default function FeedbackCard({ shiftData, userId, view }: FeedbackCardPr
                             <SproutFeedbackForm
                                 shiftId={_id}
                                 userId={userId}
-                                // view={view}
+                                view={view}
                                 onClose={() => {
                                     void onFeedbackFormClose();
                                 }}
