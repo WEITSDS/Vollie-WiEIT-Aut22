@@ -33,9 +33,10 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
         rating: "",
     };
 
+    // getFeedback with userId
+    const feedbackQuery = useFeedbackByUserId();
+
     if (props.view == "completed") {
-        // getFeedback with userId
-        const feedbackQuery = useFeedbackByUserId();
         const feedbackData = feedbackQuery.data?.data;
 
         // sort until finding matching shift in returned forms
@@ -91,6 +92,7 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
                 errorMessage = response.message;
                 return;
             }
+            await feedbackQuery.refetch();
             if (props.onClose) props.onClose(true);
         } catch (err) {
             console.error(err);
