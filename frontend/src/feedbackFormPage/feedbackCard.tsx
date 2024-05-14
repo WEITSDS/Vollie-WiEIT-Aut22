@@ -141,7 +141,7 @@ export default function FeedbackCard({ shiftData, userId, view }: FeedbackCardPr
                             <LeadSproutFeedbackForm
                                 shiftId={_id}
                                 userId={userId}
-                                // view={view}
+                                view={view}
                                 onClose={() => {
                                     void onFeedbackFormClose();
                                 }}

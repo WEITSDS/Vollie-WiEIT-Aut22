@@ -363,9 +363,6 @@ export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
                     <Button variant="secondary" onClick={() => onClose(true)}>
                         Cancel
                     </Button>
-                    <Button onClick={(e) => onSubmit(e)} disabled={disabled()}>
-                        Submit
-                    </Button>
                 </Modal.Footer>
             </Modal>
         );
