@@ -83,8 +83,6 @@ export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
                 return;
             }
 
-            // shift?.formCompleted === true;
-            // await setCompleteForm(props.userId, props.shiftId, "complete");
             if (props.onClose) props.onClose(true);
         } catch (err) {
             console.error(err);

@@ -121,7 +121,7 @@ export default function FeedbackCard({ shiftData, userId, view }: FeedbackCardPr
                                 <AmbassadorFeedbackForm
                                     shiftId={_id}
                                     userId={userId}
-                                    // view={view}
+                                    view={view}
                                     onClose={() => {
                                         void onFeedbackFormClose();
                                     }}
