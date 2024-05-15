@@ -9,6 +9,8 @@ import { isIBasicUser, IUser, IUserVolunteerType, mapUserToUserSummary } from ".
 import VolunteerType from "../VolunteerType/volunteerType.model";
 import { sendVolunteerRequestEmail, sendVolunteerApprovalEmail } from "../mailer/mailer";
 import bcrypt from "bcrypt";
+import Shift from "../Shift/shift.model";
+// import { use } from "./user.route";
 
 const logger = new Logger({ name: "user.controller" });
 
@@ -185,6 +187,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
             firstName: userFields.firstName,
             lastName: userFields.lastName,
             lastLogin: 0,
+            lastShift: null,
             volunteerTypes: newVolunteerTypes,
         });
 
@@ -386,6 +389,26 @@ export const setCompleteShift = async (req: Request, res: Response) => {
             { _id: targettedUserId, "shifts.shift": req.params.shiftid },
             { $set: { "shifts.$.completed": completionStatus } }
         );
+        // update lastShift to the time of the completed shift
+        //find the shift endAt date (based on the shiftid??)
+        //set lastShift to be the endAt date^
+        const shift = await Shift.findOne({ _id: req.params.shiftid });
+        if (shift && completionStatus) {
+            //userObj.lastShift = shift.endAt;
+            const updatedUser = await User.findOneAndUpdate(
+                { _id: targettedUserId },
+                { $set: { lastShift: shift.endAt } }
+            );
+            console.log("updated lastShift to be the endAt date of the completed shift");
+            console.log(updatedUser);
+            console.log("endAt - " + shift.endAt.toLocaleString());
+            //console.log(userObj.lastShift.toLocaleString());
+            // if (!userLastShift) {
+            //     res.status(400).json({
+            //         message: "lastShift could not be updated",
+            //         success: true,
+            //     });
+        }
 
         if (completeShiftResult) {
             res.status(200).json({

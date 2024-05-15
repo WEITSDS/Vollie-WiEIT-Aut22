@@ -87,6 +87,7 @@ export interface User {
     verified: boolean;
     // qualifications: [];
     lastLogin: number;
+    lastShift: Date;
     registeredAt: number;
     isAdmin: boolean;
     shifts: IUserShift[];
