@@ -1291,8 +1291,9 @@ export async function getTotalHoursWorked(req: Request, res: Response) {
                 totalHours += shift.hours;
             });
 
-            // Store the total hours for this cohort
-            totalHoursByCohort[cohort.name] = totalHours;
+            // Store the total hours for this cohort (rounded to 2 dp)
+            const totalHoursSummed: number = Math.round(totalHours * 100) / 100;
+            totalHoursByCohort[cohort.name] = totalHoursSummed;
         }
 
         // consider adding this check too(from the getUserShifts method), but only checking that the user is themselves -
