@@ -149,3 +149,11 @@ export async function assignVolunteerType(userId: string, volunteerTypeId: strin
 export async function removeVolunteerType(userId: string, volunteerTypeId: string) {
     return patch(`${PATH}/${userId}/remove-volunteer-type/${volunteerTypeId}`);
 }
+
+export async function assignCohortType(userId: string, cohortId: string) {
+    return patch(`${PATH}/${userId}/assign-cohort-type/${cohortId}`);
+}
+
+export async function removeCohortType(userId: string, cohortId: string) {
+    return patch(`${PATH}/${userId}/remove-cohort-type/${cohortId}`);
+}
