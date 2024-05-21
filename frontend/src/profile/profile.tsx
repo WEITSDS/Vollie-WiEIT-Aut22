@@ -178,71 +178,69 @@ export const ProfilePage = () => {
                         </div>
                         <br></br>
                         <div className="ambassador-hour-tracking" hidden={!isAdmin && !editingSelf}>
-                            {totalhours && totalhours.data && (
-                                <>
-                                    <Table striped bordered hover>
-                                        <thead>
-                                            <tr>
-                                                <th>Cohort Name</th>
-                                                <th>Hours Worked</th>
-                                                {isAdmin && <th>Delete</th>}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {cohorts?.data &&
-                                                cohorts.data.map((cohort) => {
-                                                    return (
-                                                        <tr key={cohort._id}>
-                                                            <td>{cohort.name}</td>
-                                                            <td>
-                                                                {totalhours.data &&
-                                                                    totalhours.data[
-                                                                        cohort.name as keyof typeof totalhours.data
-                                                                    ]}
-                                                            </td>
-                                                            {isAdmin && (
-                                                                <td>
-                                                                    <Button
-                                                                        onClick={() => handleDeleteCohort(cohort)}
-                                                                        variant="danger"
-                                                                        disabled={!editingSelf && !isAdmin}
-                                                                    >
-                                                                        <i className="bi bi-trash" />
-                                                                    </Button>
-                                                                </td>
-                                                            )}
-                                                        </tr>
-                                                    );
-                                                })}
-                                        </tbody>
-                                    </Table>
-                                    {isAdmin && (
-                                        <Button
-                                            title="Add Cohort"
-                                            variant="success"
-                                            onClick={() => handleAddCohort()}
-                                            disabled={!editingSelf && !isAdmin}
-                                        >
-                                            Add Cohort {"   "}
-                                            <i className="bi bi-plus-square" />
-                                        </Button>
-                                    )}
-                                    {showAddCohortModal && user._id && (
-                                        <AddCohortModal
-                                            userId={user?._id}
-                                            onClose={() => {
-                                                void onAddCohortClose();
-                                            }}
-                                            userCohorts={[]}
-                                        />
-                                    )}
-                                    {showDeleteCohortModal && selectedCohort && (
-                                        <ConfirmDeleteCohortModal
-                                            type={selectedCohort}
-                                            onClose={(shouldDelete: boolean) => void onDeleteCohortClose(shouldDelete)}
-                                        />
-                                    )}
-                                </>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Cohort Name</th>
+                                        <th>Hours Worked</th>
+                                        {isAdmin && <th>Delete</th>}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cohorts?.data &&
+                                        cohorts.data.map((cohort) => {
+                                            return (
+                                                <tr key={cohort._id}>
+                                                    <td>{cohort.name}</td>
+                                                    <td>
+                                                        {(totalhours &&
+                                                            totalhours.data &&
+                                                            totalhours.data[
+                                                                cohort.name as keyof typeof totalhours.data
+                                                            ]) ??
+                                                            "N/A"}
+                                                    </td>
+                                                    {isAdmin && (
+                                                        <td>
+                                                            <Button
+                                                                onClick={() => handleDeleteCohort(cohort)}
+                                                                variant="danger"
+                                                                disabled={!editingSelf && !isAdmin}
+                                                            >
+                                                                <i className="bi bi-trash" />
+                                                            </Button>
+                                                        </td>
+                                                    )}
+                                                </tr>
+                                            );
+                                        })}
+                                </tbody>
+                            </Table>
+                            {isAdmin && (
+                                <Button
+                                    title="Add Cohort"
+                                    variant="success"
+                                    onClick={() => handleAddCohort()}
+                                    disabled={!editingSelf && !isAdmin}
+                                >
+                                    Add Cohort {"   "}
+                                    <i className="bi bi-plus-square" />
+                                </Button>
+                            )}
+                            {showAddCohortModal && user._id && (
+                                <AddCohortModal
+                                    userId={user?._id}
+                                    onClose={() => {
+                                        void onAddCohortClose();
+                                    }}
+                                    userCohorts={[]}
+                                />
+                            )}
+                            {showDeleteCohortModal && selectedCohort && (
+                                <ConfirmDeleteCohortModal
+                                    type={selectedCohort}
+                                    onClose={(shouldDelete: boolean) => void onDeleteCohortClose(shouldDelete)}
+                                />
                             )}
                         </div>
                         <br></br>
