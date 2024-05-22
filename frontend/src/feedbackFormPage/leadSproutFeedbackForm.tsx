@@ -4,6 +4,7 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { addFeedback } from "../api/feedbackAPI";
 import { useFeedbackByUserId } from "../hooks/useFeedbackByUserId";
+import "./feedbackForm.css";
 
 interface LeadSproutFeedbackProps {
     shiftId: string;
@@ -149,8 +150,12 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
 
                         <Form.Group controlId="teamDynamics" className="mb-3">
                             <Form.Label>
-                                How were the team dynamics in each classroom? (Did they work together well, who was
-                                presenting, how were classroom activities managed, were tasks shared)
+                                How were the team dynamics in each classroom?
+                                <br />
+                                <span className="notes">
+                                    (Did they work together well, who was presenting, how were classroom activities
+                                    managed, were tasks shared)
+                                </span>
                             </Form.Label>
                             <Form.Control
                                 as="textarea"
@@ -165,7 +170,11 @@ export const LeadSproutFeedbackForm = (props: LeadSproutFeedbackProps) => {
                         <Form.Group controlId="managementStyles" className="mb-3">
                             <Form.Label>
                                 What comments do you have on individual facilitator's classroom management and
-                                facilitation styles? (What are some stand-out skills/positives for development team)
+                                facilitation styles?
+                                <br />
+                                <span className="notes">
+                                    (What are some stand-out skills/positives for development team)
+                                </span>
                             </Form.Label>
                             <Form.Control
                                 as="textarea"

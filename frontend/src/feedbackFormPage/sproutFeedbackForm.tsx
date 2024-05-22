@@ -4,6 +4,7 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { addFeedback } from "../api/feedbackAPI";
 import { useFeedbackByUserId } from "../hooks/useFeedbackByUserId";
+import "./feedbackForm.css";
 
 interface SproutFeedbackProps {
     shiftId: string;
@@ -167,7 +168,9 @@ export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
 
                         <Form.Group controlId="bestPart" className="mb-3">
                             <Form.Label>
-                                What was the best part of the session? (in terms of classroom delivery or content)
+                                What was the best part of the session?
+                                <br />
+                                <span className="notes">(in terms of classroom delivery or content)</span>
                             </Form.Label>
                             <Form.Control
                                 as="textarea"
@@ -181,7 +184,9 @@ export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
 
                         <Form.Group controlId="partImproved" className="mb-3">
                             <Form.Label>
-                                What part of the session could be improved? (in terms of classroom delivery or content)
+                                What part of the session could be improved?
+                                <br />
+                                <span className="notes">(in terms of classroom delivery or content)</span>
                             </Form.Label>
                             <Form.Control
                                 as="textarea"
@@ -195,7 +200,9 @@ export const SproutFeedbackForm = (props: SproutFeedbackProps) => {
 
                         <Form.Group controlId="improvementSuggestion" className="mb-3">
                             <Form.Label>
-                                How could this part be improved? (in terms of classroom delivery or content)
+                                How could this part be improved?
+                                <br />
+                                <span className="notes">(in terms of classroom delivery or content)</span>
                             </Form.Label>
                             <Form.Control
                                 as="textarea"

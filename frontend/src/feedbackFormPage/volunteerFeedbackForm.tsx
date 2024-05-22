@@ -14,9 +14,6 @@ interface VolunteerFeedbackProps {
 }
 
 export const VolunteerFeedbackForm = (props: VolunteerFeedbackProps) => {
-    // const userQuery = useOwnUser();
-    // const shift = userQuery.data?.data?.shifts.find((shift) => shift.shift._id === props.shiftId);
-
     const [feedback, setFeedback] = useState({
         generalFeedback: "",
         rating: 0,
