@@ -133,12 +133,8 @@ export const deleteFeedbackById = async (req: Request, res: Response) => {
 export const getAllFeedback = async (_req: Request, res: Response) => {
     try {
         let feedbacks = await Feedback.find();
-        console.log("Feedbacks before population:", feedbacks);
-        console.log("hi roy");
 
         feedbacks = await Feedback.find().populate("user").populate("shift").exec();
-
-        console.log("Feedbacks after population:", feedbacks);
 
         res.status(200).json({
             message: "success",
