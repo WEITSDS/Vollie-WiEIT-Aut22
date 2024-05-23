@@ -10,7 +10,7 @@ import "../../../src/shiftpage/shiftpage.css";
 export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element => {
     const { visible, onClose, allVolTypes, updateFilters, filters } = props;
     const [currentMenu, setCurrentMenu] = useState("Date");
-    const [AllLocations, setAllLocations] = useState<IAddress[]>([]);
+    const [allLocations, setAllLocations] = useState<IAddress[]>([]);
 
     const [selectedVenue, setSelectedVenue] = useState<string>(""); // State to hold the selected venue
 
@@ -24,8 +24,8 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
         const fetchVenues = async () => {
             try {
                 const venues = await getAllVenues();
-                const AllLocations = venues.filter((location) => location.address.toLowerCase());
-                setAllLocations(AllLocations);
+                const allLocations = venues.filter((location) => location.address.toLowerCase());
+                setAllLocations(allLocations);
             } catch (error) {
                 console.error(error);
             }
@@ -188,11 +188,15 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                     }}
                                 >
                                     <option value="">Select venue</option>
-                                    {AllLocations.map((location, index) => (
-                                        <option key={index} value={location.address}>
-                                            {location.address}
-                                        </option>
-                                    ))}
+                                    {allLocations.length === 0 ? (
+                                        <option disabled>No venues found</option>
+                                    ) : (
+                                        allLocations.map((location, index) => (
+                                            <option key={index} value={location.address}>
+                                                {location.address}
+                                            </option>
+                                        ))
+                                    )}
                                 </select>
                             </>
                         )}
