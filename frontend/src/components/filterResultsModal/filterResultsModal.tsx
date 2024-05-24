@@ -125,17 +125,33 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                             <>
                                 <label>Hide Unavailable</label>
                                 <br />
-                                <Form.Select
-                                    className="drop-down"
-                                    onChange={(e) =>
-                                        updateFilters({ ...filters, hideUnavailable: e.target.value === "true" })
-                                    }
-                                    value={filters.hideUnavailable.toString()}
-                                    aria-label="Shift Length"
-                                >
-                                    <option value="true">Hide Unavailable Shifts</option>
-                                    <option value="false">Show Taken Shifts</option>
-                                </Form.Select>
+
+                                <Form.Group>
+                                    <div className="availability-filter">
+                                        <div className="availability-radio-buttons">
+                                            <input
+                                                type={"radio"}
+                                                id="hideUnavailableTrue"
+                                                name="hideUnavailable"
+                                                value="true"
+                                                checked={filters.hideUnavailable === true}
+                                                onChange={() => updateFilters({ ...filters, hideUnavailable: true })}
+                                            />
+                                            <label>Yes</label>
+                                        </div>
+                                        <div className="availability-radio-buttons ">
+                                            <input
+                                                type={"radio"}
+                                                id="hideUnavailableFalse"
+                                                name="hideUnavailable"
+                                                value="false"
+                                                checked={filters.hideUnavailable === false}
+                                                onChange={() => updateFilters({ ...filters, hideUnavailable: false })}
+                                            />
+                                            <label>No</label>
+                                        </div>
+                                    </div>
+                                </Form.Group>
                             </>
                         )}
 
