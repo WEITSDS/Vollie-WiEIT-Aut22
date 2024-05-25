@@ -16,6 +16,7 @@ export default class Timer {
     public start() {
         const id = JSON.stringify({ userId: this.userId, shiftId: this.shiftId });
 
+        // check if current time/date is past shift end time/date, every minute
         if (!timers[id]) {
             timers[id] = setInterval(() => {
                 if (new Date() > new Date(this.shiftEnd)) {
