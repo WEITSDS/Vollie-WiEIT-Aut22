@@ -1,10 +1,14 @@
 {
   "dependencies": {
+    "@cloudinary/react": "^1.13.0",
+    "@cloudinary/url-gen": "^1.19.0",
     "@googlemaps/google-maps-services-js": "^3.3.42",
     "@react-google-maps/api": "^2.19.2",
     "axios": "^1.6.2",
     "bootstrap": "5.0",
+    "cloudinary": "^2.1.0",
     "exceljs": "^4.4.0",
+    "express": "^4.19.2",
     "leaflet": "^1.9.4",
     "react-leaflet": "^4.2.1"
   }

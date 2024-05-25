@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
-import avatar from "../assets/avatar.svg";
-import Spinner from "react-bootstrap/Spinner";
-// import { User } from "../api/userApi";
+import { useState, useEffect, ChangeEvent } from "react";
+import Spinner from "../components/spinner";
 import { QualificationsSection } from "./qualifications/qualificationManagement";
 import { VerifyAccountModal } from "./verifyAccount";
 import { NavigationBar } from "../components/navbar";
@@ -9,7 +7,6 @@ import { useParams } from "react-router-dom";
 import { setPageTitle } from "../utility";
 import "./profile.css";
 import { VerifiedMark } from "./verifiedMark";
-import { Button, Table } from "react-bootstrap";
 import { useUserById } from "../hooks/useUserById";
 import { useOwnUser } from "../hooks/useOwnUser";
 import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
@@ -17,6 +14,8 @@ import { removeVolunteerType, setApprovalUserVolunteerType } from "../api/userAp
 import { loggedInUserIsAdmin } from "../protectedRoute";
 import { AddRoleModal, ConfirmDeleteModal } from "./volunteer/addRoleModal";
 import { IVolunteerTypeUserWithApproved } from "../api/volTypeAPI";
+import { useProfileImage } from "../hooks/useProfileImage";
+import avatar from "../assets/avatar.svg";
 
 export const ProfilePage = () => {
     const { id } = useParams();
@@ -25,6 +24,14 @@ export const ProfilePage = () => {
     const [showAddModal, setshowAddModal] = useState(false);
     const [showDeleteModal, setshowDeleteModal] = useState(false);
     const [selectedVolType, setselectedVolType] = useState<IVolunteerTypeUserWithApproved | null>(null);
+    const {
+        profileImage,
+        loading: loadingProfileImage,
+        error: errorProfileImage,
+        updateProfileImage,
+    } = useProfileImage(user?._id);
+
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const isAdmin = loggedInUserIsAdmin();
 
@@ -48,7 +55,6 @@ export const ProfilePage = () => {
     };
 
     const handleSetVolunteerTypeApproval = async (qualId: string, status: string) => {
-        console.log(qualId);
         try {
             if (user) {
                 await setApprovalUserVolunteerType(qualId, user?._id, status);
@@ -78,7 +84,6 @@ export const ProfilePage = () => {
             setshowDeleteModal(false);
             if (user?._id && selectedVolType && shouldDelete) {
                 await removeVolunteerType(user?._id, selectedVolType?._id);
-                console.log("Trying to delete");
             }
             await refetchVolTypeUser();
         } catch (error) {
@@ -86,9 +91,23 @@ export const ProfilePage = () => {
         }
     };
 
-    if (!(!isLoading && user)) {
-        return <Spinner animation="border" />;
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            setSelectedFile(event.target.files[0]);
+        }
+    };
+
+    const handleUpdateProfileImage = async () => {
+        if (selectedFile) {
+            await updateProfileImage(selectedFile);
+            setSelectedFile(null);
+        }
+    };
+
+    if (isLoading || !user) {
+        return <Spinner />;
     }
+
     return (
         <>
             <NavigationBar />
@@ -97,7 +116,11 @@ export const ProfilePage = () => {
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-3">
-                                <img className="profile-image" src={avatar} alt="logo" />
+                                <img className="profile-image" src={profileImage || avatar} alt="Profile" />
+                                <input type="file" accept="image/*" onChange={handleFileChange} />
+                                {selectedFile && (
+                                    <button onClick={handleUpdateProfileImage}>Update Profile Image</button>
+                                )}
                             </div>
                             <div className="col-6">
                                 <h2>
@@ -117,28 +140,19 @@ export const ProfilePage = () => {
                             </div>
                             <div className="col-8">
                                 {error && <p>{error}</p>}
-                                {/* <div className="main-content">
-                                    <h4>
-                                        <strong>Qualifications</strong>
-                                    </h4>
-                                    <QualificationsSection
-                                        isAdmin={isAdmin}
-                                        userId={user._id}
-                                        onFinishAddingQualification={() => void refetchQualifications()}
-                                    />
-                                </div> */}
+                                {errorProfileImage && <p>{errorProfileImage}</p>}
                                 {showOTPModal && (
                                     <VerifyAccountModal
                                         email={user.email}
                                         closeModal={() => {
-                                            void closeOTPVerifierModal;
+                                            void closeOTPVerifierModal();
                                         }}
                                     />
                                 )}
                             </div>
                         </div>
                         <div className="volunteer-type-table" hidden={!isAdmin && !editingSelf}>
-                            <Table striped bordered hover>
+                            <table>
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -151,50 +165,46 @@ export const ProfilePage = () => {
                                 <tbody>
                                     {!isLoadingVolTypes &&
                                         userVolTypesData?.data &&
-                                        userVolTypesData.data.map((volType, index) => {
-                                            return (
-                                                <tr key={volType._id}>
-                                                    <td>{index + 1}</td>
-                                                    <td>{volType.name}</td>
-                                                    <td>{volType.approved ? "Yes" : "No"}</td>
+                                        userVolTypesData.data.map((volType, index) => (
+                                            <tr key={volType._id}>
+                                                <td>{index + 1}</td>
+                                                <td>{volType.name}</td>
+                                                <td>{volType.approved ? "Yes" : "No"}</td>
+                                                <td>
+                                                    <button
+                                                        onClick={() => handleDeleteRole(volType)}
+                                                        title={`Delete`}
+                                                        disabled={!editingSelf && !isAdmin}
+                                                    >
+                                                        <i className="bi bi-trash" />
+                                                    </button>
+                                                </td>
+                                                {isAdmin && (
                                                     <td>
-                                                        <Button
-                                                            onClick={() => handleDeleteRole(volType)}
-                                                            title={`Delete`}
-                                                            variant="danger"
-                                                            disabled={!editingSelf && !isAdmin}
+                                                        <button
+                                                            onClick={() => {
+                                                                void handleSetVolunteerTypeApproval(
+                                                                    volType._id,
+                                                                    volType.approved ? "revoke" : "approve"
+                                                                );
+                                                            }}
                                                         >
-                                                            <i className="bi bi-trash" />
-                                                        </Button>
+                                                            {volType.approved ? "Revoke" : "Approve"}
+                                                        </button>
                                                     </td>
-                                                    {isAdmin && (
-                                                        <td>
-                                                            <Button
-                                                                onClick={() => {
-                                                                    void handleSetVolunteerTypeApproval(
-                                                                        volType._id,
-                                                                        volType.approved ? "revoke" : "approve"
-                                                                    );
-                                                                }}
-                                                            >
-                                                                {volType.approved ? "Revoke" : "Approve"}
-                                                            </Button>
-                                                        </td>
-                                                    )}
-                                                </tr>
-                                            );
-                                        })}
+                                                )}
+                                            </tr>
+                                        ))}
                                 </tbody>
-                            </Table>
-                            <Button
+                            </table>
+                            <button
                                 title="Add Volunteer Type"
-                                variant="success"
                                 onClick={() => handleAddRole()}
                                 disabled={!editingSelf && !isAdmin}
                             >
                                 Add Volunteer Type {"   "}
                                 <i className="bi bi-plus-square" />
-                            </Button>
+                            </button>
                             {showAddModal && user._id && userVolTypesData?.data && (
                                 <AddRoleModal
                                     userId={user?._id}
@@ -211,7 +221,7 @@ export const ProfilePage = () => {
                                 />
                             )}
                         </div>
-                        <br></br>
+                        <br />
                         {user?._id && (
                             <QualificationsSection userId={user._id} isAdmin={isAdmin} editingSelf={editingSelf} />
                         )}
