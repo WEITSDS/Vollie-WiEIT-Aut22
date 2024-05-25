@@ -16,7 +16,9 @@ export const FeedbackAdminPage = () => {
                     <div>
                         <div className="button-section">
                             <h1>Feedback Submissions</h1>
-                            <button className="download-button">Download</button>
+
+                            {/* yet to implement download functionality */}
+                            {/* <button className="download-button">Download</button> */}
                         </div>
                         <div className="table-responsive bdr">
                             <table className="table table-striped table-bg table-bordered table-hover table-rounded">
