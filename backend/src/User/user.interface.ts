@@ -91,7 +91,7 @@ export function mapUserToUserSummary({
         cohorts,
     };
 }
-export interface UserShiftAttendaceSummary {
+export interface UserShiftAttendanceSummary {
     _id: string;
     firstName: string;
     lastName: string;

@@ -240,7 +240,7 @@ export interface AttendaceSummary {
     email: string;
     volunteerType: string;
 }
-export interface UserShiftAttendaceSummary {
+export interface UserShiftAttendanceSummary {
     _id: string;
     firstName: string;
     lastName: string;
@@ -253,7 +253,7 @@ export interface UserShiftAttendaceSummary {
 
 export async function getShiftAttendanceList(
     shiftId: string | undefined
-): Promise<ResponseWithData<UserShiftAttendaceSummary[]>> {
+): Promise<ResponseWithData<UserShiftAttendanceSummary[]>> {
     return typeof shiftId === "undefined"
         ? Promise.reject(new Error("Invalid id"))
         : await getDataResponse(`${ROOT_URL}/api/shifts/attendance-list/${shiftId}`);
