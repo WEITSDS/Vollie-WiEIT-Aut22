@@ -27,30 +27,14 @@ export interface NewICohort {
 
 const PATH = `${window.location.origin}/api`;
 
-//getting all cohorts
+// Retrieving all cohorts
 export async function getAllCohorts(): Promise<ResponseWithData<ICohort[]>> {
-    return getDataResponse(`${PATH}/cohort/cohort-all`);
+    return getDataResponse(`${PATH}/cohort`);
 }
-
-// export async function createCohort(
-//     name: string,
-//     startDate: Date, //start date for the session
-//     endDate: Date, //end date for the session
-//     userId?: string
-// ): Promise<ResponseWithStatus> {
-//     const payload: NewICohort = {
-//         _id: "",
-//         user: userId || "",
-//         name,
-//         startDate,
-//         endDate,
-//     };
-//     return await postAndGetBasicResponse(`${PATH}/cohort/create`, payload as unknown as Record<string, unknown>);
-// }
 
 export async function createCohort(cohortBody: object): Promise<ResponseWithData<ICohort | null>> {
     try {
-        const response = await post(`${PATH}/cohort/create`, { ...cohortBody });
+        const response = await post(`${PATH}/cohort`, { ...cohortBody });
         const resp = (await response.json()) as ResponseWithData<ICohort>;
         if (!isBasicResponse(resp)) {
             throw new Error("Unexpected response format");
@@ -69,5 +53,5 @@ export default function deleteCohort(cohortId: string): Promise<ResponseWithStat
 export async function getCohortsForUser(userId: string | undefined): Promise<ResponseWithData<ICohort[]>> {
     return typeof userId === "undefined"
         ? Promise.reject(new Error("Invalid id"))
-        : getDataResponse(`${PATH}/cohort/cohortById/${userId}`);
+        : getDataResponse(`${PATH}/user/${userId}/cohort`);
 }

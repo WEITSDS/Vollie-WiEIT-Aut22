@@ -1,15 +1,11 @@
 import express from "express";
 import { wrapAsync } from "../utility";
-import { createCohort, getAllCohorts, deleteCohort, getCohortsForUser } from "./cohort.controller";
-
-//should be able to retrieve the cohorts a user is in
-//should be able to obtain all cohorts
+import { createCohort, getAllCohorts, deleteCohort } from "./cohort.controller";
 
 const router = express.Router();
 
-router.post("/create", wrapAsync(createCohort));
-router.get("/cohort-all", wrapAsync(getAllCohorts));
-router.get("/cohortById/:userId", wrapAsync(getCohortsForUser));
+router.post("/", wrapAsync(createCohort));
+router.get("/", wrapAsync(getAllCohorts));
 router.delete("/:id", wrapAsync(deleteCohort));
 
 export = router;

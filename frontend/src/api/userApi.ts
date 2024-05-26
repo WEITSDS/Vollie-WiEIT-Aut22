@@ -25,7 +25,7 @@ export interface ResetPasswordDetails {
 
 export async function resetPassword(details: ResetPasswordDetails): Promise<ResponseWithStatus> {
     return postAndGetBasicResponse(
-        `${ROOT_URL}/api/users/resetpassword`,
+        `${ROOT_URL}/api/users/reset-password`,
         details as unknown as Record<string, unknown>
     );
 }
