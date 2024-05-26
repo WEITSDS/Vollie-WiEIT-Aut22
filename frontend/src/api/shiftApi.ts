@@ -23,7 +23,7 @@ async function patchBasicResponse(url: string): Promise<ResponseWithStatus> {
         return { ...resp, status: response.status };
     } catch (error) {
         console.error(error);
-        return { success: false, message: "An unexpected error occured", status: response?.status || 500 };
+        return { success: false, message: "An unexpected error occurred", status: response?.status || 500 };
     }
 }
 
@@ -38,7 +38,7 @@ async function patchBasicResponse(url: string): Promise<ResponseWithStatus> {
 //         return { ...resp, status: response.status };
 //     } catch (error) {
 //         console.error(error);
-//         return { success: false, message: "An unexpected error occured", status: response?.status || 500 };
+//         return { success: false, message: "An unexpected error occurred", status: response?.status || 500 };
 //     }
 // }
 
@@ -53,27 +53,27 @@ async function deleteBasicResponse(url: string): Promise<ResponseWithStatus> {
         return { ...resp, status: response.status };
     } catch (error) {
         console.error(error);
-        return { success: false, message: "An unexpected error occured", status: response?.status || 500 };
+        return { success: false, message: "An unexpected error occurred", status: response?.status || 500 };
     }
 }
 
 interface AssignmentUserDetails {
-    shiftid: string;
-    userid: string;
+    shiftId: string;
+    userId: string;
     selectedVolType: string;
 }
 
 interface UnAssignmentUserDetails {
-    shiftid: string;
-    userid: string;
+    shiftId: string;
+    userId: string;
 }
 
 export async function assignUserToShift(req: AssignmentUserDetails): Promise<ResponseWithStatus> {
-    return patchBasicResponse(`${ROOT_URL}/api/shifts/${req.shiftid}/assign-user/${req.userid}/${req.selectedVolType}`);
+    return patchBasicResponse(`${ROOT_URL}/api/shifts/${req.shiftId}/assign-user/${req.userId}/${req.selectedVolType}`);
 }
 
 export async function unassignUserFromShift(req: UnAssignmentUserDetails): Promise<ResponseWithStatus> {
-    return patchBasicResponse(`${ROOT_URL}/api/shifts/${req.shiftid}/unassign-user/${req.userid}`);
+    return patchBasicResponse(`${ROOT_URL}/api/shifts/${req.shiftId}/unassign-user/${req.userId}`);
 }
 
 // export interface IShift extends Document {
@@ -152,7 +152,7 @@ export async function createShift(shiftBody: object): Promise<ResponseWithData<I
         return { ...resp };
     } catch (error) {
         console.error(error);
-        return { success: false, message: "An unexpected error occured", data: null };
+        return { success: false, message: "An unexpected error occurred", data: null };
     }
 }
 
@@ -233,13 +233,6 @@ export async function getShiftById(shiftId: string): Promise<ResponseWithData<IS
     return await getDataResponse(`${ROOT_URL}/api/shifts/shift/${shiftId}`);
 }
 
-export interface AttendaceSummary {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    volunteerType: string;
-}
 export interface UserShiftAttendanceSummary {
     _id: string;
     firstName: string;
