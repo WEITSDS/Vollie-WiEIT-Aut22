@@ -14,38 +14,16 @@ import {
     IShiftFiltersRequest,
     IExportShiftRequest,
 } from "./shift.interface";
-import { IUser, UserShiftAttendaceSummary } from "../User/user.interface";
+import { IUser, UserShiftAttendanceSummary } from "../User/user.interface";
 import QualificationType from "../QualificationType/qualificationType.model";
 import Qualifications from "../Qualifications/qualification.model";
 // import { IQualificationType } from "../QualificationType/qualificationType.interface";
 // import { ObjectId } from "mongodb";
 import VolunteerType from "../VolunteerType/volunteerType.model";
 import { sendSignedUpShiftEmail, sendCancelledShiftEmail, sendUpdateShiftEmail } from "../mailer/mailer";
+import Cohort from "../Cohort/cohort.model";
+import { ICohort } from "../Cohort/cohort.interface";
 const logger = new Logger({ name: "shift.controller" });
-
-// const getAttributeFromVolunteerType = (userRole: string | undefined): keyof IShift => {
-//     let targetShiftAttribute: keyof IShift = "numGeneralVolunteers";
-//     switch (userRole) {
-//         case "generalVolunteer":
-//             targetShiftAttribute = "numGeneralVolunteers";
-//             break;
-//         case "undergradAmbassador":
-//             targetShiftAttribute = "numUndergradAmbassadors";
-//             break;
-//         case "postgradAmbassador":
-//             targetShiftAttribute = "numPostgradAmbassadors";
-//             break;
-//         case "staffAmbassador":
-//             targetShiftAttribute = "numStaffAmbassadors";
-//             break;
-//         case "sprout":
-//             targetShiftAttribute = "numSprouts";
-//             break;
-//         default:
-//             break;
-//     }
-//     return targetShiftAttribute;
-// };
 
 /**
  * Create shift request
@@ -97,7 +75,7 @@ export const updateShift = async (req: Request, res: Response) => {
         return;
     }
 
-    const shiftId: string = req.params.shiftid;
+    const shiftId: string = req.params.shiftId;
 
     if (!shiftId) {
         handleError(logger, res, null, "No shift ID provided for update", 401);
@@ -150,7 +128,7 @@ export const deleteShift = async (req: Request, res: Response) => {
             return;
         }
 
-        const deletionResult = await Shift.deleteOne({ _id: req.params.shiftid });
+        const deletionResult = await Shift.deleteOne({ _id: req.params.shiftId });
 
         if (deletionResult.acknowledged && deletionResult.deletedCount > 0) {
             res.status(200).json({
@@ -196,23 +174,23 @@ export const assignUser = async (req: Request, res: Response) => {
 
         const isAdmin = userObj?.isAdmin || false;
         const sessionUserId = userObj._id;
-        if (!isAdmin && sessionUserId.toString() !== req.params.userid) {
+        if (!isAdmin && sessionUserId.toString() !== req.params.userId) {
             res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
             return;
         }
 
-        const targetShift = await Shift.findOne({ _id: req.params.shiftid });
+        const targetShift = await Shift.findOne({ _id: req.params.shiftId });
         if (!targetShift) {
             res.status(404).json({ message: "Shift not found", success: false });
             return;
         }
 
-        if (targetShift?.users?.some((userShift) => userShift.user.toString() === req.params.userid)) {
+        if (targetShift?.users?.some((userShift) => userShift.user.toString() === req.params.userId)) {
             res.status(401).json({ message: "Cannot double assign shift", success: false });
             return;
         }
 
-        const targetUser = await User.findById(req.params.userid);
+        const targetUser = await User.findById(req.params.userId);
         if (!targetUser) {
             res.status(404).json({ message: "Target user not found", success: false });
             return;
@@ -261,7 +239,7 @@ export const assignUser = async (req: Request, res: Response) => {
         // Check if user's selected volunteer type is approved
         const selectedVolunteerTypeID = req.params.selectedVolunteerTypeID;
 
-        // -1 if either voltype doesnt exist for the user OR the type is not approved yet
+        // -1 if either voltype doesn't exist for the user OR the type is not approved yet
         const userVolTypeIndex = targetUser.volunteerTypes.findIndex(
             (volType) => volType.type.toString() === selectedVolunteerTypeID && volType.approved === true
         );
@@ -292,18 +270,18 @@ export const assignUser = async (req: Request, res: Response) => {
         // also increment the qualification allocations based on user quals
         const assignUserResponse = await Shift.findOneAndUpdate(
             {
-                _id: req.params.shiftid,
+                _id: req.params.shiftId,
             },
             {
                 $addToSet: {
-                    users: { user: req.params.userid, chosenVolunteerType: selectedVolunteerTypeID, approved: false },
+                    users: { user: req.params.userId, chosenVolunteerType: selectedVolunteerTypeID, approved: false },
                 },
             }
         );
 
         const incrementVolTypeResponse = await Shift.findOneAndUpdate(
             {
-                _id: req.params.shiftid,
+                _id: req.params.shiftId,
                 "volunteerTypeAllocations.type": selectedVolunteerTypeID,
             },
             {
@@ -328,7 +306,7 @@ export const assignUser = async (req: Request, res: Response) => {
 
         const incrementQualTypeResponse = await Shift.updateOne(
             {
-                _id: req.params.shiftid,
+                _id: req.params.shiftId,
             },
             {
                 $set: { requiredQualifications: newQualAllocs },
@@ -342,11 +320,10 @@ export const assignUser = async (req: Request, res: Response) => {
 
         const assignShiftResponse = await User.findOneAndUpdate(
             { _id: req.params.userid },
-            { $addToSet: { shifts: { shift: req.params.shiftid, approved: false } } }
+            { $addToSet: { shifts: { shift: req.params.shiftId, approved: false } } }
         );
 
         if (assignShiftResponse) {
-            console.log("jhel: " + req.params.selectedVolunteerTypeID);
             res.status(200).json({ message: "User assigned to shift", success: true });
             //Send sign up email
 
@@ -376,14 +353,14 @@ export const setUserApproval = async (req: Request, res: Response) => {
     try {
         const isAdmin = req.session.user?.isAdmin || false;
         const sessionUserId = req.session.user?._id;
-        if (!isAdmin && sessionUserId !== req.params.userid) {
+        if (!isAdmin && sessionUserId !== req.params.userId) {
             res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
             return;
         }
 
-        const targetShift = await Shift.findOne({ _id: req.params.shiftid });
+        const targetShift = await Shift.findOne({ _id: req.params.shiftId });
 
-        const approvalStatus = req.params.approvalstatus === "approved";
+        const approvalStatus = req.params.approvalStatus === "approved";
 
         if (!targetShift) {
             res.status(404).json({
@@ -392,7 +369,7 @@ export const setUserApproval = async (req: Request, res: Response) => {
             });
             return;
         }
-        const userObj = await User.findOne({ _id: req.params.userid });
+        const userObj = await User.findOne({ _id: req.params.userId });
 
         if (!userObj) {
             res.status(404).json({ message: "User doesn't exist with that ID", success: false });
@@ -408,12 +385,12 @@ export const setUserApproval = async (req: Request, res: Response) => {
         }
 
         await Shift.findOneAndUpdate(
-            { _id: req.params.shiftid, "users.user": req.params.userid },
+            { _id: req.params.shiftId, "users.user": req.params.userId },
             { $set: { "users.$.approved": approvalStatus } }
         );
 
         const approveUserResponse = await User.findOneAndUpdate(
-            { _id: req.params.userid, "shifts.shift": req.params.shiftid },
+            { _id: req.params.userId, "shifts.shift": req.params.shiftId },
             { $set: { "shifts.$.approved": approvalStatus } }
         );
         if (approveUserResponse) {
@@ -443,12 +420,12 @@ export const removeUser = async (req: Request, res: Response) => {
     try {
         const isAdmin = req.session.user?.isAdmin || false;
         const sessionUserId = req.session.user?._id;
-        if (!isAdmin && sessionUserId !== req.params.userid) {
+        if (!isAdmin && sessionUserId !== req.params.userId) {
             res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
             return;
         }
 
-        const targetShift = await Shift.findOne({ _id: req.params.shiftid });
+        const targetShift = await Shift.findOne({ _id: req.params.shiftId });
 
         if (!targetShift) {
             res.status(404).json({
@@ -457,7 +434,7 @@ export const removeUser = async (req: Request, res: Response) => {
             });
             return;
         }
-        const userObj = await User.findOne({ _id: req.params.userid });
+        const userObj = await User.findOne({ _id: req.params.userId });
         if (!userObj) {
             res.status(404).json({ message: "User doesn't exist with that ID", success: false });
             return;
@@ -470,7 +447,7 @@ export const removeUser = async (req: Request, res: Response) => {
             return;
         }
 
-        const targetUser = await User.findById(req.params.userid);
+        const targetUser = await User.findById(req.params.userId);
         if (!targetUser) {
             res.status(404).json({ message: "Target user not found", success: false });
             return;
@@ -485,11 +462,11 @@ export const removeUser = async (req: Request, res: Response) => {
 
         const updatedShift = await Shift.findOneAndUpdate(
             {
-                _id: req.params.shiftid,
+                _id: req.params.shiftId,
                 "volunteerTypeAllocations.type": selectedVolunteerTypeID,
             },
             {
-                $pull: { users: { user: req.params.userid } },
+                $pull: { users: { user: req.params.userId } },
                 $inc: { "volunteerTypeAllocations.$.currentNum": -1 },
             }
         );
@@ -515,7 +492,7 @@ export const removeUser = async (req: Request, res: Response) => {
 
         const updateShiftQualAllocs = await Shift.updateOne(
             {
-                _id: req.params.shiftid,
+                _id: req.params.shiftId,
             },
             {
                 $set: { requiredQualifications: newQualAllocs },
@@ -523,8 +500,8 @@ export const removeUser = async (req: Request, res: Response) => {
         );
 
         const assignShiftResponse = await User.findOneAndUpdate(
-            { _id: req.params.userid },
-            { $pull: { shifts: { shift: req.params.shiftid } } }
+            { _id: req.params.userId },
+            { $pull: { shifts: { shift: req.params.shiftId } } }
         );
 
         if (assignShiftResponse && updateShiftQualAllocs) {
@@ -547,7 +524,7 @@ export const removeUser = async (req: Request, res: Response) => {
         }
     } catch (error) {
         res.status(500).json({
-            message: "error removing unassigning user",
+            message: "Error un-assigning user",
             error,
             success: false,
         });
@@ -559,7 +536,7 @@ export const generateShiftCalendar = async (req: Request, res: Response) => {
     try {
         const { _id: userID } = req.session.user || {};
         if (!userID) {
-            res.status(403).json({ message: "Authorization error", success: false });
+            res.status(403).json({ message: "Authorisation error", success: false });
             return;
         }
 
@@ -620,7 +597,7 @@ export const getShiftById = async (req: Request, res: Response) => {
             return;
         }
 
-        const shift = await Shift.findOne({ _id: req.params.shiftid });
+        const shift = await Shift.findOne({ _id: req.params.shiftId });
 
         if (!shift) {
             res.status(404).json({ message: "Shift not found", success: false });
@@ -937,7 +914,7 @@ export const exportVolunteerShifts = async (req: Request, res: Response) => {
 export const getUserShifts = async (req: Request, res: Response) => {
     try {
         console.log(req.params);
-        const targetUserID = req.params.userid;
+        const targetUserID = req.params.userId;
 
         const userObj = await User.findOne({ _id: targetUserID });
         if (!userObj) {
@@ -945,7 +922,7 @@ export const getUserShifts = async (req: Request, res: Response) => {
             return;
         }
 
-        // users can get their own shifts, if request is looking for user other than themselve, they must be admin
+        // users can get their own shifts, if request is looking for user other than themselves, they must be admin
         if (targetUserID !== userObj._id.toString() && !userObj.isAdmin) {
             res.status(403).json({ message: "Authorization error", success: false });
             return;
@@ -981,19 +958,13 @@ export const getShiftAttendanceList = async (req: Request, res: Response) => {
             return;
         }
 
-        // only admin can view participants
-        // if (!userObj.isAdmin) {
-        //     res.status(403).json({ message: "Authorization error", success: false });
-        //     return;
-        // }
-
-        const { shiftid } = req.params;
-        if (!shiftid) {
+        const { shiftId } = req.params;
+        if (!shiftId) {
             res.status(403).json({ message: "No shift ID provided", success: false });
             return;
         }
 
-        const shift = await Shift.findOne({ _id: shiftid });
+        const shift = await Shift.findOne({ _id: shiftId });
 
         if (!shift?.users) {
             res.status(200).json({
@@ -1004,7 +975,7 @@ export const getShiftAttendanceList = async (req: Request, res: Response) => {
             return;
         }
 
-        const participantMapResult: UserShiftAttendaceSummary[] = [];
+        const participantMapResult: UserShiftAttendanceSummary[] = [];
 
         for (let idx = 0; idx < shift?.users?.length; idx++) {
             const participant = shift?.users[idx];
@@ -1019,7 +990,7 @@ export const getShiftAttendanceList = async (req: Request, res: Response) => {
                 volTypeId: targetVolType?._id.toString() || "",
                 approved: participant.approved,
                 completed:
-                    targetUser?.shifts?.find((uShift) => uShift.shift.toString() === shiftid)?.completed || false,
+                    targetUser?.shifts?.find((uShift) => uShift.shift.toString() === shiftId)?.completed || false,
             });
         }
 
@@ -1043,8 +1014,8 @@ export const getShiftAttendanceList = async (req: Request, res: Response) => {
 export const getAvailableRolesForShiftUser = async (req: Request, res: Response) => {
     // Get roles for a user that are approved and that there is available slots for in the target shift
     try {
-        const userObj = await User.findOne({ _id: req.params.userid });
-        if (!userObj || !req.params.userid) {
+        const userObj = await User.findOne({ _id: req.params.userId });
+        if (!userObj || !req.params.userId) {
             res.status(403).json({ message: "Could not find user object", success: false });
             return;
         }
@@ -1055,7 +1026,7 @@ export const getAvailableRolesForShiftUser = async (req: Request, res: Response)
 
         // todo: also check the shift to ensure there are slots available, doesn't really matter
         // since application process is denied if no slots available but serves as better UX for
-        // the user not to have the option to apply as a vol type that there is no space for in the target shfit.
+        // the user not to have the option to apply as a vol type that there is no space for in the target shift.
 
         res.status(200).json({
             message: "success",
@@ -1080,7 +1051,7 @@ export const getAllShifts = async (req: Request, res: Response) => {
         const userObj = await User.findOne({ _id: req.session.user?._id });
 
         if (!userObj || !userObj?.isAdmin) {
-            handleError(logger, res, null, "Unauthorized", 401);
+            handleError(logger, res, null, "Unauthorised", 401);
             return;
         }
 
@@ -1243,3 +1214,72 @@ export const exportVolunteerReportAsExcel = async (req: Request, res: Response) 
 //         });
 //     }
 // };
+
+export async function getTotalHoursWorked(req: Request, res: Response) {
+    //returns an array with each cohort and corresponding total hours
+    //note - the function is intended to be used by the user as it is for the ambassador hours component of the profile page
+    try {
+        // Retrieve the user
+        const user = await User.findOne({ _id: req.params.userId });
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        //check if user has at least one cohort (e.g. Spring 2023 - Spring 2024)
+        const hasCohort = user.cohorts.length > 0;
+
+        if (!hasCohort) {
+            // Return an error message indicating that the user does not have cohorts
+            throw new Error("User does not have any cohorts");
+        }
+
+        //Retrieve the user cohorts
+        const cohortIds = user.cohorts.map((cohort) => cohort.type); // Extracting 'type' values from each IUserCohort object
+        const userCohorts: ICohort[] = await Cohort.find({ _id: { $in: cohortIds } });
+
+        const totalHoursByCohort: { [cohortName: string]: number } = {};
+
+        // Retrieve the userId from the request
+        const targetUserID = req.params.userid;
+
+        for (const cohort of userCohorts) {
+            const { startDate, endDate } = cohort;
+
+            // Filter shifts by start and end dates falling within the cohort period and by approval
+            const shifts = await Shift.find({
+                "users.user": targetUserID,
+                startAt: { $gte: startDate },
+                endAt: { $lte: endDate },
+                "users.completed": true,
+                "users.approved": true,
+            });
+
+            // Sum up the 'hours' parameter for each shift within the cohort period
+            let totalHours = 0;
+            shifts.forEach((shift) => {
+                totalHours += shift.hours;
+            });
+
+            // Store the total hours for this cohort (rounded to 2 dp)
+            const totalHoursSummed: number = Math.round(totalHours * 100) / 100;
+            totalHoursByCohort[cohort.name] = totalHoursSummed;
+        }
+
+        // consider adding this check too(from the getUserShifts method), but only checking that the user is themselves -
+        // // users can get their own shifts, if request is looking for user other than themselves, they must be admin
+        // if (targetUserID !== userObj._id.toString() && !userObj.isAdmin) {
+        //     res.status(403).json({ message: "Authorization error", success: false });
+        //     return;
+        // }
+
+        // Respond with the total hours worked
+        res.status(200).json({
+            message: "success",
+            data: totalHoursByCohort,
+            success: true,
+        });
+    } catch (error) {
+        console.error("Error retrieving total hours by cohort:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}

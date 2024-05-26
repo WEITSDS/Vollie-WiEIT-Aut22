@@ -25,7 +25,7 @@ export interface ResetPasswordDetails {
 
 export async function resetPassword(details: ResetPasswordDetails): Promise<ResponseWithStatus> {
     return postAndGetBasicResponse(
-        `${ROOT_URL}/api/users/resetpassword`,
+        `${ROOT_URL}/api/users/reset-password`,
         details as unknown as Record<string, unknown>
     );
 }
@@ -148,4 +148,12 @@ export async function assignVolunteerType(userId: string, volunteerTypeId: strin
 
 export async function removeVolunteerType(userId: string, volunteerTypeId: string) {
     return patch(`${PATH}/${userId}/remove-volunteer-type/${volunteerTypeId}`);
+}
+
+export async function assignCohortType(userId: string, cohortId: string) {
+    return patch(`${PATH}/${userId}/assign-cohort-type/${cohortId}`);
+}
+
+export async function removeCohortType(userId: string, cohortId: string) {
+    return patch(`${PATH}/${userId}/remove-cohort-type/${cohortId}`);
 }
