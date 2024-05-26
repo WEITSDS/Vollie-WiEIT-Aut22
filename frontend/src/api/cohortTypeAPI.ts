@@ -53,5 +53,5 @@ export default function deleteCohort(cohortId: string): Promise<ResponseWithStat
 export async function getCohortsForUser(userId: string | undefined): Promise<ResponseWithData<ICohort[]>> {
     return typeof userId === "undefined"
         ? Promise.reject(new Error("Invalid id"))
-        : getDataResponse(`${PATH}/user/${userId}/cohort`);
+        : getDataResponse(`${PATH}/users/${userId}/cohort`);
 }
