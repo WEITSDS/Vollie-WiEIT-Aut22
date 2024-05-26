@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { IShift, setApprovalUserForShift, UserShiftAttendaceSummary } from "../api/shiftApi";
+import { IShift, setApprovalUserForShift, UserShiftAttendanceSummary } from "../api/shiftApi";
 import participantsIcon from "../assets/participants.svg";
 //import AttendanceList from "./attendanceList.json";
 import { useAttendanceList } from "../hooks/useAttendanceList";
@@ -87,13 +87,16 @@ export default function AttendanceListModal({
                 alert("Please select a volunteer type for each user.");
                 return;
             }
-            const assignmentPromises = selectedUsers.map((userId) =>
+            const assignmentPromises = selectedUsers.map((userId) => {
                 assignUserToShift({
                     shiftid: shift._id,
                     userid: userId,
                     selectedVolType: userVolunteerTypes[userId],
-                })
-            );
+                });
+                //Error that says "User doesn't exist in this shift"
+                setApprovalUserForShift(userId, shift._id, "approved");
+                console.log("Hi");
+            });
 
             // Wait for all assignments to complete
             await Promise.all(assignmentPromises);
@@ -253,7 +256,7 @@ export default function AttendanceListModal({
      *
      */
 
-    const displayAttendanceList = (attendanceList: UserShiftAttendaceSummary[]) => {
+    const displayAttendanceList = (attendanceList: UserShiftAttendanceSummary[]) => {
         return attendanceList?.map((userShift, index) => (
             <tr key={userShift._id}>
                 <th scope="row">{index + 1}</th>

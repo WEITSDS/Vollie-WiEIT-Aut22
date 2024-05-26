@@ -20,6 +20,7 @@ export const AddRoleModal = (props: AddRoleProps) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [updating, setUpdating] = useState(false);
 
+    //checking if volunteer type selected needs administrator approval
     const handleVolTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedVolType(e.target.value);
         for (let v = 0; volTypesSelection && v < volTypesSelection.length; v++) {
@@ -31,6 +32,7 @@ export const AddRoleModal = (props: AddRoleProps) => {
         console.log("selected vol type:", e.target.value);
     };
 
+    //ensure that form is not submitted with an invalid volunteer type (empty or already selected)
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (selectedVolType.length == 0) {
@@ -44,6 +46,7 @@ export const AddRoleModal = (props: AddRoleProps) => {
         void handleSubmit();
     };
 
+    //assigning volunteer type with user
     const handleSubmit = async (): Promise<void> => {
         setUpdating(true);
         try {

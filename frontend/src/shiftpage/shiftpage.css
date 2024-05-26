@@ -1,3 +1,21 @@
+.background {
+    opacity: 0.5;
+}
+
+.calendar-page {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.title-header {
+    display: grid;
+    grid-template-columns: 9fr 1fr;
+}
+
+.calendar-header {
+    font-weight: 500;
+    font-size: 42px;
+}
+
 .page-container {
     display: flex;
     flex-direction: column;
@@ -5,8 +23,9 @@
 
 .header-container {
     display: flex;
-    justify-content: flex-start; 
+    justify-content: flex-start;
     margin-top: 53px;
+    /* width: 90vw; */
 }
 
 .header-container h1 {
@@ -25,10 +44,8 @@
     vertical-align: middle;
 }
 .unreleased-state {
-    background-color: rgb(245,172,183) !important;
+    background-color: rgb(245, 172, 183) !important;
 }
-
-
 
 h1 {
     font-style: normal;
@@ -49,7 +66,7 @@ h1 {
     grid-auto-rows: auto;
     grid-gap: 10px;
     align-self: center;
-    margin-right: 150px;
+    /* margin-right: 150px; */
 }
 
 #whiteButton {
@@ -71,7 +88,7 @@ h1 {
 
 #whiteButton:hover {
     transform: scale(0.97);
-    box-shadow: 0px 1px 1px rgba(0,0,0,0.25);
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
 }
 
 .btn-icon {
@@ -93,7 +110,7 @@ h1 {
     font-size: 18px;
     font-weight: 400;
     line-height: 19px;
-    color: #FFFFFF;
+    color: #ffffff;
     font-family: Lato;
     font-style: normal;
     border: 0;
@@ -122,7 +139,7 @@ h1 {
     display: flex;
     flex-direction: column;
     margin-right: 20px;
-    margin-top:180px;
+    margin-top: 180px;
     background-color: #f1f1f1;
     padding: 10px;
     border-radius: 8px;

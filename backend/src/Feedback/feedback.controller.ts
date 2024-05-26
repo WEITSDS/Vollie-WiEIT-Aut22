@@ -2,13 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-// import ExcelJS from "exceljs";
-// const StreamParser = require("@json2csv/plainjs").StreamParser;
-// import { Request, Response } from "express";
-// import { handleError } from "../utility";
-// import Feedback from "./feedbacks.model";
-// import ExcelJS from "exceljs";
-// import { IFeedback } from "./feedback.interface"; // Import your Mongoose model here
 import { Logger } from "tslog";
 import { StreamParser } from "@json2csv/plainjs";
 import { Request, Response } from "express";
@@ -22,25 +15,26 @@ import { Parser } from "json2csv";
 const logger = new Logger({ name: "feedback.controller" });
 
 export const createFeedback = async (req: Request, res: Response) => {
-    const {
-        user,
-        qualificationType,
-        shift,
-        experience,
-        learnings,
-        teacher,
-        studentEngagement,
-        teacherEngagement,
-        improvements,
-        improvementMethods,
-        styles,
-        content,
-        teamDynamics,
-        additionalComments,
-        rating,
-        formCompleted,
-    } = req.body;
     try {
+        const {
+            user,
+            qualificationType,
+            shift,
+            experience,
+            learnings,
+            teacher,
+            studentEngagement,
+            teacherEngagement,
+            improvements,
+            improvementMethods,
+            styles,
+            content,
+            teamDynamics,
+            additionalComments,
+            rating,
+            formCompleted,
+        } = req.body;
+
         const feedback = new Feedback({
             user,
             qualificationType,
@@ -67,25 +61,26 @@ export const createFeedback = async (req: Request, res: Response) => {
 };
 
 export const updateFeedbackById = async (req: Request, res: Response) => {
-    const {
-        user,
-        qualificationType,
-        shift,
-        experience,
-        learnings,
-        teacher,
-        studentEngagement,
-        teacherEngagement,
-        improvements,
-        improvementMethods,
-        styles,
-        content,
-        teamDynamics,
-        additionalComments,
-        rating,
-        formCompleted,
-    } = req.body;
     try {
+        const {
+            user,
+            qualificationType,
+            shift,
+            experience,
+            learnings,
+            teacher,
+            studentEngagement,
+            teacherEngagement,
+            improvements,
+            improvementMethods,
+            styles,
+            content,
+            teamDynamics,
+            additionalComments,
+            rating,
+            formCompleted,
+        } = req.body;
+
         const feedback = await Feedback.findByIdAndUpdate(req.params.id, {
             user,
             qualificationType,
@@ -238,7 +233,7 @@ export const downloadFeedbackAsExcel = async (_req: Request, res: Response) => {
 
         // When no more data is being sent
         parser.onEnd = () => {
-            // Set the required headers to inform the requestor that the response is a downloadable file
+            // Set the required headers to inform the requester that the response is a downloadable file
             res.setHeader("Content-Disposition", "attachment; filename=feedback-report.csv");
             res.set("Content-Type", "text/csv");
             res.status(200).send(csv);
@@ -251,7 +246,19 @@ export const downloadFeedbackAsExcel = async (_req: Request, res: Response) => {
         };
 
         // Loop through each element to minimize memory impact (instead of pushing it all to a CSV)
-        feedbacks.forEach((record: string | object | Iterable<number>) => parser.write(record));
+        feedbacks.forEach((record: string | object | Iterable<number>) => {
+            if (typeof record === "string") {
+                parser.write(record);
+            } else if (Array.isArray(record)) {
+                const iterable = record as Iterable<number>;
+                parser.write(Array.from(iterable).join(",")); // Handling Iterable<number>
+            } else if (typeof record === "object") {
+                parser.write(JSON.stringify(record));
+            } else {
+                throw new Error("Unsupported type");
+            }
+        });
+
         parser.end(); // End the parser when all data is processed
     } catch (err) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -272,7 +279,7 @@ export const downloadFeedbackAsCsv = async (_req: Request, res: Response) => {
         const json2csvParser = new Parser({ fields });
         const csv = json2csvParser.parse(feedbacks);
 
-        // Set the required headers to inform the requestor that the response is a downloadable file
+        // Set the required headers to inform the requester that the response is a downloadable file
         res.setHeader("Content-Disposition", "attachment; filename=feedback-report.csv");
         res.set("Content-Type", "text/csv");
 

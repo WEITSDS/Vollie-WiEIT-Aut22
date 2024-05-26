@@ -473,7 +473,7 @@ const AddShiftForm: React.FC<formProps> = ({ shiftdata, handleClose, previousShi
 
                 <hr className="type-line" />
 
-                <h1 className="type-header">Qualification Allocations</h1>
+                <h1 className="type-header">Qualified Allocations</h1>
                 <div className="type-container">
                     {!loadingAllQualTypes &&
                         qualTypes &&

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { IShift, UserShiftAttendaceSummary } from "../api/shiftApi";
+import { IShift, UserShiftAttendanceSummary } from "../api/shiftApi";
 import participantsIcon from "../assets/participants.svg";
 import { useAttendanceList } from "../hooks/useAttendanceList";
 import "./attendanceList.css";
@@ -69,7 +69,7 @@ export default function AttendanceListVolModal({
      *
      */
 
-    const displayAttendanceList = (attendanceList: UserShiftAttendaceSummary[]) => {
+    const displayAttendanceList = (attendanceList: UserShiftAttendanceSummary[]) => {
         return attendanceList?.map((userShift, index) => (
             <tr key={userShift._id}>
                 <th scope="row">{index + 1}</th>
