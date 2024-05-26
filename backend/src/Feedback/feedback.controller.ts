@@ -7,23 +7,24 @@ import Feedback from "./feedbacks.model";
 const logger = new Logger({ name: "feedback.controller" });
 
 export const createFeedback = async (req: Request, res: Response) => {
-    const {
-        user,
-        qualificationType,
-        experience,
-        learnings,
-        teacher,
-        studentEngagement,
-        teacherEngagement,
-        improvements,
-        improvementMethods,
-        styles,
-        content,
-        teamDynamics,
-        additionalComments,
-        rating,
-    } = req.body;
     try {
+        const {
+            user,
+            qualificationType,
+            experience,
+            learnings,
+            teacher,
+            studentEngagement,
+            teacherEngagement,
+            improvements,
+            improvementMethods,
+            styles,
+            content,
+            teamDynamics,
+            additionalComments,
+            rating,
+        } = req.body;
+
         const feedback = new Feedback({
             user,
             qualificationType,
@@ -48,23 +49,24 @@ export const createFeedback = async (req: Request, res: Response) => {
 };
 
 export const updateFeedbackById = async (req: Request, res: Response) => {
-    const {
-        user,
-        qualificationType,
-        experience,
-        learnings,
-        teacher,
-        studentEngagement,
-        teacherEngagement,
-        improvements,
-        improvementMethods,
-        styles,
-        content,
-        teamDynamics,
-        additionalComments,
-        rating,
-    } = req.body;
     try {
+        const {
+            user,
+            qualificationType,
+            experience,
+            learnings,
+            teacher,
+            studentEngagement,
+            teacherEngagement,
+            improvements,
+            improvementMethods,
+            styles,
+            content,
+            teamDynamics,
+            additionalComments,
+            rating,
+        } = req.body;
+
         const feedback = await Feedback.findByIdAndUpdate(req.params.id, {
             user,
             qualificationType,

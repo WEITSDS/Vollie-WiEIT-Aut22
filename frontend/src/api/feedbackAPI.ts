@@ -54,5 +54,5 @@ export async function addFeedback(
         teamDynamics,
         additionalComments,
     };
-    return await postAndGetBasicResponse(`${PATH}/create`, payload as unknown as Record<string, unknown>);
+    return await postAndGetBasicResponse(`${PATH}`, payload as unknown as Record<string, unknown>);
 }

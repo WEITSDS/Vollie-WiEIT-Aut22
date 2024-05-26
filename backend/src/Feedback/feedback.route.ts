@@ -4,8 +4,8 @@ import { wrapAsync } from "../utility";
 
 const router = express.Router();
 
-router.post("/create", wrapAsync(createFeedback));
-router.post("/:id/update", wrapAsync(updateFeedbackById));
-router.delete("/:id/delete", wrapAsync(deleteFeedbackById));
+router.post("/", wrapAsync(createFeedback));
+router.patch("/:id", wrapAsync(updateFeedbackById));
+router.delete("/:id", wrapAsync(deleteFeedbackById));
 
 export = router;

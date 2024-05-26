@@ -6,7 +6,6 @@ export function isIFeedback(args: unknown): args is IFeedback {
         typeof p === "object" &&
         typeof p.user === "string" &&
         typeof p.qualificationType === "string" &&
-        // typeof p.session === "string" &&
         typeof p.experience === "string" &&
         typeof p.learnings === "string" &&
         typeof p.teacher === "string" &&
@@ -25,7 +24,6 @@ export function isIFeedback(args: unknown): args is IFeedback {
 export interface IBasicFeedback {
     user: Types.ObjectId;
     qualificationType: Types.ObjectId;
-    // session?: string;
     experience?: string;
     learnings?: string;
     teacher?: string;
