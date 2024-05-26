@@ -10,6 +10,7 @@ import notificationRoutes from "./Notifications/notifications.route";
 import volunteerTypeRoutes from "./VolunteerType/volunteerType.route";
 import notificationTypeRoutes from "./NotificationType/notificationType.route";
 import addressRoutes from "./Address/address.route";
+import cohortRoutes from "./Cohort/cohort.route";
 // import https = require("https");
 
 // Middleware
@@ -150,3 +151,6 @@ app.use("/api/addresses", addressRoutes);
 // });
 /** Qualification Routes */
 app.use("/api/qualifications", qualificationRoutes);
+
+//Cohort routes
+app.use("/api/cohort", cohortRoutes);
