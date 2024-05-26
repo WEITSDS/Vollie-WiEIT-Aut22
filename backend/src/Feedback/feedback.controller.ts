@@ -8,9 +8,6 @@ import { Request, Response } from "express";
 import { handleError } from "../utility";
 import Feedback from "./feedbacks.model";
 import { Parser } from "json2csv";
-// import { Query } from "mongoose";
-// import Feedback from "./feedbacks.model";
-// import { IFeedback } from "./feedback.interface";
 
 const logger = new Logger({ name: "feedback.controller" });
 

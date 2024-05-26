@@ -41,7 +41,7 @@ export const AmbassadorFeedbackForm = (props: AmbassadorFeedbackProps) => {
         const matchingFeedback = feedbackData?.filter((data) => data.shift === props.shiftId);
         const firstMatching = matchingFeedback?.at(0);
 
-        // set feedback variable above to feedback recieved that matches shift
+        // set feedback variable above to feedback received that matches shift
         if (firstMatching != undefined) {
             completedFeedback.experience = firstMatching.experience || "";
             completedFeedback.learnings = firstMatching.learnings || "";
