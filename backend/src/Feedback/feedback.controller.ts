@@ -24,6 +24,7 @@ const logger = new Logger({ name: "feedback.controller" });
 export const createFeedback = async (req: Request, res: Response) => {
     const {
         user,
+        shift,
         qualificationType,
         session,
         experience,
@@ -42,6 +43,7 @@ export const createFeedback = async (req: Request, res: Response) => {
     try {
         const feedback = new Feedback({
             user,
+            shift,
             qualificationType,
             session,
             experience,
@@ -68,6 +70,7 @@ export const createFeedback = async (req: Request, res: Response) => {
 export const updateFeedbackById = async (req: Request, res: Response) => {
     const {
         user,
+        shift,
         qualificationType,
         session,
         experience,
@@ -87,6 +90,7 @@ export const updateFeedbackById = async (req: Request, res: Response) => {
     try {
         const feedback = await Feedback.findByIdAndUpdate(req.params.id, {
             user,
+            shift,
             qualificationType,
             session,
             experience,
@@ -134,15 +138,6 @@ export const getAllFeedback = async (_req: Request, res: Response) => {
         handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
     }
 };
-
-// export const getAllFeedbackSortedByUserId = async (_req: Request, res: Response) => {
-//     try {
-//         const feedbacks = await Feedback.find().sort({ user: 1 }); // Sorting by user ID in ascending order
-//         res.status(200).json({ feedbacks, success: true });
-//     } catch (err) {
-//         handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
-//     }
-// };
 
 export const getAllFeedbackByUserId = async (req: Request, res: Response): Promise<void> => {
     try {
