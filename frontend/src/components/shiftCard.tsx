@@ -73,7 +73,7 @@ export default function ShiftCard({ shiftData, isAdmin, handleSelected, classNam
             <Card
                 className={className} // className is now correctly included
                 style={{
-                    width: "25rem",
+                    width: "24rem",
                     padding: "0.5rem",
                     borderRadius: "1rem",
                     boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",

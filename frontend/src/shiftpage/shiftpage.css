@@ -25,7 +25,7 @@
     display: flex;
     justify-content: flex-start;
     margin-top: 53px;
-    width: 90vw;
+    /* width: 90vw; */
 }
 
 .header-container h1 {
@@ -66,7 +66,7 @@ h1 {
     grid-auto-rows: auto;
     grid-gap: 10px;
     align-self: center;
-    margin-right: 150px;
+    /* margin-right: 150px; */
 }
 
 #whiteButton {

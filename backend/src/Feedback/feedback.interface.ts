@@ -9,6 +9,7 @@ export function isIFeedback(args: unknown): args is IFeedback {
         typeof p.session === "string" &&
         typeof p.experience === "string" &&
         typeof p.keyLearnings === "string" &&
+        typeof p.shift === "string" &&
         typeof p.learnings === "string" &&
         typeof p.teacher === "string" &&
         typeof p.studentEngagement === "string" &&
@@ -30,15 +31,16 @@ export interface IBasicFeedback {
     experience?: string;
     learnings?: string;
     keyLearnings?: string;
+    shift: Types.ObjectId;
     teacher?: string;
     studentEngagement?: string;
     teacherEngagement?: string;
     improvements?: string;
     sessionImprovements?: string;
-    styles?: string;
     contentDelivery?: string;
+    styles?: string;
     teamDynamics?: string;
-    rating: string;
+    rating?: string;
     formCompleted: boolean;
 }
 
