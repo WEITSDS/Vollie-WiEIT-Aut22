@@ -126,13 +126,15 @@ export async function sendQualificationExpiryEmail(
     userFirstName: string,
     userLastName: string,
     userId: string,
-    email: string | string[],
-    qualTitle: string
+    email: string | string[]
+    // qualTitle: string
 ): Promise<void> {
     logger.debug(
-        `Sending qualification expiry email for ${userFirstName} ${userLastName} for expired qualification '${qualTitle}'`
+        //`Sending qualification expiry email for ${userFirstName} ${userLastName} for expired qualification '${qualTitle}'`
+        `Sending qualification expiry email for ${userFirstName} ${userLastName}`
     );
-    const content = `Dear ${SITE_NAME} administrator,\n\nThis email is to let you know that a qualification (${qualTitle}) 
+    // const content = `Dear ${SITE_NAME} administrator,\n\nThis email is to let you know that a qualification (${qualTitle})
+    const content = `Dear ${SITE_NAME} administrator,\n\nThis email is to let you know that a qualification
     of user ${userFirstName} ${userLastName} expires today.\n You can visit their page (${HOST}/profile/${userId}) to revoke 
     approval for this qualification.\n`;
     const type = "Expired Qualification";

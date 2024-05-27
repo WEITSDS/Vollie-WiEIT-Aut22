@@ -11,7 +11,11 @@ import volunteerTypeRoutes from "./VolunteerType/volunteerType.route";
 import notificationTypeRoutes from "./NotificationType/notificationType.route";
 import addressRoutes from "./Address/address.route";
 import feedbackRoutes from "./Feedback/feedback.route";
+<<<<<<< HEAD
+// import https = require("https");
+=======
 import cohortRoutes from "./Cohort/cohort.route";
+>>>>>>> origin/master
 
 // Middleware
 import cors from "cors";
@@ -155,6 +159,9 @@ app.use("/api/addresses", addressRoutes);
 app.use("/api/qualifications", qualificationRoutes);
 //  Feedback Routes
 app.use("/api/feedback", feedbackRoutes);
+<<<<<<< HEAD
+=======
 
 //Cohort routes
 app.use("/api/cohort", cohortRoutes);
+>>>>>>> origin/master

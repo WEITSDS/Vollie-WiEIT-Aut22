@@ -12,43 +12,43 @@ import { Parser } from "json2csv";
 const logger = new Logger({ name: "feedback.controller" });
 
 export const createFeedback = async (req: Request, res: Response) => {
+    const {
+        user,
+        shift,
+        qualificationType,
+        session,
+        experience,
+        learnings,
+        keyLearnings,
+        teacher,
+        studentEngagement,
+        teacherEngagement,
+        improvements,
+        sessionImprovements,
+        styles,
+        contentDelivery,
+        teamDynamics,
+        rating,
+    } = req.body;
     try {
-        const {
-            user,
-            qualificationType,
-            shift,
-            experience,
-            learnings,
-            teacher,
-            studentEngagement,
-            teacherEngagement,
-            improvements,
-            improvementMethods,
-            styles,
-            content,
-            teamDynamics,
-            additionalComments,
-            rating,
-            formCompleted,
-        } = req.body;
-
         const feedback = new Feedback({
             user,
-            qualificationType,
             shift,
+            qualificationType,
+            session,
             experience,
             learnings,
+            keyLearnings,
             teacher,
             studentEngagement,
             teacherEngagement,
             improvements,
-            improvementMethods,
+            sessionImprovements,
             styles,
-            content,
+            contentDelivery,
             teamDynamics,
-            additionalComments,
             rating,
-            formCompleted: formCompleted || false, // Set the default value for the formCompleted field
+            formCompleted: false, // Set the default value for the formCompleted field
         });
         await feedback.save();
         res.status(200).json({ message: "Feedback created successfully", success: true });
@@ -58,41 +58,42 @@ export const createFeedback = async (req: Request, res: Response) => {
 };
 
 export const updateFeedbackById = async (req: Request, res: Response) => {
+    const {
+        user,
+        shift,
+        qualificationType,
+        session,
+        experience,
+        learnings,
+        keyLearnings,
+        teacher,
+        studentEngagement,
+        teacherEngagement,
+        improvements,
+        sessionImprovements,
+        styles,
+        contentDelivery,
+        teamDynamics,
+        rating,
+        formCompleted,
+    } = req.body;
     try {
-        const {
-            user,
-            qualificationType,
-            shift,
-            experience,
-            learnings,
-            teacher,
-            studentEngagement,
-            teacherEngagement,
-            improvements,
-            improvementMethods,
-            styles,
-            content,
-            teamDynamics,
-            additionalComments,
-            rating,
-            formCompleted,
-        } = req.body;
-
         const feedback = await Feedback.findByIdAndUpdate(req.params.id, {
             user,
-            qualificationType,
             shift,
+            qualificationType,
+            session,
             experience,
             learnings,
+            keyLearnings,
             teacher,
             studentEngagement,
             teacherEngagement,
             improvements,
-            improvementMethods,
+            sessionImprovements,
             styles,
-            content,
+            contentDelivery,
             teamDynamics,
-            additionalComments,
             rating,
             formCompleted,
         });
@@ -128,15 +129,6 @@ export const getAllFeedback = async (_req: Request, res: Response) => {
     }
 };
 
-// export const getAllFeedbackSortedByUserId = async (_req: Request, res: Response) => {
-//     try {
-//         const feedbacks = await Feedback.find().sort({ user: 1 }); // Sorting by user ID in ascending order
-//         res.status(200).json({ feedbacks, success: true });
-//     } catch (err) {
-//         handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
-//     }
-// };
-
 export const getAllFeedbackByUserId = async (req: Request, res: Response): Promise<void> => {
     try {
         const requestingUser = req.session.user;
@@ -169,12 +161,12 @@ export const getFeedbackById = async (req: Request, res: Response): Promise<void
 export const getAllCompletedFeedbackByUserId = async (req: Request, res: Response): Promise<void> => {
     try {
         const requestingUser = req.session.user;
-        const data = await Feedback.find({ user: requestingUser?._id, formCompleted: true });
-        if (!data || data.length === 0) {
+        const feedbacks = await Feedback.find({ user: requestingUser?._id, formCompleted: true });
+        if (!feedbacks || feedbacks.length === 0) {
             res.status(404).json({ message: "No feedback found for the given user", success: false });
             return;
         }
-        res.status(200).json({ message: "Retrieved Completed Feedback Forms by UserId", data, success: true });
+        res.status(200).json({ feedbacks, success: true });
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
         res.status(500).json({ error: "An unexpected error occurred while retrieving feedback." });

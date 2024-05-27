@@ -1,11 +1,16 @@
 {
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.3.42",
+    "@json2csv/plainjs": "^7.0.6",
     "@react-google-maps/api": "^2.19.2",
     "axios": "^1.6.2",
     "bootstrap": "5.0",
     "exceljs": "^4.4.0",
+    "json2csv": "^6.0.0-alpha.2",
     "leaflet": "^1.9.4",
     "react-leaflet": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/json2csv": "^5.0.7"
   }
 }
