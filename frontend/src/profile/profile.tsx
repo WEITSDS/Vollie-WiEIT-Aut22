@@ -31,6 +31,12 @@ export const ProfilePage = () => {
     const [showDeleteModal, setshowDeleteModal] = useState(false);
     const [showDeleteCohortModal, setshowDeleteCohortModal] = useState(false);
     const [selectedVolType, setselectedVolType] = useState<IVolunteerTypeUserWithApproved | null>(null);
+    let displayLastLogin: Date;
+    if (user == undefined) {
+        displayLastLogin = new Date();
+    } else {
+        displayLastLogin = new Date(user?.lastLogin);
+    }
     const [selectedCohort, setSelectedCohort] = useState<ICohort | null>(null);
 
     const isAdmin = loggedInUserIsAdmin();
@@ -153,6 +159,8 @@ export const ProfilePage = () => {
                                     />
                                 </h2>
                                 <h4>{user.email}</h4>
+                                <h6>Last login: {displayLastLogin.toLocaleString()}</h6>
+                                <h6>Last shift: {user.lastShift}</h6>
                             </div>
                             <div className="col-8">
                                 {error && <p>{error}</p>}

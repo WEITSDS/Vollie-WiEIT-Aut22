@@ -13,6 +13,7 @@ export interface IUser extends Document, IBasicUser {
     verified: boolean;
     isAdmin: boolean;
     lastLogin: number;
+    lastShift: Date;
     qualifications: Array<Types.ObjectId>; // qualification IDs
     createdAt: Date;
     shifts: Array<IUserShiftType>; // shift IDs
@@ -53,6 +54,7 @@ export interface UserSummary {
     lastName: string;
     email: string;
     lastLogin: number;
+    lastShift: Date;
     registeredAt: number;
     qualifications: Array<string>;
     verified: boolean;
@@ -66,6 +68,7 @@ export function mapUserToUserSummary({
     firstName,
     lastName,
     lastLogin,
+    lastShift,
     _id,
     email,
     qualifications,
@@ -78,6 +81,7 @@ export function mapUserToUserSummary({
 }: IUser): UserSummary {
     return {
         lastLogin: lastLogin ?? 0,
+        lastShift: lastShift ?? null,
         firstName,
         lastName,
         _id: _id || "",

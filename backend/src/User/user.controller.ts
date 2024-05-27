@@ -187,6 +187,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
             firstName: userFields.firstName,
             lastName: userFields.lastName,
             lastLogin: 0,
+            lastShift: null,
             volunteerTypes: newVolunteerTypes,
         });
 
@@ -365,13 +366,19 @@ export const setCompleteShift = async (req: Request, res: Response) => {
             { $set: { "shifts.$.completed": completionStatus } }
         );
 
+        const shift = await Shift.findOne({ _id: req.params.shiftId });
+        let updatedUser = undefined;
+        if (shift && completionStatus) {
+            updatedUser = await User.findOneAndUpdate({ _id: targettedUserId }, { $set: { lastShift: shift.endAt } });
+        }
+
         //update completed status in shift schema too (users.completed)
         const completeShiftResultUsers = await Shift.findOneAndUpdate(
             { _id: req.params.shiftId, "users.user": req.params.userId },
             { $set: { "users.$.completed": completionStatus } }
         );
 
-        if (completeShiftResult && completeShiftResultUsers) {
+        if (completeShiftResult && completeShiftResultUsers && updatedUser) {
             res.status(200).json({
                 message: "User set completion success",
                 success: true,

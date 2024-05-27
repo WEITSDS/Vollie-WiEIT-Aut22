@@ -11,6 +11,7 @@ const UserSchema: Schema = new Schema(
         lastName: { type: String, required: true },
         password: { type: String, required: true },
         lastLogin: { type: Number, required: true },
+        lastShift: { type: Date, required: false },
         verified: { type: Boolean, default: false, required: true },
         isAdmin: { type: Boolean, default: false, required: true },
         qualifications: [{ type: mongoose.Types.ObjectId, ref: "Qualification" }],
