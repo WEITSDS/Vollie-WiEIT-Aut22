@@ -14,7 +14,7 @@ async function postAndGetBasicResponse(url: string, data: Record<string, unknown
         return { ...resp, status: response.status };
     } catch (error) {
         console.error(error);
-        return { success: false, message: "An unexpected error occured", status: response?.status || 500 };
+        return { success: false, message: "An unexpected error occurred", status: response?.status || 500 };
     }
 }
 
@@ -25,7 +25,7 @@ export interface ResetPasswordDetails {
 
 export async function resetPassword(details: ResetPasswordDetails): Promise<ResponseWithStatus> {
     return postAndGetBasicResponse(
-        `${ROOT_URL}/api/users/resetpassword`,
+        `${ROOT_URL}/api/users/reset-password`,
         details as unknown as Record<string, unknown>
     );
 }
@@ -93,7 +93,7 @@ export interface User {
     volunteerTypes: IVolunteerTypeUser[];
 }
 export interface IUserShift {
-    //xiaobing shift: string;
+    // Xiaobing shift: string;
     shift: UserShift;
     approved: boolean;
     completed: boolean;
@@ -101,7 +101,7 @@ export interface IUserShift {
     endAt: Date;
     name: string;
 }
-//xiaobing added
+// Xiaobing added
 export interface UserShift {
     _id: string;
     startAt: Date;
@@ -138,8 +138,12 @@ export async function setApprovalUserVolunteerType(id: string, userId: string, s
     return patch(`${PATH}/set-volunteerType-approval/${id}/${userId}/${status}`);
 }
 
-export async function setCompleteShift(userId: string, shiftid: string, completionStatus: string) {
-    return patch(`${PATH}/${userId}/set-complete-shift/${shiftid}/${completionStatus}`);
+export async function setCompleteShift(userId: string, shiftId: string, completionStatus: string) {
+    return patch(`${PATH}/${userId}/set-complete-shift/${shiftId}/${completionStatus}`);
+}
+
+export async function setCompleteForm(userId: string, shiftId: string, completionStatus: string) {
+    return patch(`${PATH}/${userId}/set-complete-form/${shiftId}/${completionStatus}`);
 }
 
 export async function assignVolunteerType(userId: string, volunteerTypeId: string) {
@@ -148,4 +152,12 @@ export async function assignVolunteerType(userId: string, volunteerTypeId: strin
 
 export async function removeVolunteerType(userId: string, volunteerTypeId: string) {
     return patch(`${PATH}/${userId}/remove-volunteer-type/${volunteerTypeId}`);
+}
+
+export async function assignCohortType(userId: string, cohortId: string) {
+    return patch(`${PATH}/${userId}/assign-cohort-type/${cohortId}`);
+}
+
+export async function removeCohortType(userId: string, cohortId: string) {
+    return patch(`${PATH}/${userId}/remove-cohort-type/${cohortId}`);
 }

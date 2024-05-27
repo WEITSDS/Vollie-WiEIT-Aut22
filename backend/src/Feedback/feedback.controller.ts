@@ -2,65 +2,53 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-// import ExcelJS from "exceljs";
-// const StreamParser = require("@json2csv/plainjs").StreamParser;
-// import { Request, Response } from "express";
-// import { handleError } from "../utility";
-// import Feedback from "./feedbacks.model";
-// import ExcelJS from "exceljs";
-// import { IFeedback } from "./feedback.interface"; // Import your Mongoose model here
 import { Logger } from "tslog";
 import { StreamParser } from "@json2csv/plainjs";
 import { Request, Response } from "express";
 import { handleError } from "../utility";
-// import mongoose from "mongoose";
 import Feedback from "./feedbacks.model";
-
-// import Shift from "../Shift/shift.model";
 import { Parser } from "json2csv";
-// import { IShift } from "../Shift/shift.interface";
-// import { Query } from "mongoose";
-// import Feedback from "./feedbacks.model";
-// import { IFeedback } from "./feedback.interface";
 
 const logger = new Logger({ name: "feedback.controller" });
 
 export const createFeedback = async (req: Request, res: Response) => {
-    const {
-        user,
-        qualificationType,
-        session,
-        experience,
-        learnings,
-        keyLearnings,
-        teacher,
-        studentEngagement,
-        teacherEngagement,
-        improvements,
-        sessionImprovements,
-        styles,
-        contentDelivery,
-        teamDynamics,
-        rating,
-    } = req.body;
     try {
-        const feedback = new Feedback({
+        const {
             user,
             qualificationType,
-            session,
+            shift,
             experience,
             learnings,
-            keyLearnings,
             teacher,
             studentEngagement,
             teacherEngagement,
             improvements,
-            sessionImprovements,
+            improvementMethods,
             styles,
-            contentDelivery,
+            content,
             teamDynamics,
+            additionalComments,
             rating,
-            formCompleted: false, // Set the default value for the formCompleted field
+            formCompleted,
+        } = req.body;
+
+        const feedback = new Feedback({
+            user,
+            qualificationType,
+            shift,
+            experience,
+            learnings,
+            teacher,
+            studentEngagement,
+            teacherEngagement,
+            improvements,
+            improvementMethods,
+            styles,
+            content,
+            teamDynamics,
+            additionalComments,
+            rating,
+            formCompleted: formCompleted || false, // Set the default value for the formCompleted field
         });
         await feedback.save();
         res.status(200).json({ message: "Feedback created successfully", success: true });
@@ -70,40 +58,41 @@ export const createFeedback = async (req: Request, res: Response) => {
 };
 
 export const updateFeedbackById = async (req: Request, res: Response) => {
-    const {
-        user,
-        qualificationType,
-        session,
-        experience,
-        learnings,
-        keyLearnings,
-        teacher,
-        studentEngagement,
-        teacherEngagement,
-        improvements,
-        sessionImprovements,
-        styles,
-        contentDelivery,
-        teamDynamics,
-        rating,
-        formCompleted,
-    } = req.body;
     try {
-        const feedback = await Feedback.findByIdAndUpdate(req.params.id, {
+        const {
             user,
             qualificationType,
-            session,
+            shift,
             experience,
             learnings,
-            keyLearnings,
             teacher,
             studentEngagement,
             teacherEngagement,
             improvements,
-            sessionImprovements,
+            improvementMethods,
             styles,
-            contentDelivery,
+            content,
             teamDynamics,
+            additionalComments,
+            rating,
+            formCompleted,
+        } = req.body;
+
+        const feedback = await Feedback.findByIdAndUpdate(req.params.id, {
+            user,
+            qualificationType,
+            shift,
+            experience,
+            learnings,
+            teacher,
+            studentEngagement,
+            teacherEngagement,
+            improvements,
+            improvementMethods,
+            styles,
+            content,
+            teamDynamics,
+            additionalComments,
             rating,
             formCompleted,
         });
@@ -187,12 +176,12 @@ export const getFeedbackById = async (req: Request, res: Response): Promise<void
 export const getAllCompletedFeedbackByUserId = async (req: Request, res: Response): Promise<void> => {
     try {
         const requestingUser = req.session.user;
-        const feedbacks = await Feedback.find({ user: requestingUser?._id, formCompleted: true });
-        if (!feedbacks || feedbacks.length === 0) {
+        const data = await Feedback.find({ user: requestingUser?._id, formCompleted: true });
+        if (!data || data.length === 0) {
             res.status(404).json({ message: "No feedback found for the given user", success: false });
             return;
         }
-        res.status(200).json({ feedbacks, success: true });
+        res.status(200).json({ message: "Retrieved Completed Feedback Forms by UserId", data, success: true });
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
         res.status(500).json({ error: "An unexpected error occurred while retrieving feedback." });
@@ -248,7 +237,7 @@ export const downloadFeedbackAsExcel = async (_req: Request, res: Response) => {
 
         // When no more data is being sent
         parser.onEnd = () => {
-            // Set the required headers to inform the requestor that the response is a downloadable file
+            // Set the required headers to inform the requester that the response is a downloadable file
             res.setHeader("Content-Disposition", "attachment; filename=feedback-report.csv");
             res.set("Content-Type", "text/csv");
             res.status(200).send(csv);
@@ -261,7 +250,19 @@ export const downloadFeedbackAsExcel = async (_req: Request, res: Response) => {
         };
 
         // Loop through each element to minimize memory impact (instead of pushing it all to a CSV)
-        feedbacks.forEach((record: string | object | Iterable<number>) => parser.write(record));
+        feedbacks.forEach((record: string | object | Iterable<number>) => {
+            if (typeof record === "string") {
+                parser.write(record);
+            } else if (Array.isArray(record)) {
+                const iterable = record as Iterable<number>;
+                parser.write(Array.from(iterable).join(",")); // Handling Iterable<number>
+            } else if (typeof record === "object") {
+                parser.write(JSON.stringify(record));
+            } else {
+                throw new Error("Unsupported type");
+            }
+        });
+
         parser.end(); // End the parser when all data is processed
     } catch (err) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -282,7 +283,7 @@ export const downloadFeedbackAsCsv = async (_req: Request, res: Response) => {
         const json2csvParser = new Parser({ fields });
         const csv = json2csvParser.parse(feedbacks);
 
-        // Set the required headers to inform the requestor that the response is a downloadable file
+        // Set the required headers to inform the requester that the response is a downloadable file
         res.setHeader("Content-Disposition", "attachment; filename=feedback-report.csv");
         res.set("Content-Type", "text/csv");
 

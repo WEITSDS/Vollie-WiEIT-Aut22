@@ -2,18 +2,37 @@ import { FilterResultsModalProps, VolType } from "./types";
 import DateTimePicker from "react-datetime-picker";
 import Select, { MultiValue } from "react-select";
 import "./styles.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Modal } from "react-bootstrap";
+import { getAllVenues, IAddress } from "../../api/addressAPI";
+import "../../../src/shiftpage/shiftpage.css";
 
 export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element => {
     const { visible, onClose, allVolTypes, updateFilters, filters } = props;
     const [currentMenu, setCurrentMenu] = useState("Date");
+    const [allLocations, setAllLocations] = useState<IAddress[]>([]);
+
+    const [selectedVenue, setSelectedVenue] = useState<string>(""); // State to hold the selected venue
 
     if (!allVolTypes) return <></>;
 
     const volTypesSelection = allVolTypes.map((vol) => {
         return { value: vol._id, label: vol.name };
     }) as VolType[];
+
+    useEffect(() => {
+        const fetchVenues = async () => {
+            try {
+                const venues = await getAllVenues();
+                const allLocations = venues.filter((location) => location.address.toLowerCase());
+                setAllLocations(allLocations);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchVenues().catch((error) => console.error(error));
+    }, [filters.location]);
 
     return (
         <Modal
@@ -157,20 +176,34 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
 
                         {currentMenu === "Venue" && (
                             <>
-                                <label>Venue</label>
-                                <Form.Control
-                                    type="text"
-                                    className="venue-input"
-                                    placeholder="Enter venue"
-                                    value={filters.location ? filters.location : ""}
-                                    // Controlled with the current location value
-                                    onChange={(e) => updateFilters({ ...filters, location: e.target.value })}
-                                />
+                                <label htmlFor="venue-select">Venue</label>
+                                <select
+                                    id="venue-select"
+                                    className="venue-input venue-filters"
+                                    value={selectedVenue}
+                                    onChange={(e) => {
+                                        const newSelectedVenue = e.target.value;
+                                        setSelectedVenue(newSelectedVenue);
+                                        updateFilters({ ...filters, location: newSelectedVenue }); // Update filters with selected venue
+                                    }}
+                                >
+                                    <option value="">Select venue</option>
+                                    {allLocations.length === 0 ? (
+                                        <option disabled>No venues found</option>
+                                    ) : (
+                                        allLocations.map((location, index) => (
+                                            <option key={index} value={location.address}>
+                                                {location.address}
+                                            </option>
+                                        ))
+                                    )}
+                                </select>
                             </>
                         )}
+
                         <div className="filter-buttons">
                             <button
-                                className="btn btn-secondary"
+                                className=" reset-filter-button"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     updateFilters({
@@ -182,9 +215,10 @@ export const FilterResultsModal = (props: FilterResultsModalProps): JSX.Element 
                                         hideUnavailable: false,
                                         location: "",
                                     });
+                                    setSelectedVenue("");
                                 }}
                             >
-                                Reset Filter
+                                Reset Filters
                             </button>
                         </div>
                     </form>

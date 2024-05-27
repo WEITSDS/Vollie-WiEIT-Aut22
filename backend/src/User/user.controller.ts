@@ -9,6 +9,8 @@ import { isIBasicUser, IUser, IUserVolunteerType, mapUserToUserSummary } from ".
 import VolunteerType from "../VolunteerType/volunteerType.model";
 import { sendVolunteerRequestEmail, sendVolunteerApprovalEmail } from "../mailer/mailer";
 import bcrypt from "bcrypt";
+import Cohort from "../Cohort/cohort.model";
+import Shift from "../Shift/shift.model";
 
 const logger = new Logger({ name: "user.controller" });
 
@@ -19,7 +21,7 @@ const logger = new Logger({ name: "user.controller" });
  */
 export const getAllUsers = (_req: Request, res: Response, _next: NextFunction) => {
     User.find()
-        //xiaobing added
+        // Xiaobing added
         .populate("shifts.shift")
         .exec()
         .then((results) => {
@@ -51,7 +53,7 @@ export const getAllAdmins = () => {
  */
 export const getUserById = (req: Request, res: Response, _next: NextFunction) => {
     User.findById(req.params.id)
-        //xiaobing added
+        // Xiaobing added
         .populate("shifts.shift")
         .exec()
         .then((foundUser) => {
@@ -140,7 +142,7 @@ export const setUserPassword = (req: Request, res: Response, _next: NextFunction
 };
 
 /**
- * Regiter a user
+ * Register a user
  * If a user has an existing account then throw an error to state that
  * Else send a request to the backend to sign them up
  */
@@ -173,7 +175,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
                 if (targetVolType) {
                     newVolunteerTypes.push({
                         type: new mongoose.Types.ObjectId(targetVolType._id.toString()),
-                        approved: !targetVolType?.requiresApproval, // if no appoval required, set approved to true
+                        approved: !targetVolType?.requiresApproval, // if no approval required, set approved to true
                     });
                 }
             }
@@ -296,7 +298,7 @@ export const setUserIsAdmin = async (req: Request, res: Response): Promise<void>
             });
             return;
         } else if (requestingUser.email === user.email) {
-            // Dont let users accidentally remove themselves as admin...
+            // Don't let users accidentally remove themselves as admin...
             res.status(400).json({ message: "Cannot change own administrator flag", success: false });
             return;
         }
@@ -312,30 +314,6 @@ export const setUserIsAdmin = async (req: Request, res: Response): Promise<void>
         handleError(logger, res, err, "Change user administrator flag failed");
     }
 };
-
-// User.find({ email: req.body.email }).exec(function (err, users) {
-//         if (!users.length) {
-//             return res.status(400).json({
-//                 loginStatus: false,
-//             });
-//         } else {
-//             user = users[0];
-//             bcrypt.compare(req.body.password, user.password, function (err, response) {
-//                 // Checking the hash stored in the database with the entered value
-//                 // if (err) throw err; //Built in error handler
-//                 if (response && user.email == req.body.email) {
-//                     // Check if the email is the same as the one stored in the database
-//                     req.session.userid = user.email; // Sets the session to the user and assigns a cookie
-//                     req.session.id_number = user.id_number;
-//                     //console.log(req.session); // logging the session for development purposes
-//                     res.json({ loginStatus: true }); // responding with whether the user was able to login or not
-//                 } else {
-//                     res.json({ loginStatus: false }); // responding with whether the user was able to login or not
-//                 }
-//             });
-//         }
-//     });
-// };
 
 export const getOwnUser = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -366,28 +344,34 @@ export const setCompleteShift = async (req: Request, res: Response) => {
             return;
         }
 
-        //Cbeck to see if user is admin so they can mark other users as complete
+        // Check to see if user is admin so they can mark other users as complete
         // This should be adjusted to check if the user is a supervising volunteer not admin
         // Will likely have to make DB adjustments for this to identify if user is supervisor
         const isAdmin = userObj?.isAdmin || false;
         let targettedUserId = userObj._id;
         if (isAdmin) {
-            targettedUserId = req.params.userid;
+            targettedUserId = req.params.userId;
         }
-        if (!isAdmin && targettedUserId.toString() !== req.params.userid) {
+        if (!isAdmin && targettedUserId.toString() !== req.params.userId) {
             res.status(401).json({ message: "Unauthorised, admin privileges are required", success: false });
             return;
         }
 
-        const completionStatus = req.params.completionstatus === "complete";
+        const completionStatus = req.params.completionStatus === "complete";
 
         //Add some checking to ensure the time is past that of the shift so it cant be completed before?
         const completeShiftResult = await User.findOneAndUpdate(
-            { _id: targettedUserId, "shifts.shift": req.params.shiftid },
+            { _id: targettedUserId, "shifts.shift": req.params.shiftId },
             { $set: { "shifts.$.completed": completionStatus } }
         );
 
-        if (completeShiftResult) {
+        //update completed status in shift schema too (users.completed)
+        const completeShiftResultUsers = await Shift.findOneAndUpdate(
+            { _id: req.params.shiftId, "users.user": req.params.userId },
+            { $set: { "users.$.completed": completionStatus } }
+        );
+
+        if (completeShiftResult && completeShiftResultUsers) {
             res.status(200).json({
                 message: "User set completion success",
                 success: true,
@@ -417,14 +401,14 @@ export const setApprovalVolunteerTypeForUser = async (req: Request, res: Respons
         }
 
         // Ensure this user has this qualification in the first place (redundant check but ensures that consumers of API provide a corresponding qualID and userID)
-        const volunteerType = await VolunteerType.findById(req.params.volunteerTypeID);
-        if (!req.params.volunteerTypeID || !volunteerType) {
+        const volunteerType = await VolunteerType.findById(req.params.volunteerTypeId);
+        if (!req.params.volunteerTypeId || !volunteerType) {
             handleError(logger, res, null, "Volunteer Type not found.", 404);
             return;
         }
 
-        const targetUser = await User.findOne({ _id: req.params.userid });
-        if (!req.params.userid || !targetUser) {
+        const targetUser = await User.findOne({ _id: req.params.userId });
+        if (!req.params.userId || !targetUser) {
             handleError(logger, res, null, "User not found.", 404);
             return;
         }
@@ -472,7 +456,7 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
         }
 
         const sessionUserId = userObj._id;
-        if (sessionUserId != req.params.userid && !userObj.isAdmin) {
+        if (sessionUserId != req.params.userId && !userObj.isAdmin) {
             res.status(401).json({
                 message: "Unauthorised, you can only assign volunteer types to yourself unless you are an admin",
                 success: false,
@@ -481,14 +465,14 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
         }
         const newVolTypeId = new mongoose.Types.ObjectId().toString();
 
-        const targetVolType = await VolunteerType.findById(req.params.volunteertypeid);
+        const targetVolType = await VolunteerType.findById(req.params.volunteerTypeId);
         const assignVolTypeResult = await User.findOneAndUpdate(
-            { _id: req.params.userid },
+            { _id: req.params.userId },
             {
                 $addToSet: {
                     volunteerTypes: {
                         _id: new mongoose.Types.ObjectId(newVolTypeId),
-                        type: req.params.volunteertypeid,
+                        type: req.params.volunteerTypeId,
                         approved: !targetVolType?.requiresApproval,
                     },
                 },
@@ -514,7 +498,7 @@ export const assignVolunteerType = async (req: Request, res: Response) => {
                     userObj.firstName,
                     userObj.lastName,
                     targetVolType.name,
-                    req.params.volunteertypeid,
+                    req.params.volunteerTypeId,
                     userObj._id
                 );
                 console.log("CHECK CHECK id being passed " + userObj._id);
@@ -541,7 +525,7 @@ export const removeVolunteerType = async (req: Request, res: Response) => {
         }
 
         const sessionUserId = userObj._id;
-        if (sessionUserId != req.params.userid && !userObj.isAdmin) {
+        if (sessionUserId != req.params.userId && !userObj.isAdmin) {
             res.status(401).json({
                 message: "Unauthorised, you can only remove volunteer types from yourself unless you are an admin",
                 success: false,
@@ -549,16 +533,16 @@ export const removeVolunteerType = async (req: Request, res: Response) => {
             return;
         }
 
-        const removeVolTypeResult = await User.updateOne(
-            { _id: req.params.userid },
+        const removeVolunteerTypeResult = await User.updateOne(
+            { _id: req.params.userId },
             {
                 $pull: {
-                    volunteerTypes: { type: req.params.volunteertypeid },
+                    volunteerTypes: { type: req.params.volunteerTypeId },
                 },
             }
         );
 
-        if (removeVolTypeResult) {
+        if (removeVolunteerTypeResult) {
             res.status(200).json({
                 message: "Volunteer type removed from user",
                 success: true,
@@ -573,5 +557,104 @@ export const removeVolunteerType = async (req: Request, res: Response) => {
         }
     } catch (err) {
         handleError(logger, res, err, "Volunteer type removal from user failed");
+    }
+};
+
+export const assignCohortType = async (req: Request, res: Response) => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) {
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
+            return;
+        }
+
+        const sessionUserId = userObj._id;
+        if (sessionUserId != req.params.userId && !userObj.isAdmin) {
+            res.status(401).json({
+                message: "Unauthorised, you can only assign cohort types to yourself unless you are an admin",
+                success: false,
+            });
+            return;
+        }
+        //const newCohortId = new mongoose.Types.ObjectId().toString();
+
+        const targetCohort = await Cohort.findById(req.params.cohortId);
+        const assignCohortResult = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            {
+                $addToSet: {
+                    cohorts: {
+                        type: targetCohort,
+                    },
+                },
+            }
+        );
+
+        if (assignCohortResult && targetCohort) {
+            res.status(200).json({
+                message: "User assigned to cohort type",
+                success: true,
+            });
+            return;
+        } else {
+            res.status(404).json({
+                message: "User not found",
+                success: true,
+            });
+            return;
+        }
+    } catch (err) {
+        handleError(logger, res, err, "Cohort type assignment to user failed");
+    }
+};
+
+export const removeCohortType = async (req: Request, res: Response) => {
+    try {
+        const userObj = await User.findOne({ _id: req.session.user?._id });
+        if (!userObj) {
+            res.status(404).json({ message: "Requesting user doesn't exist", success: false });
+            return;
+        }
+
+        const sessionUserId = userObj._id;
+        if (sessionUserId != req.params.userId && !userObj.isAdmin) {
+            res.status(401).json({
+                message: "Unauthorised, you can only remove cohort types from yourself unless you are an admin",
+                success: false,
+            });
+            return;
+        }
+
+        const removeCohortResult = await User.updateOne(
+            { _id: req.params.userId },
+            {
+                $pull: {
+                    cohorts: { type: req.params.cohortId },
+                },
+            }
+        );
+        if (removeCohortResult && removeCohortResult.modifiedCount !== undefined) {
+            if (removeCohortResult.modifiedCount > 0) {
+                res.status(200).json({
+                    message: "Cohort removed from user",
+                    success: true,
+                });
+                return;
+            } else {
+                res.status(404).json({
+                    message: "User not found",
+                    success: true,
+                });
+                return;
+            }
+        } else {
+            res.status(400).json({
+                message: "cohort has not been removed from user",
+                success: true,
+            });
+            return;
+        }
+    } catch (err) {
+        handleError(logger, res, err, "Cohort removal from user failed");
     }
 };
