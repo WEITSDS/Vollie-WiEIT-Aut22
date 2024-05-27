@@ -27,7 +27,7 @@ export const FeedbackAdminPage = () => {
                                         <th>User Name</th>
                                         <th>Shift Date</th>
                                         <th>School</th>
-                                        <th>Improvements</th>
+                                        <th>Role</th>
                                         <th>Rating</th>
                                     </tr>
                                 </thead>
@@ -35,12 +35,6 @@ export const FeedbackAdminPage = () => {
                                     {feedbackData &&
                                         feedbackData.data &&
                                         feedbackData?.data.map((feedbackItem, index) => {
-                                            // const shiftId =
-                                            //     feedbackItem.shift !== undefined ? feedbackItem.shift.toString() : "";
-                                            // const { data: shiftData } = useShiftById(shiftId || "");
-
-                                            // const shift = feedbackItem.shift; // Accessing shift data from feedback
-                                            // const { firstName } = feedbackItem.user;
                                             const user = feedbackItem.user;
                                             const shift = feedbackItem.shift;
 
@@ -49,7 +43,16 @@ export const FeedbackAdminPage = () => {
                                                     <td>{`${user.firstName} ${user.lastName}`}</td>
                                                     <td>{shift?.startAt}</td>
                                                     <td>{shift?.venue}</td>
-                                                    <td>{feedbackItem.improvements}</td>
+                                                    <td>
+                                                        {shift?.users.map(
+                                                            (shiftUser) =>
+                                                                user.email === shiftUser.user.email && (
+                                                                    <span key={shiftUser.user._id}>
+                                                                        {shiftUser.chosenVolunteerType?.name}{" "}
+                                                                    </span>
+                                                                )
+                                                        )}
+                                                    </td>
                                                     <td>{feedbackItem.rating}</td>
                                                 </tr>
                                             );

@@ -1,4 +1,5 @@
 import { Filters } from "../components/filterResultsModal/types";
+import { User } from "./userApi";
 import {
     isBasicResponse,
     patch,
@@ -9,6 +10,7 @@ import {
     ResponseWithData,
     postAndGetDataResponse,
 } from "./utility";
+import { IVolunteerType } from "./volTypeAPI";
 
 const ROOT_URL = window.location.origin;
 
@@ -137,8 +139,8 @@ export interface IShiftVolunteerAllocations {
 }
 
 export interface IShiftUser {
-    user: string; // userID
-    chosenVolunteerType: string; // volunteerTypeID
+    user: User; // userID
+    chosenVolunteerType: IVolunteerType; // volunteerTypeID
     approved: boolean;
 }
 

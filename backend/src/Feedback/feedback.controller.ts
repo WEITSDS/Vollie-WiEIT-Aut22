@@ -123,7 +123,16 @@ export const getAllFeedback = async (_req: Request, res: Response) => {
     try {
         let feedbacks = await Feedback.find();
 
-        feedbacks = await Feedback.find().populate("user").populate("shift").exec();
+        feedbacks = await Feedback.find()
+            .populate("user")
+            .populate({
+                path: "shift",
+                populate: [
+                    { path: "users.user" }, // Populate users.user
+                    { path: "users.chosenVolunteerType" }, // Populate users.chosenVolunteerType
+                ],
+            })
+            .exec();
 
         res.status(200).json({
             message: "success",
