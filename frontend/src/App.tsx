@@ -22,6 +22,7 @@ import { NotificationPage } from "./notificationpage/notificationpage";
 import { CalendarPage } from "./calendarpage/calendarpage";
 import AdminReport from "./admin/adminReport";
 import { FeedbackFormsPage } from "./feedbackFormPage/feedbackFormPage";
+import { FeedbackAdminPage } from "./feedbackAdmin/feedbackPage";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,10 @@ function App(): JSX.Element {
                     <Route
                         path="/notificationsadmin"
                         element={<ProtectedRoute needsAdmin={true} outlet={<NotificationPageAdmin />} />}
+                    ></Route>
+                    <Route
+                        path="/feedbackadmin"
+                        element={<ProtectedRoute needsAdmin={true} outlet={<FeedbackAdminPage />} />}
                     ></Route>
                     <Route path="/notifications" element={<ProtectedRoute outlet={<NotificationPage />} />}></Route>
                     <Route path="/feedbackForm" element={<ProtectedRoute outlet={<FeedbackFormsPage />} />}></Route>

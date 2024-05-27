@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable no-useless-catch */
 // FeedbackAPI.ts
-
 import { postAndGetBasicResponse, ResponseWithStatus, ResponseWithData, getDataResponse } from "./utility";
 
 // The base URL of your backend server
@@ -65,4 +64,12 @@ export async function addFeedback(
         formCompleted,
     };
     return await postAndGetBasicResponse(`${PATH}`, payload as unknown as Record<string, unknown>);
+}
+
+export async function getAllFeedback(): Promise<ResponseWithData<IBasicFeedback[]>> {
+    return await getDataResponse(`${PATH}/all`);
+}
+
+export async function downloadFeedbackAsCsv(): Promise<ResponseWithData<IBasicFeedback[]>> {
+    return await getDataResponse(`${PATH}/download-csv`);
 }
