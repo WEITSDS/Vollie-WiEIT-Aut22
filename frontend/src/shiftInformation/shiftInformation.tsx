@@ -90,6 +90,7 @@ const ShiftInformation = () => {
         e.preventDefault();
         handleShowRoles();
     };
+
     const handleComplete = async () => {
         try {
             if (typeof shiftId === "string" && userObj?._id) {
@@ -144,6 +145,7 @@ const ShiftInformation = () => {
                 await refetch();
                 await userQuery.refetch();
             }
+            // delete timer if it exists
         } catch (error) {
             console.log("error assigning user", error);
         }

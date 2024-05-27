@@ -18,6 +18,7 @@ export interface IUser extends Document, IBasicUser {
     createdAt: Date;
     shifts: Array<IUserShiftType>; // shift IDs
     volunteerTypes: IUserVolunteerType[];
+    cohorts: IUserCohort[];
     notifications: Array<Types.ObjectId>; // notification IDs
 }
 
@@ -30,6 +31,10 @@ export interface IUserShiftType {
 export interface IUserVolunteerType {
     type: Types.ObjectId; // volunteer type ID
     approved: boolean;
+}
+
+export interface IUserCohort {
+    type: Types.ObjectId; //cohort type ID
 }
 
 export function isIBasicUser(args: unknown): args is IBasicUser {
@@ -56,6 +61,7 @@ export interface UserSummary {
     isAdmin: boolean;
     volunteerTypes: Array<IUserVolunteerType>;
     shifts: Array<IUserShiftType>;
+    cohorts: Array<IUserCohort>;
 }
 
 export function mapUserToUserSummary({
@@ -71,6 +77,7 @@ export function mapUserToUserSummary({
     isAdmin,
     volunteerTypes,
     shifts,
+    cohorts,
 }: IUser): UserSummary {
     return {
         lastLogin: lastLogin ?? 0,
@@ -85,9 +92,10 @@ export function mapUserToUserSummary({
         isAdmin,
         volunteerTypes,
         shifts,
+        cohorts,
     };
 }
-export interface UserShiftAttendaceSummary {
+export interface UserShiftAttendanceSummary {
     _id: string;
     firstName: string;
     lastName: string;

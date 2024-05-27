@@ -29,6 +29,11 @@ const UserSchema: Schema = new Schema(
             },
         ],
         notifications: [{ type: mongoose.Types.ObjectId, ref: "Notification" }],
+        cohorts: [
+            {
+                type: { type: mongoose.Types.ObjectId, ref: "Cohort" },
+            },
+        ],
     },
     {
         timestamps: true,

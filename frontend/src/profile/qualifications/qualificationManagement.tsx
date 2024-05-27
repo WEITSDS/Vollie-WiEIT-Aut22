@@ -133,7 +133,7 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
                             return (
                                 <tr key={qual._id}>
                                     <td>{qual.title}</td>
-                                    <td>{qual.qualificationType.name}</td>
+                                    <td>{qual.qualificationType?.name}</td>
                                     <td>
                                         {Date.parse(qual.expiryDate) < Date.now() ? (
                                             <div title="This qualification is expired." style={{ color: "red" }}>

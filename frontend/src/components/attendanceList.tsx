@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { IShift, setApprovalUserForShift, UserShiftAttendaceSummary } from "../api/shiftApi";
+import { IShift, setApprovalUserForShift, UserShiftAttendanceSummary } from "../api/shiftApi";
 import participantsIcon from "../assets/participants.svg";
 //import AttendanceList from "./attendanceList.json";
 import { useAttendanceList } from "../hooks/useAttendanceList";
@@ -127,12 +127,17 @@ export default function AttendanceListModal({
         if (onCloseModal) {
             onCloseModal();
         }
+        // delete timer if it exists
     };
 
     const onApproveUser = async (targetUserId: string) => {
         try {
             await setApprovalUserForShift(targetUserId, shift._id, "approved");
             await refetch();
+
+            // check if timer exists for this user and shift
+            // if not, create timer
+            // if yes, delete existing timer, create new timer
         } catch (error) {
             console.log(error);
         }
@@ -142,6 +147,9 @@ export default function AttendanceListModal({
         try {
             await setApprovalUserForShift(targetUserId, shift._id, "unapprove");
             await refetch();
+
+            // check if timer exists for this user and shift
+            // if yes, delete existing timer
         } catch (error) {
             console.log(error);
         }
@@ -256,7 +264,7 @@ export default function AttendanceListModal({
      *
      */
 
-    const displayAttendanceList = (attendanceList: UserShiftAttendaceSummary[]) => {
+    const displayAttendanceList = (attendanceList: UserShiftAttendanceSummary[]) => {
         return attendanceList?.map((userShift, index) => (
             <tr key={userShift._id}>
                 <th scope="row">{index + 1}</th>

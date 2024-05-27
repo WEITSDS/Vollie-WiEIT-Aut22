@@ -13,17 +13,23 @@ import { Button, Table } from "react-bootstrap";
 import { useUserById } from "../hooks/useUserById";
 import { useOwnUser } from "../hooks/useOwnUser";
 import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
-import { removeVolunteerType, setApprovalUserVolunteerType } from "../api/userApi";
+import { removeCohortType, removeVolunteerType, setApprovalUserVolunteerType } from "../api/userApi";
 import { loggedInUserIsAdmin } from "../protectedRoute";
 import { AddRoleModal, ConfirmDeleteModal } from "./volunteer/addRoleModal";
 import { IVolunteerTypeUserWithApproved } from "../api/volTypeAPI";
+import { useTotalHoursWorked } from "../hooks/useTotalHoursWorked";
+import { AddCohortModal, ConfirmDeleteCohortModal } from "./cohort/addCohortModal";
+import { useCohortsForUser } from "../hooks/useCohortsForUser";
+import { ICohort } from "../api/cohortTypeAPI";
 
 export const ProfilePage = () => {
     const { id } = useParams();
     const { isLoading, data: userData, refetch: refetchUser, error } = id ? useUserById(id) : useOwnUser();
     const user = userData?.data;
     const [showAddModal, setshowAddModal] = useState(false);
+    const [showAddCohortModal, setshowAddCohortModal] = useState(false);
     const [showDeleteModal, setshowDeleteModal] = useState(false);
+    const [showDeleteCohortModal, setshowDeleteCohortModal] = useState(false);
     const [selectedVolType, setselectedVolType] = useState<IVolunteerTypeUserWithApproved | null>(null);
     let displayLastLogin: Date;
     if (user == undefined) {
@@ -31,8 +37,13 @@ export const ProfilePage = () => {
     } else {
         displayLastLogin = new Date(user?.lastLogin);
     }
+    const [selectedCohort, setSelectedCohort] = useState<ICohort | null>(null);
 
     const isAdmin = loggedInUserIsAdmin();
+
+    const { data: totalhours, refetch: refetchTotalHours } = useTotalHoursWorked(user?._id);
+
+    const { data: cohorts, refetch: refetchCohorts } = useCohortsForUser(user?._id);
 
     const {
         data: userVolTypesData,
@@ -69,6 +80,15 @@ export const ProfilePage = () => {
         setshowAddModal(true);
     };
 
+    const handleAddCohort = () => {
+        setshowAddCohortModal(true);
+    };
+
+    const handleDeleteCohort = (cohort: ICohort) => {
+        setSelectedCohort(cohort);
+        setshowDeleteCohortModal(true);
+    };
+
     const handleDeleteRole = (volType: IVolunteerTypeUserWithApproved) => {
         setselectedVolType(volType);
         setshowDeleteModal(true);
@@ -79,6 +99,12 @@ export const ProfilePage = () => {
         await refetchVolTypeUser();
     };
 
+    const onAddCohortClose = async () => {
+        setshowAddCohortModal(false);
+        await refetchTotalHours();
+        await refetchCohorts();
+    };
+
     const onDeleteRoleClose = async (shouldDelete: boolean) => {
         try {
             setshowDeleteModal(false);
@@ -87,6 +113,19 @@ export const ProfilePage = () => {
                 console.log("Trying to delete");
             }
             await refetchVolTypeUser();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const onDeleteCohortClose = async (shouldDelete: boolean) => {
+        try {
+            setshowDeleteCohortModal(false);
+            if (user?._id && selectedCohort && shouldDelete) {
+                await removeCohortType(user?._id, selectedCohort?._id);
+                await refetchTotalHours();
+                await refetchCohorts();
+            }
         } catch (error) {
             console.log(error);
         }
@@ -145,6 +184,74 @@ export const ProfilePage = () => {
                                 )}
                             </div>
                         </div>
+                        <br></br>
+                        <div className="ambassador-hour-tracking" hidden={!isAdmin && !editingSelf}>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Cohort Name</th>
+                                        <th>Hours Worked</th>
+                                        {isAdmin && <th>Delete</th>}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cohorts?.data &&
+                                        cohorts.data.map((cohort) => {
+                                            return (
+                                                <tr key={cohort._id}>
+                                                    <td>{cohort.name}</td>
+                                                    <td>
+                                                        {(totalhours &&
+                                                            totalhours.data &&
+                                                            totalhours.data[
+                                                                cohort.name as keyof typeof totalhours.data
+                                                            ]) ??
+                                                            "N/A"}
+                                                    </td>
+                                                    {isAdmin && (
+                                                        <td>
+                                                            <Button
+                                                                onClick={() => handleDeleteCohort(cohort)}
+                                                                variant="danger"
+                                                                disabled={!editingSelf && !isAdmin}
+                                                            >
+                                                                <i className="bi bi-trash" />
+                                                            </Button>
+                                                        </td>
+                                                    )}
+                                                </tr>
+                                            );
+                                        })}
+                                </tbody>
+                            </Table>
+                            {isAdmin && (
+                                <Button
+                                    title="Add Cohort"
+                                    variant="success"
+                                    onClick={() => handleAddCohort()}
+                                    disabled={!editingSelf && !isAdmin}
+                                >
+                                    Add Cohort {"   "}
+                                    <i className="bi bi-plus-square" />
+                                </Button>
+                            )}
+                            {showAddCohortModal && user._id && (
+                                <AddCohortModal
+                                    userId={user?._id}
+                                    onClose={() => {
+                                        void onAddCohortClose();
+                                    }}
+                                    userCohorts={[]}
+                                />
+                            )}
+                            {showDeleteCohortModal && selectedCohort && (
+                                <ConfirmDeleteCohortModal
+                                    type={selectedCohort}
+                                    onClose={(shouldDelete: boolean) => void onDeleteCohortClose(shouldDelete)}
+                                />
+                            )}
+                        </div>
+                        <br></br>
                         <div className="volunteer-type-table" hidden={!isAdmin && !editingSelf}>
                             <Table striped bordered hover>
                                 <thead>
