@@ -28,7 +28,7 @@ export default function RemoveUserFromShiftModal({
 
     const removeUser = async () => {
         try {
-            await unassignUserFromShift({ shiftid: shiftId, userid: userId });
+            await unassignUserFromShift({ shiftId: shiftId, userId: userId });
             onDelete();
         } catch (error) {
             console.log(error);

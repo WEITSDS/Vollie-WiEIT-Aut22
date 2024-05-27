@@ -139,8 +139,8 @@ const ShiftInformation = () => {
         try {
             if (typeof shiftId === "string" && userObj?._id) {
                 await unassignUserFromShift({
-                    shiftid: shiftId,
-                    userid: userObj?._id,
+                    shiftId: shiftId,
+                    userId: userObj?._id,
                 });
                 await refetch();
                 await userQuery.refetch();
@@ -161,8 +161,8 @@ const ShiftInformation = () => {
         try {
             if (typeof shiftId === "string" && userObj?._id) {
                 const result = await assignUserToShift({
-                    shiftid: shiftId,
-                    userid: userObj?._id,
+                    shiftId: shiftId,
+                    userId: userObj?._id,
                     selectedVolType: userType,
                 });
                 if (result.success == false) {
