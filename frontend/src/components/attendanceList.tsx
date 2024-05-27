@@ -127,12 +127,17 @@ export default function AttendanceListModal({
         if (onCloseModal) {
             onCloseModal();
         }
+        // delete timer if it exists
     };
 
     const onApproveUser = async (targetUserId: string) => {
         try {
             await setApprovalUserForShift(targetUserId, shift._id, "approved");
             await refetch();
+
+            // check if timer exists for this user and shift
+            // if not, create timer
+            // if yes, delete existing timer, create new timer
         } catch (error) {
             console.log(error);
         }
@@ -142,6 +147,9 @@ export default function AttendanceListModal({
         try {
             await setApprovalUserForShift(targetUserId, shift._id, "unapprove");
             await refetch();
+
+            // check if timer exists for this user and shift
+            // if yes, delete existing timer
         } catch (error) {
             console.log(error);
         }

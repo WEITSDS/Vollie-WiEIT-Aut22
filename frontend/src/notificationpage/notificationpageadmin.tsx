@@ -9,6 +9,7 @@ import { ModalBody } from "react-bootstrap";
 import { setApprovalUserForShift } from "../api/shiftApi";
 import { useAllNotifications } from "../hooks/useAllNotifications";
 import { setApprovalUserVolunteerType } from "../api/userApi";
+import { useShiftById } from "../hooks/useShiftById";
 
 export const NotificationPageAdmin = () => {
     const { data: userNotificationsData, isLoading: isLoadingNotifications } = useAllNotifications();
@@ -56,6 +57,18 @@ export const NotificationPageAdmin = () => {
                     if (response.status === 200) {
                         void updateNotificationStatus(notif._id, approvalStatus);
                         alert("Shift status updated successfully!");
+
+                        // get shift's end time and date
+                        const { data } = useShiftById(notif.typeId);
+                        const shiftEnd = data?.data?.endAt;
+
+                        if (shiftEnd && approvalStatus === "approved") {
+                            // start timer
+                        }
+
+                        if (shiftEnd && approvalStatus === "unapprove") {
+                            // stop timer if it exists
+                        }
                     } else {
                         alert(`Failed to update shift:`);
                     }
