@@ -67,12 +67,12 @@ export class ViewAvailableShifts extends React.Component<SelectedShiftState> {
     handleAccept = async (shift: data) => {
         const user = await getOwnUser();
         const data = {
-            userid: user.data?._id as string,
-            shiftid: shift.id,
+            userId: user.data?._id as string,
+            shiftId: shift.id,
             selectedVolType: "634320042a444bc07bd4cff7",
         };
         console.log(shift);
-        //Request now requires shiftid and userid to be passed as an object.
+        //Request now requires shiftId and userId to be passed as an object.
         const assignShiftResponse = await assignUserToShift(data);
         console.log(assignShiftResponse);
     };

@@ -89,8 +89,8 @@ export default function AttendanceListModal({
             }
             const assignmentPromises = selectedUsers.map((userId) => {
                 assignUserToShift({
-                    shiftid: shift._id,
-                    userid: userId,
+                    shiftId: shift._id,
+                    userId: userId,
                     selectedVolType: userVolunteerTypes[userId],
                 });
                 //Error that says "User doesn't exist in this shift"
