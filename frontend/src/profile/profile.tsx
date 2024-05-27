@@ -1,5 +1,7 @@
-import { useState, useEffect, ChangeEvent } from "react";
-import Spinner from "../components/spinner";
+import { useState, useEffect } from "react";
+import avatar from "../assets/avatar.svg";
+import Spinner from "react-bootstrap/Spinner";
+// import { User } from "../api/userApi";
 import { QualificationsSection } from "./qualifications/qualificationManagement";
 import { VerifyAccountModal } from "./verifyAccount";
 import { NavigationBar } from "../components/navbar";
@@ -7,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { setPageTitle } from "../utility";
 import "./profile.css";
 import { VerifiedMark } from "./verifiedMark";
+import { Button, Table } from "react-bootstrap";
 import { useUserById } from "../hooks/useUserById";
 import { useOwnUser } from "../hooks/useOwnUser";
 import { useVoltypesForUser } from "../hooks/useVolTypesForUser";
@@ -15,23 +18,17 @@ import { loggedInUserIsAdmin } from "../protectedRoute";
 import { AddRoleModal, ConfirmDeleteModal } from "./volunteer/addRoleModal";
 import { IVolunteerTypeUserWithApproved } from "../api/volTypeAPI";
 import { useProfileImage } from "../hooks/useProfileImage";
-import avatar from "../assets/avatar.svg";
+import { CreateOrEditImageModal } from "./updateImageModal";
 
 export const ProfilePage = () => {
     const { id } = useParams();
     const { isLoading, data: userData, refetch: refetchUser, error } = id ? useUserById(id) : useOwnUser();
     const user = userData?.data;
+    const { profileImage, loading: loadingProfileImage } = useProfileImage(user?._id);
     const [showAddModal, setshowAddModal] = useState(false);
     const [showDeleteModal, setshowDeleteModal] = useState(false);
+    const [showCreateModal, setshowCreateModal] = useState(false);
     const [selectedVolType, setselectedVolType] = useState<IVolunteerTypeUserWithApproved | null>(null);
-    const {
-        profileImage,
-        loading: loadingProfileImage,
-        error: errorProfileImage,
-        updateProfileImage,
-    } = useProfileImage(user?._id);
-
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const isAdmin = loggedInUserIsAdmin();
 
@@ -55,6 +52,7 @@ export const ProfilePage = () => {
     };
 
     const handleSetVolunteerTypeApproval = async (qualId: string, status: string) => {
+        console.log(qualId);
         try {
             if (user) {
                 await setApprovalUserVolunteerType(qualId, user?._id, status);
@@ -63,6 +61,14 @@ export const ProfilePage = () => {
         } catch (error) {
             console.log(error);
         }
+    };
+
+    const handleCreateImage = () => {
+        setshowCreateModal(true);
+    };
+
+    const onCreateClose = () => {
+        setshowCreateModal(false);
     };
 
     const handleAddRole = () => {
@@ -84,6 +90,7 @@ export const ProfilePage = () => {
             setshowDeleteModal(false);
             if (user?._id && selectedVolType && shouldDelete) {
                 await removeVolunteerType(user?._id, selectedVolType?._id);
+                console.log("Trying to delete");
             }
             await refetchVolTypeUser();
         } catch (error) {
@@ -91,23 +98,9 @@ export const ProfilePage = () => {
         }
     };
 
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files[0]) {
-            setSelectedFile(event.target.files[0]);
-        }
-    };
-
-    const handleUpdateProfileImage = async () => {
-        if (selectedFile) {
-            await updateProfileImage(selectedFile);
-            setSelectedFile(null);
-        }
-    };
-
-    if (isLoading || !user) {
-        return <Spinner />;
+    if (!(!isLoading && user)) {
+        return <Spinner animation="border" />;
     }
-
     return (
         <>
             <NavigationBar />
@@ -116,11 +109,36 @@ export const ProfilePage = () => {
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-3">
-                                <img className="profile-image" src={profileImage || avatar} alt="Profile" />
-                                <input type="file" accept="image/*" onChange={handleFileChange} />
-                                {selectedFile && (
-                                    <button onClick={handleUpdateProfileImage}>Update Profile Image</button>
+                                {loadingProfileImage ? (
+                                    <Spinner animation="border" />
+                                ) : (
+                                    <img className="profile-image" src={profileImage || avatar} alt="Profile" />
                                 )}
+                                <div className="image-button">
+                                    <Button
+                                        title={`Update profile image`}
+                                        variant="success"
+                                        hidden={!editingSelf}
+                                        onClick={() => handleCreateImage()}
+                                    >
+                                        {" "}
+                                        Update image
+                                    </Button>
+                                    {showCreateModal && (
+                                        <CreateOrEditImageModal
+                                            image={{
+                                                _id: "",
+                                                filePath: "",
+                                                fileId: "",
+                                                user: "",
+                                            }}
+                                            onClose={() => {
+                                                void onCreateClose();
+                                            }}
+                                            isNew={true}
+                                        />
+                                    )}
+                                </div>
                             </div>
                             <div className="col-6">
                                 <h2>
@@ -140,19 +158,28 @@ export const ProfilePage = () => {
                             </div>
                             <div className="col-8">
                                 {error && <p>{error}</p>}
-                                {errorProfileImage && <p>{errorProfileImage}</p>}
+                                {/* <div className="main-content">
+                                    <h4>
+                                        <strong>Qualifications</strong>
+                                    </h4>
+                                    <QualificationsSection
+                                        isAdmin={isAdmin}
+                                        userId={user._id}
+                                        onFinishAddingQualification={() => void refetchQualifications()}
+                                    />
+                                </div> */}
                                 {showOTPModal && (
                                     <VerifyAccountModal
                                         email={user.email}
                                         closeModal={() => {
-                                            void closeOTPVerifierModal();
+                                            void closeOTPVerifierModal;
                                         }}
                                     />
                                 )}
                             </div>
                         </div>
                         <div className="volunteer-type-table" hidden={!isAdmin && !editingSelf}>
-                            <table>
+                            <Table striped bordered hover>
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -165,46 +192,50 @@ export const ProfilePage = () => {
                                 <tbody>
                                     {!isLoadingVolTypes &&
                                         userVolTypesData?.data &&
-                                        userVolTypesData.data.map((volType, index) => (
-                                            <tr key={volType._id}>
-                                                <td>{index + 1}</td>
-                                                <td>{volType.name}</td>
-                                                <td>{volType.approved ? "Yes" : "No"}</td>
-                                                <td>
-                                                    <button
-                                                        onClick={() => handleDeleteRole(volType)}
-                                                        title={`Delete`}
-                                                        disabled={!editingSelf && !isAdmin}
-                                                    >
-                                                        <i className="bi bi-trash" />
-                                                    </button>
-                                                </td>
-                                                {isAdmin && (
+                                        userVolTypesData.data.map((volType, index) => {
+                                            return (
+                                                <tr key={volType._id}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{volType.name}</td>
+                                                    <td>{volType.approved ? "Yes" : "No"}</td>
                                                     <td>
-                                                        <button
-                                                            onClick={() => {
-                                                                void handleSetVolunteerTypeApproval(
-                                                                    volType._id,
-                                                                    volType.approved ? "revoke" : "approve"
-                                                                );
-                                                            }}
+                                                        <Button
+                                                            onClick={() => handleDeleteRole(volType)}
+                                                            title={`Delete`}
+                                                            variant="danger"
+                                                            disabled={!editingSelf && !isAdmin}
                                                         >
-                                                            {volType.approved ? "Revoke" : "Approve"}
-                                                        </button>
+                                                            <i className="bi bi-trash" />
+                                                        </Button>
                                                     </td>
-                                                )}
-                                            </tr>
-                                        ))}
+                                                    {isAdmin && (
+                                                        <td>
+                                                            <Button
+                                                                onClick={() => {
+                                                                    void handleSetVolunteerTypeApproval(
+                                                                        volType._id,
+                                                                        volType.approved ? "revoke" : "approve"
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {volType.approved ? "Revoke" : "Approve"}
+                                                            </Button>
+                                                        </td>
+                                                    )}
+                                                </tr>
+                                            );
+                                        })}
                                 </tbody>
-                            </table>
-                            <button
+                            </Table>
+                            <Button
                                 title="Add Volunteer Type"
+                                variant="success"
                                 onClick={() => handleAddRole()}
                                 disabled={!editingSelf && !isAdmin}
                             >
                                 Add Volunteer Type {"   "}
                                 <i className="bi bi-plus-square" />
-                            </button>
+                            </Button>
                             {showAddModal && user._id && userVolTypesData?.data && (
                                 <AddRoleModal
                                     userId={user?._id}
@@ -221,7 +252,7 @@ export const ProfilePage = () => {
                                 />
                             )}
                         </div>
-                        <br />
+                        <br></br>
                         {user?._id && (
                             <QualificationsSection userId={user._id} isAdmin={isAdmin} editingSelf={editingSelf} />
                         )}

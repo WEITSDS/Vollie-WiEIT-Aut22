@@ -18,7 +18,7 @@ export interface IBasicImage {
 
 export interface IImage extends Document, IBasicImage {}
 
-export interface QualificationSummary {
+export interface ImageSummary {
     _id: string;
     filePath: string;
 }

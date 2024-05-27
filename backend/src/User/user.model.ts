@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 // 2. Create a Schema corresponding to the document interface.
 const UserSchema: Schema = new Schema(
     {
+        images: [{ type: mongoose.Types.ObjectId, ref: "ProfileImage" }],
         email: { type: String, required: true },
         firstName: { type: String, required: true },
         lastName: { type: String, required: true },

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Logger } from "tslog";
 import { handleError } from "../utility";
 import { v2 as cloudinary } from "cloudinary";
-import { CLOUDINARY_CONFIG } from "../constants";
+import { CLOUDINARY_CONFIG2 } from "../constants";
 import { IBasicImage, isIBasicImage } from "./image.interface";
 import Image from "./image.model";
 import User from "../User/user.model";
@@ -10,7 +10,7 @@ import mongoose from "mongoose";
 import { getUserByEmail } from "../User/user.controller";
 import { IUser } from "../User/user.interface";
 
-cloudinary.config(CLOUDINARY_CONFIG);
+cloudinary.config(CLOUDINARY_CONFIG2);
 const logger = new Logger({ name: "image.controller" });
 
 export const getValidImages = () => {

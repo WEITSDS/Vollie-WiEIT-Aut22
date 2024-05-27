@@ -29,3 +29,11 @@
 .col-8{
     margin-right: 2%;
 }
+
+.image-button {
+    padding: 20px;
+    padding-left: 30px;
+}
+.profile-image img{
+    border-radius: 100px;
+}
