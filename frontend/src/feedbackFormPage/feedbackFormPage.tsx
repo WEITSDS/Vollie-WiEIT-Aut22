@@ -27,6 +27,7 @@ export const FeedbackFormsPage = () => {
 
     // find matching completed id's in shifts
     const completedForms = completedSchoolShifts?.filter((shift) => {
+        console.log(feedbackQuery.data);
         return feedback?.some((form) => shift._id === form.shift);
     });
 

@@ -12,30 +12,11 @@ import { Parser } from "json2csv";
 const logger = new Logger({ name: "feedback.controller" });
 
 export const createFeedback = async (req: Request, res: Response) => {
-    const {
-        user,
-        qualificationType,
-        shift,
-        //session,
-        experience,
-        learnings,
-        teacher,
-        studentEngagement,
-        teacherEngagement,
-        improvements,
-        improvementMethods,
-        styles,
-        content,
-        teamDynamics,
-        additionalComments,
-        rating,
-    } = req.body;
     try {
-        const feedback = new Feedback({
+        const {
             user,
             qualificationType,
             shift,
-            //session,
             experience,
             learnings,
             teacher,
@@ -48,7 +29,26 @@ export const createFeedback = async (req: Request, res: Response) => {
             teamDynamics,
             additionalComments,
             rating,
-            formCompleted: false, // Set the default value for the formCompleted field
+            formCompleted,
+        } = req.body;
+
+        const feedback = new Feedback({
+            user,
+            qualificationType,
+            shift,
+            experience,
+            learnings,
+            teacher,
+            studentEngagement,
+            teacherEngagement,
+            improvements,
+            improvementMethods,
+            styles,
+            content,
+            teamDynamics,
+            additionalComments,
+            rating,
+            formCompleted: formCompleted || false,
         });
         await feedback.save();
         res.status(200).json({ message: "Feedback created successfully", success: true });
@@ -62,7 +62,6 @@ export const updateFeedbackById = async (req: Request, res: Response) => {
         user,
         qualificationType,
         shift,
-        //session,
         experience,
         learnings,
         teacher,
@@ -82,7 +81,6 @@ export const updateFeedbackById = async (req: Request, res: Response) => {
             user,
             qualificationType,
             shift,
-            //session,
             experience,
             learnings,
             teacher,
@@ -177,12 +175,12 @@ export const getFeedbackById = async (req: Request, res: Response): Promise<void
 export const getAllCompletedFeedbackByUserId = async (req: Request, res: Response): Promise<void> => {
     try {
         const requestingUser = req.session.user;
-        const feedbacks = await Feedback.find({ user: requestingUser?._id, formCompleted: true });
-        if (!feedbacks || feedbacks.length === 0) {
+        const data = await Feedback.find({ user: requestingUser?._id, formCompleted: true });
+        if (!data || data.length === 0) {
             res.status(404).json({ message: "No feedback found for the given user", success: false });
             return;
         }
-        res.status(200).json({ feedbacks, success: true });
+        res.status(200).json({ message: "Retrieved Completed Feedback Forms by UserId", data, success: true });
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occurred while retrieving feedback.");
         res.status(500).json({ error: "An unexpected error occurred while retrieving feedback." });
