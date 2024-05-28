@@ -6,6 +6,7 @@ import { getAllUsers, User } from "../api/userApi";
 import { setPageTitle } from "../utility";
 import QualificationsTable from "../components/qualificationsTable";
 import VenuesTable from "../components/venuesTable";
+import CohortTable from "../components/cohortTable";
 interface SettingsState {
     loading: boolean;
     errorMessage?: string;
@@ -41,13 +42,28 @@ export class Settings extends React.Component<Record<string, never>, SettingsSta
                 <NavigationBar />
                 <WEITBackground>
                     <ModalBody
-                        style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "100vh",
+                        }}
                     >
                         <div className="dashboard-table-container">
                             <QualificationsTable tableType="Qualification" />
                             <QualificationsTable tableType="Volunteer" />
                             <VenuesTable />
                         </div>
+                    </ModalBody>
+                    <ModalBody
+                        style={{
+                            display: "flex",
+                            // justifyContent: "center",
+                            alignItems: "center",
+                            // height: "100vh",
+                        }}
+                    >
+                        <CohortTable />
                     </ModalBody>
                 </WEITBackground>
             </>
