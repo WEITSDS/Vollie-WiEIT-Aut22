@@ -5,20 +5,20 @@ export function isIFeedback(args: unknown): args is IFeedback {
     return (
         typeof p === "object" &&
         typeof p.user === "string" &&
-        typeof p.shift === "string" &&
         typeof p.qualificationType === "string" &&
-        typeof p.session === "string" &&
+        typeof p.shift === "string" &&
+        //typeof p.session === "string" &&
         typeof p.experience === "string" &&
-        typeof p.keyLearnings === "string" &&
         typeof p.learnings === "string" &&
         typeof p.teacher === "string" &&
         typeof p.studentEngagement === "string" &&
         typeof p.teacherEngagement === "string" &&
         typeof p.improvements === "string" &&
-        typeof p.sessionImprovements === "string" &&
+        typeof p.improvementMethods === "string" &&
         typeof p.styles === "string" &&
-        typeof p.contentDelivery === "string" &&
+        typeof p.content === "string" &&
         typeof p.teamDynamics === "string" &&
+        typeof p.additionalComments === "string" &&
         typeof p.rating === "string" &&
         typeof p.formCompleted === "boolean"
     );
@@ -26,9 +26,9 @@ export function isIFeedback(args: unknown): args is IFeedback {
 
 export interface IBasicFeedback {
     user: Types.ObjectId;
-    shift: Types.ObjectId;
     qualificationType: Types.ObjectId;
-    session?: string;
+    shift: Types.ObjectId;
+    //session?: string;
     experience?: string;
     learnings?: string;
     keyLearnings?: string;
@@ -36,10 +36,11 @@ export interface IBasicFeedback {
     studentEngagement?: string;
     teacherEngagement?: string;
     improvements?: string;
-    sessionImprovements?: string;
+    improvementMethods?: string;
     styles?: string;
-    contentDelivery?: string;
+    content?: string;
     teamDynamics?: string;
+    additionalComments?: string;
     rating: string;
     formCompleted: boolean;
 }
