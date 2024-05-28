@@ -20,11 +20,11 @@ export default function FeedbackCard({ shiftData, userId, view }: FeedbackCardPr
 
     const shiftUsers = shiftData.users; //type Array<IShiftUser>
     const usersShiftData = shiftUsers.find((user) => {
-        return user.user?._id === userId;
+        return user.user === userId;
     });
 
     const type = usersShiftData?.chosenVolunteerType
-        ? useVolunteerTypeById(usersShiftData?.chosenVolunteerType?._id)
+        ? useVolunteerTypeById(usersShiftData?.chosenVolunteerType)
         : undefined;
 
     const volType = type?.data?.data;

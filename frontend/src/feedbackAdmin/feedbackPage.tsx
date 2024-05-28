@@ -43,16 +43,7 @@ export const FeedbackAdminPage = () => {
                                                     <td>{`${user.firstName} ${user.lastName}`}</td>
                                                     <td>{shift?.startAt}</td>
                                                     <td>{shift?.venue}</td>
-                                                    <td>
-                                                        {shift?.users.map(
-                                                            (shiftUser) =>
-                                                                user.email === shiftUser.user.email && (
-                                                                    <span key={shiftUser.user._id}>
-                                                                        {shiftUser.chosenVolunteerType?.name}{" "}
-                                                                    </span>
-                                                                )
-                                                        )}
-                                                    </td>
+                                                    <td>{feedbackItem.improvements}</td>
                                                     <td>{feedbackItem.rating}</td>
                                                 </tr>
                                             );
