@@ -319,7 +319,7 @@ export const assignUser = async (req: Request, res: Response) => {
         }
 
         const assignShiftResponse = await User.findOneAndUpdate(
-            { _id: req.params.userid },
+            { _id: req.params.userId },
             { $addToSet: { shifts: { shift: req.params.shiftId, approved: false } } }
         );
 
@@ -1240,7 +1240,7 @@ export async function getTotalHoursWorked(req: Request, res: Response) {
         const totalHoursByCohort: { [cohortName: string]: number } = {};
 
         // Retrieve the userId from the request
-        const targetUserID = req.params.userid;
+        const targetUserID = req.params.userId;
 
         for (const cohort of userCohorts) {
             const { startDate, endDate } = cohort;
