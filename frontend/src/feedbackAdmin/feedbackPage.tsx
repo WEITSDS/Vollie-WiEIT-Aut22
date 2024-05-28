@@ -27,7 +27,7 @@ export const FeedbackAdminPage = () => {
                                         <th>User Name</th>
                                         <th>Shift Date</th>
                                         <th>School</th>
-                                        <th>Role</th>
+                                        <th>Improvements</th>
                                         <th>Rating</th>
                                     </tr>
                                 </thead>
