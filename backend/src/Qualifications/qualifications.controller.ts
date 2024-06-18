@@ -312,7 +312,7 @@ export const createQualification = async (req: Request, res: Response) => {
         //     handleError(logger, res, null, "Qualification type not found.", 404);
         //     return;
         // }
-        const user = await (newQualification.user && req.session.user?.isAdmin
+        const user = await (newQualification.user
             ? User.findById(newQualification.user)
             : getUserByEmail(req.session.user?.email || ""));
         if (!user) {
@@ -342,7 +342,6 @@ export const createQualification = async (req: Request, res: Response) => {
 
         await user.update({ $push: { qualifications: qual._id as string } });
         await Promise.all([qual.save(), user.save()]);
-
         res.status(200).json({ message: "Created qualification successfully", success: true });
     } catch (err) {
         handleError(logger, res, err, "An unexpected error occured while creating qualification.");
@@ -367,9 +366,7 @@ const getQualificationsForUser = async (userPromise: Promise<IUser | undefined |
         }
 
         // find all the qualifications and populate the qualification type nested doc instead of sending back an id
-        const qualifications = await Qualification.find({ _id: { $in: currentUser.qualifications } }).populate(
-            "qualificationType"
-        );
+        const qualifications = await Qualification.find({ _id: { $in: currentUser.qualifications } });
 
         res.status(200).json({
             message: "Got qualifications for current user successfully",
@@ -421,7 +418,7 @@ export const updateQualificationById = async (req: Request, res: Response) => {
 
 export const deleteQualificationById = async (req: Request, res: Response) => {
     try {
-        const qual = await Qualification.findById(req.params.id).populate("qualificationType");
+        const qual = await Qualification.findById(req.params.id);
 
         if (!qual) {
             res.status(404).json({

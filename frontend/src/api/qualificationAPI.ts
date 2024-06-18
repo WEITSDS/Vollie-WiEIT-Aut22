@@ -1,4 +1,3 @@
-import { IQualificationType } from "./qualificationTypeAPI";
 import {
     deleteAndGetBasicResponse,
     getDataResponse,
@@ -10,26 +9,28 @@ import {
 
 export interface Qualification {
     _id: string;
-    title: string;
-    description: string;
-    filePath: string;
-    fileId: string;
     user: string;
-    qualificationType: IQualificationType;
+    wwccNumber: string;
     expiryDate: string;
-    expiredAndNotified: boolean;
-    approved: boolean;
+    dateOfbirth: string;
+    fullName: string;
 }
 
 export interface NewQualification {
     _id: string;
     title: string;
-    description: string;
-    filePath: string;
-    fileId: string;
+    wWCC: string;
     user: string;
-    qualificationType: string;
     expiryDate: string;
+    birthDate: string;
+}
+
+export interface CreateQualification {
+    user: string;
+    wwccNumber: string;
+    expiryDate: string;
+    dateOfbirth: string;
+    fullName: string;
 }
 
 const PATH = `${window.location.origin}/api/qualifications`;
@@ -47,22 +48,18 @@ export async function getQualificationsForUserId(id: string | undefined): Promis
 }
 
 export async function createQualification(
-    title: string,
-    description: string,
-    filePath: string,
-    selectedQualType: string,
+    user: string,
+    wwccNumber: string,
     expiryDate: string,
-    userId?: string
+    dateOfbirth: string,
+    fullName: string
 ): Promise<ResponseWithStatus> {
-    const payload: NewQualification = {
-        _id: "",
-        user: userId || "",
-        fileId: "",
-        title,
-        description,
-        filePath,
-        qualificationType: selectedQualType,
+    const payload: CreateQualification = {
+        user,
+        wwccNumber,
         expiryDate,
+        dateOfbirth,
+        fullName,
     };
     return await postAndGetBasicResponse(`${PATH}/create`, payload as unknown as Record<string, unknown>);
 }
@@ -70,28 +67,26 @@ export async function createQualification(
 interface QualificationPatch {
     _id: string;
     title: string;
-    description: string;
-    selectedQualType: string;
+    wWCC: string;
     expiryDate: string;
+    birthDate: string;
     user?: string;
 }
 export async function updateQualification({
     _id,
     title,
-    description,
+    wWCC,
     user,
     expiryDate,
-    selectedQualType,
+    birthDate,
 }: QualificationPatch): Promise<ResponseWithStatus> {
     const payload: NewQualification = {
         _id,
         user: user || "",
-        fileId: "",
         title,
-        description,
-        filePath: "",
+        wWCC,
         expiryDate,
-        qualificationType: selectedQualType,
+        birthDate,
     };
 
     return postAndGetBasicResponse(`${PATH}/${_id}/update`, payload as unknown as Record<string, unknown>);

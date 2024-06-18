@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Table, Modal } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import { deleteQualification, Qualification, setApprovalUserQualification } from "../../api/qualificationAPI";
 // import { Qualification, NewQualification } from "../../api/qualificationAPI";
 import { useQualificationsForUserById } from "../../hooks/useQualificationsForUserById";
@@ -68,7 +68,7 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
 
     const [selectedQualification, setselectedQualification] = useState<Qualification | null>(null);
 
-    const [showQualificationModal, setShowQualificationModal] = useState(false);
+    //const [showQualificationModal, setShowQualificationModal] = useState(false);
 
     const handleDeleteModalClose = async (shouldDelete: boolean) => {
         try {
@@ -97,11 +97,6 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
         await refetchQualifications();
     };
 
-    const handleShowQualification = (qual: Qualification) => {
-        setselectedQualification(qual);
-        setShowQualificationModal(true);
-    };
-
     const handleSetApproval = async (qualId: string, status: string) => {
         try {
             if (userId) {
@@ -118,12 +113,10 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Qualification Type</th>
+                        <th>WWCC Number</th>
                         <th>Expiry Date</th>
                         <th>Approval Status</th>
                         <th>Delete</th>
-                        <th>Evidence</th>
                         {isAdmin && <th>Set Approval</th>}
                     </tr>
                 </thead>
@@ -132,8 +125,7 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
                         userQualifications?.data?.map((qual) => {
                             return (
                                 <tr key={qual._id}>
-                                    <td>{qual.title}</td>
-                                    <td>{qual.qualificationType?.name}</td>
+                                    <td>{qual.wwccNumber}</td>
                                     <td>
                                         {Date.parse(qual.expiryDate) < Date.now() ? (
                                             <div title="This qualification is expired." style={{ color: "red" }}>
@@ -144,7 +136,17 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
                                             <div>{qual.expiryDate}</div>
                                         )}
                                     </td>
-                                    <td>{qual.approved ? "Yes" : "No"}</td>
+                                    <td>
+                                        {Date.parse(qual.expiryDate) < Date.now() ? (
+                                            <div title="This qualification is expired." style={{ color: "red" }}>
+                                                {qual.expiryDate} {"   "}
+                                                <i className="bi bi-exclamation-square" />
+                                            </div>
+                                        ) : (
+                                            <div>{qual.expiryDate}</div>
+                                        )}
+                                    </td>
+                                    {/* <td>{qual.approved ? "Yes" : "No"}</td> */}
                                     <td>
                                         <Button
                                             onClick={() => handleQualificationDelete(qual)}
@@ -154,14 +156,9 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
                                             <i className="bi bi-trash" />
                                         </Button>
                                     </td>
-                                    <td>
-                                        <Button onClick={() => handleShowQualification(qual)} title={`Evidence`}>
-                                            Evidence
-                                        </Button>
-                                    </td>
                                     {isAdmin && (
                                         <td>
-                                            {qual.approved ? (
+                                            {qual.dateOfbirth ? (
                                                 <Button onClick={() => void handleSetApproval(qual._id, "revoke")}>
                                                     Revoke
                                                 </Button>
@@ -189,14 +186,11 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
             {showCreateModal && (
                 <CreateOrEditQualificationModal
                     qualification={{
-                        _id: "",
-                        description: "",
-                        filePath: "",
-                        title: "",
-                        user: isAdmin && userId ? userId : "",
-                        qualificationType: "",
+                        user: "",
+                        wwccNumber: "",
+                        dateOfbirth: "",
                         expiryDate: "",
-                        fileId: "",
+                        fullName: "",
                     }}
                     onClose={() => {
                         void onCreateClose();
@@ -210,42 +204,6 @@ export const QualificationsSection = ({ userId, isAdmin, editingSelf }: Qualific
                     onClose={(shouldDelete: boolean) => void handleDeleteModalClose(shouldDelete)}
                 />
             )}
-            <Modal
-                show={showQualificationModal}
-                onHide={() => {
-                    setShowQualificationModal(false);
-                    setselectedQualification(null);
-                }}
-            >
-                <Modal.Header>
-                    <Modal.Title>Qualification Evidence</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div className="add-shift-form">
-                        {selectedQualification ? (
-                            <>
-                                <p>Name: {selectedQualification.title}</p>
-                                <p>Description: {selectedQualification?.description}</p>
-                                <p>Expiry Date: {selectedQualification.expiryDate}</p>
-                                <p>Approval Status: {selectedQualification.approved ? "Yes" : "No"}</p>
-                                <img src={selectedQualification.filePath}></img>
-                            </>
-                        ) : (
-                            <p>No Qualification Selected</p>
-                        )}
-                    </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button
-                        onClick={() => {
-                            setShowQualificationModal(false);
-                            setselectedQualification(null);
-                        }}
-                    >
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
         </div>
     );
 };
