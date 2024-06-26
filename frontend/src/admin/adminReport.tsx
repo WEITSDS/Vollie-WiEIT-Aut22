@@ -7,7 +7,7 @@ import { useState } from "react";
 import { DateRangePicker, Range } from "react-date-range";
 import { Table } from "react-bootstrap";
 
-const ROOT_URL = window.location.origin;
+const ROOT_URL = "https://api.wieit.xyz";
 const AdminReport = () => {
     const { data: allVolTypesData } = useAllVolTypes();
     const volTypes = allVolTypesData?.data;

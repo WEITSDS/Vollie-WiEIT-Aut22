@@ -30,7 +30,7 @@ export interface IVolunteerTypeUserWithApproved {
     approved: boolean;
 }
 
-const PATH = `${window.location.origin}/api`;
+const PATH = `https://api.wieit.xyz/api`;
 export async function getAllVolTypes(): Promise<ResponseWithData<IVolunteerType[]>> {
     return getDataResponse(`${PATH}/volunteer-types/volunteer-type-all`);
 }

@@ -10,7 +10,7 @@ import {
     postAndGetDataResponse,
 } from "./utility";
 
-const ROOT_URL = window.location.origin;
+const ROOT_URL = "https://api.wieit.xyz";
 
 async function patchBasicResponse(url: string): Promise<ResponseWithStatus> {
     let response: Response | null = null;

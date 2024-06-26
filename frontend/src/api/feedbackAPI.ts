@@ -4,7 +4,7 @@
 import { postAndGetBasicResponse, ResponseWithStatus, ResponseWithData, getDataResponse } from "./utility";
 
 // The base URL of your backend server
-const PATH = `${window.location.origin}/api/feedback`;
+const PATH = `https://api.wieit.xyz/api/feedback`;
 
 // Interface for Feedback
 export interface IBasicFeedback {

@@ -45,7 +45,7 @@ mongoose
 
 // Disable annoying browser security
 // TODO: Remove this if not needed
-app.use(cors({ origin: `${PROTOCOL}://${HOST}:${PORT}` }));
+app.use(cors({ origin: `https://wieit.xyz`, credentials: true }));
 
 // Use JSON Parsing Middleware (some issue with typing hence the as cast)
 app.use(express.json({ limit: "10mb" }) as RequestHandler);

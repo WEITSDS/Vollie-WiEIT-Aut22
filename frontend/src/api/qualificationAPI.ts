@@ -32,7 +32,7 @@ export interface NewQualification {
     expiryDate: string;
 }
 
-const PATH = `${window.location.origin}/api/qualifications`;
+const PATH = `https://api.wieit.xyz/api/qualifications`;
 
 export async function getQualifications(id?: string): Promise<ResponseWithData<Qualification[]>> {
     return id ? getQualificationsForUserId(id) : getOwnQualifications();

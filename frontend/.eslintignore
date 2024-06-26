@@ -6,3 +6,7 @@ dist
 coverage
 
 *.js
+
+.eslintrc.js
+
+vite.config.js

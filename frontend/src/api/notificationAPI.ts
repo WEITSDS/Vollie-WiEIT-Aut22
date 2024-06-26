@@ -1,5 +1,6 @@
 import { getDataResponse, ResponseWithData } from "./utility";
-const ROOT_URL = window.location.origin;
+
+const ROOT_URL = "https://api.wieit.xyz";
 
 export interface INotification {
     _id: string;

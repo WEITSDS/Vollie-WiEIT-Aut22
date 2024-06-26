@@ -11,7 +11,7 @@ export function useSessionManagement(application: core.Express): void {
     application.use(
         session({
             secret: COOKIE_SECRET, // just secret stuff idk
-            cookie: { maxAge: COOKIE_DURATION }, // how long a cookie can last before it expires
+            cookie: { maxAge: COOKIE_DURATION, sameSite: "strict" }, // how long a cookie can last before it expires
             resave: false, // whether or not cookies are saved even if they havent changed
             saveUninitialized: true, // saves new and unmodified cookies bc why not
             rolling: true, // refreshes the session as needed as it nears expiry

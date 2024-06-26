@@ -3,7 +3,7 @@
 // AddressAPI.ts
 
 // The base URL of your backend server
-const ROOT_URL = window.location.origin;
+const ROOT_URL = "https://api.wieit.xyz";
 
 // Interface for Address
 export interface IAddress {

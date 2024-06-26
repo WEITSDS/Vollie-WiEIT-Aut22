@@ -25,7 +25,7 @@ export interface NewICohort {
     user: string;
 }
 
-const PATH = `${window.location.origin}/api`;
+const PATH = `https://api.wieit.xyz/api`;
 
 // Retrieving all cohorts
 export async function getAllCohorts(): Promise<ResponseWithData<ICohort[]>> {

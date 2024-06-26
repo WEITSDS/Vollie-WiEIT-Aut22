@@ -1,7 +1,7 @@
 import { getDataResponse, isBasicResponse, patch, post, ResponseWithData, ResponseWithStatus } from "./utility";
 import { IVolunteerTypeUser } from "./volTypeAPI";
 
-const ROOT_URL = window.location.origin;
+const ROOT_URL = "https://api.wieit.xyz";
 
 async function postAndGetBasicResponse(url: string, data: Record<string, unknown>): Promise<ResponseWithStatus> {
     let response: Response | null = null;

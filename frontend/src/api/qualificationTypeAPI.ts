@@ -17,7 +17,7 @@ export interface IQualificationType {
     requiresApproval: boolean;
 }
 
-const PATH = `${window.location.origin}/api`;
+const PATH = `https://api.wieit.xyz/api`;
 export async function getAllQualTypes(): Promise<ResponseWithData<IQualificationType[]>> {
     return getDataResponse(`${PATH}/qualification-types/qualification-type-all`);
 }

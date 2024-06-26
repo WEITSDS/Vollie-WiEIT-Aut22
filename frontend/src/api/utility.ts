@@ -5,6 +5,7 @@ export async function deleteReq(url: string): Promise<Response> {
 export async function post(url: string, body: Record<string, unknown>): Promise<Response> {
     return await fetch(url, {
         method: "POST",
+        credentials: "include",
         body: JSON.stringify(body),
         headers: {
             "Content-Type": "application/json",
@@ -15,6 +16,7 @@ export async function post(url: string, body: Record<string, unknown>): Promise<
 export async function patch(url: string): Promise<Response> {
     return await fetch(url, {
         method: "PATCH",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
         },
@@ -32,8 +34,10 @@ export async function get(url: string, queryParameters?: Record<string, string>)
     }
     return await fetch(`${url}?${queryArgs.join("&")}`, {
         method: "GET",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
+            Cookie: document.cookie,
         },
     });
 }
@@ -41,6 +45,7 @@ export async function get(url: string, queryParameters?: Record<string, string>)
 export async function del(url: string): Promise<Response> {
     return await fetch(url, {
         method: "DELETE",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
         },
